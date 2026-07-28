@@ -10,7 +10,7 @@ import type {
   OwnedHeart,
   PartyRecommendation,
 } from "@/lib/types";
-import { sampleDatabase } from "@/data/sample-database";
+import { mergedDatabase } from "@/data/merged-database";
 import { optimizeParty } from "@/lib/optimizer/party-optimizer";
 
 const CONTENT_OPTIONS: { value: ContentType; label: string }[] = [
@@ -23,7 +23,7 @@ const CONTENT_OPTIONS: { value: ContentType; label: string }[] = [
   { value: "event", label: "イベント" },
 ];
 
-const JOB_OPTIONS = Object.entries(sampleDatabase.jobs).map(([id, job]) => ({
+const JOB_OPTIONS = Object.entries(mergedDatabase.jobs).map(([id, job]) => ({
   id: id as JobId,
   name: job.name,
 }));
@@ -39,7 +39,7 @@ export default function HomePage() {
     { jobId: "priest", level: 35 },
   ]);
   const [ownedEquipment, setOwnedEquipment] = useState<string[]>(
-    sampleDatabase.equipment.map((e) => e.id),
+    mergedDatabase.equipment.map((e) => e.id),
   );
   const [ownedHearts, setOwnedHearts] = useState<OwnedHeart[]>([
     { heartId: "dragon_lord", rank: "S" },
@@ -52,7 +52,7 @@ export default function HomePage() {
 
   const monsters = useMemo(
     () =>
-      sampleDatabase.monsters.filter(
+      mergedDatabase.monsters.filter(
         (m) => m.contentType === contentType || contentType === "event",
       ),
     [contentType],
@@ -72,7 +72,7 @@ export default function HomePage() {
     };
 
     try {
-      const recommendation = optimizeParty(input, sampleDatabase);
+      const recommendation = optimizeParty(input, mergedDatabase);
       setResult(recommendation);
     } catch (e) {
       setError(e instanceof Error ? e.message : "不明なエラー");
@@ -118,7 +118,7 @@ export default function HomePage() {
               onChange={(e) => {
                 const ct = e.target.value as ContentType;
                 setContentType(ct);
-                const first = sampleDatabase.monsters.find(
+                const first = mergedDatabase.monsters.find(
                   (m) => m.contentType === ct,
                 );
                 if (first) setTargetMonsterId(first.id);
@@ -189,7 +189,7 @@ export default function HomePage() {
 
         <section className="space-y-3 rounded-xl bg-white p-6 shadow">
           <h2 className="text-lg font-semibold text-dq-blue">所持装備</h2>
-          {sampleDatabase.equipment.map((eq) => (
+          {mergedDatabase.equipment.map((eq) => (
             <label key={eq.id} className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -203,7 +203,7 @@ export default function HomePage() {
 
         <section className="space-y-3 rounded-xl bg-white p-6 shadow">
           <h2 className="text-lg font-semibold text-dq-blue">所持こころ</h2>
-          {sampleDatabase.hearts.map((heart) => {
+          {mergedDatabase.hearts.map((heart) => {
             const owned = ownedHearts.find((h) => h.heartId === heart.id);
             return (
               <div key={heart.id} className="flex items-center gap-3 text-sm">
@@ -285,8 +285,8 @@ export default function HomePage() {
 
           <div className="space-y-4">
             {result.builds.map((build, i) => {
-              const job = sampleDatabase.jobs[build.jobId];
-              const skill = sampleDatabase.skills.find(
+              const job = mergedDatabase.jobs[build.jobId];
+              const skill = mergedDatabase.skills.find(
                 (s) => s.id === build.skillId,
               );
               return (
@@ -305,7 +305,7 @@ export default function HomePage() {
                     {build.equipmentIds
                       .map(
                         (id) =>
-                          sampleDatabase.equipment.find((e) => e.id === id)
+                          mergedDatabase.equipment.find((e) => e.id === id)
                             ?.name ?? id,
                       )
                       .join(" / ")}
@@ -314,7 +314,7 @@ export default function HomePage() {
                     こころ:{" "}
                     {build.heartIds
                       .map((h) => {
-                        const heart = sampleDatabase.hearts.find(
+                        const heart = mergedDatabase.hearts.find(
                           (x) => x.id === h.heartId,
                         );
                         return heart ? `${heart.name}(${h.rank})` : h.heartId;
