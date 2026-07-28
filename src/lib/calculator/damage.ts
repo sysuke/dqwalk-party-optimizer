@@ -1,4 +1,4 @@
-import type { AttackType, ContentType, Element, Stats } from "./types";
+import type { AttackType, ContentType, Element, Stats } from "../types";
 
 /** 小数切り捨て（ゲーム内 truncate 相当） */
 export function truncate(value: number): number {
