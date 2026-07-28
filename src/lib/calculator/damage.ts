@@ -317,7 +317,8 @@ export function sumDamageModifiers(
         (result.elementSkillDamage[key] ?? 0) + value;
     }
     for (const [family, value] of Object.entries(mod.familyDamage ?? {})) {
-      result.familyDamage[family] = (result.familyDamage[family] ?? 0) + value;
+      const numericValue = value ?? 0;
+      result.familyDamage[family] = (result.familyDamage[family] ?? 0) + numericValue;
     }
     for (const [type, value] of Object.entries(mod.attackTypeDamage ?? {})) {
       const key = type as AttackType;
