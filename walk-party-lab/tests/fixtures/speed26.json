@@ -1,0 +1,918 @@
+{
+  "config": {
+    "actors": [
+      {
+        "member": 2,
+        "job": "job-10",
+        "weapon": "gun",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "god",
+          "heart-0",
+          "killer",
+          "lamp"
+        ],
+        "armors": [
+          "",
+          "adjust-head",
+          "adjust-body",
+          "adjust-legs",
+          "element-pearl-s-4",
+          "element-pearl-s-4",
+          "goddess-ring-plus",
+          "light-orb"
+        ],
+        "favored": true,
+        "initial": true,
+        "pathUnlocked": true,
+        "encoreUnlocked": false,
+        "rootUnlocked": false,
+        "majinCritical20": 25,
+        "majinCritical40": 25,
+        "majinPathCritical": false,
+        "leftLimitBreak": 0,
+        "inheritLevel": 0,
+        "actualAttack": null,
+        "actualMagic": null
+      },
+      {
+        "member": 1,
+        "job": "job-8",
+        "weapon": "hero",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "lamp",
+          "estark",
+          "killer",
+          "heart-0"
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "adjust-head",
+          "adjust-body",
+          "adjust-legs",
+          "gaia-s",
+          "gaia-s",
+          "light-orb",
+          "yellow-dragon-ring-plus"
+        ],
+        "favored": true,
+        "initial": true,
+        "pathUnlocked": true,
+        "encoreUnlocked": false,
+        "rootUnlocked": true,
+        "majinCritical20": 25,
+        "majinCritical40": 25,
+        "majinPathCritical": false,
+        "leftLimitBreak": 0,
+        "inheritLevel": 0,
+        "actualAttack": null,
+        "actualMagic": null
+      },
+      {
+        "member": 0,
+        "job": "job-0",
+        "weapon": "keki",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "maou-awakened",
+          "estark",
+          "killer",
+          "mikazuchi-awakened"
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "new-legend-head",
+          "adjust-body",
+          "adjust-legs",
+          "",
+          "",
+          "light-orb",
+          "yellow-dragon-ring-plus"
+        ],
+        "favored": false,
+        "initial": true,
+        "pathUnlocked": true,
+        "encoreUnlocked": false,
+        "rootUnlocked": false,
+        "majinCritical20": 25,
+        "majinCritical40": 25,
+        "majinPathCritical": false,
+        "leftLimitBreak": 0,
+        "inheritLevel": 0,
+        "actualAttack": null,
+        "actualMagic": null
+      },
+      {
+        "member": 3,
+        "job": "job-2",
+        "weapon": "eightdragon",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "god",
+          "killer",
+          "mikazuchi-awakened",
+          "maou-awakened"
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "ramia-feather",
+          "ramia-robe-body",
+          "ramia-robe-legs",
+          "element-pearl-s-4",
+          "element-pearl-s-4",
+          "goddess-ring-plus",
+          "light-orb"
+        ],
+        "favored": false,
+        "initial": true,
+        "pathUnlocked": true,
+        "encoreUnlocked": true,
+        "rootUnlocked": false,
+        "majinCritical20": 25,
+        "majinCritical40": 25,
+        "majinPathCritical": false,
+        "leftLimitBreak": 0,
+        "inheritLevel": 0,
+        "actualAttack": null,
+        "actualMagic": null
+      }
+    ],
+    "actions": [
+      {
+        "actor": 0,
+        "turn": 1,
+        "skill": "dragonfang",
+        "target": 0
+      },
+      {
+        "actor": 3,
+        "turn": 1,
+        "skill": "encore",
+        "target": 0
+      },
+      {
+        "actor": 0,
+        "turn": 1,
+        "skill": "concentrate",
+        "target": 0
+      },
+      {
+        "actor": 2,
+        "turn": 1,
+        "skill": "baiki",
+        "target": 0
+      },
+      {
+        "actor": 1,
+        "turn": 1,
+        "skill": "eradicate-fullslash",
+        "target": 1
+      },
+      {
+        "actor": 3,
+        "turn": 2,
+        "skill": "encore",
+        "target": 0
+      },
+      {
+        "actor": 0,
+        "turn": 2,
+        "skill": "dragonfang",
+        "target": 0
+      },
+      {
+        "actor": 2,
+        "turn": 2,
+        "skill": "rondo",
+        "target": 0
+      },
+      {
+        "actor": 1,
+        "turn": 2,
+        "skill": "fullslash",
+        "target": 1
+      },
+      {
+        "actor": 0,
+        "turn": 2,
+        "skill": "dragonfang",
+        "target": 0
+      }
+    ],
+    "enemy": {
+      "name": "Dオルゴデミーラ（強）",
+      "firepowerOnly": false,
+      "typeResistances": {
+        "斬撃": 0,
+        "体技": 0,
+        "呪文": 0,
+        "ブレス": 0
+      },
+      "race": "ドッペル系",
+      "defense": 2000,
+      "count": 1,
+      "typeResistance": 0,
+      "enemyTension": 0,
+      "elements": {
+        "無": 0,
+        "メラ": 60,
+        "ヒャド": 40,
+        "ギラ": 60,
+        "バギ": 0,
+        "イオ": 40,
+        "ドルマ": -50,
+        "デイン": 20,
+        "ジバリア": 80,
+        "ザバ": 80
+      },
+      "specialMechanics": false,
+      "enemies": [
+        {
+          "name": "Dオルゴデミーラ（強）",
+          "firepowerOnly": false,
+          "typeResistances": {
+            "斬撃": 0,
+            "体技": 0,
+            "呪文": 0,
+            "ブレス": 0
+          },
+          "race": "ドッペル系",
+          "defense": 2000,
+          "count": 1,
+          "typeResistance": 0,
+          "enemyTension": 0,
+          "elements": {
+            "無": 0,
+            "メラ": 60,
+            "ヒャド": 40,
+            "ギラ": 60,
+            "バギ": 0,
+            "イオ": 40,
+            "ドルマ": -50,
+            "デイン": 20,
+            "ジバリア": 80,
+            "ザバ": 80
+          },
+          "specialMechanics": false,
+          "hp": 480000
+        }
+      ]
+    },
+    "domain": "auto",
+    "weather": "unknown",
+    "timeOfDay": "unknown",
+    "strictDurations": true
+  },
+  "settings": {
+    "majinCriticalPaths": [
+      {
+        "lv20": 25,
+        "lv40": 25
+      },
+      {
+        "lv20": 25,
+        "lv40": 25
+      },
+      {
+        "lv20": 25,
+        "lv40": 25
+      },
+      {
+        "lv20": 25,
+        "lv40": 25
+      }
+    ],
+    "hp": 480000,
+    "turns": 2,
+    "incoming": null,
+    "enemySpeedMax": null,
+    "ratio": 1.2,
+    "minHP": 0,
+    "minSpeed": 0,
+    "requireOrder": false,
+    "requireSurvival": false,
+    "allowPaths": true,
+    "costLimit": null,
+    "objective": "turns",
+    "cycles": 20,
+    "passiveRecovery": true,
+    "allowDual": true,
+    "allowInheritance": false,
+    "maxNodes": 12000,
+    "_pathComparison": true
+  },
+  "builds": [
+    {
+      "stats": {
+        "hp": 1380,
+        "mp": 813,
+        "attack": 1518,
+        "defense": 1022,
+        "magic": 712,
+        "heal": 394,
+        "speed": 1222,
+        "dex": 686
+      },
+      "actor": {
+        "member": 2,
+        "job": "job-10",
+        "weapon": "gun",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "god",
+          "heart-0",
+          "killer",
+          "lamp"
+        ],
+        "armors": [
+          "",
+          "adjust-head",
+          "adjust-body",
+          "adjust-legs",
+          "element-pearl-s-4",
+          "element-pearl-s-4",
+          "goddess-ring-plus",
+          "light-orb"
+        ],
+        "favored": true,
+        "initial": true,
+        "pathUnlocked": true,
+        "encoreUnlocked": false,
+        "rootUnlocked": false,
+        "majinCritical20": 25,
+        "majinCritical40": 25,
+        "majinPathCritical": false,
+        "leftLimitBreak": 0,
+        "inheritLevel": 0,
+        "actualAttack": null,
+        "actualMagic": null
+      }
+    },
+    {
+      "stats": {
+        "hp": 1545,
+        "mp": 724,
+        "attack": 1540,
+        "defense": 1179,
+        "magic": 368,
+        "heal": 344,
+        "speed": 1081,
+        "dex": 590
+      },
+      "actor": {
+        "member": 1,
+        "job": "job-8",
+        "weapon": "hero",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "lamp",
+          "estark",
+          "killer",
+          "heart-0"
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "adjust-head",
+          "adjust-body",
+          "adjust-legs",
+          "gaia-s",
+          "gaia-s",
+          "light-orb",
+          "yellow-dragon-ring-plus"
+        ],
+        "favored": true,
+        "initial": true,
+        "pathUnlocked": true,
+        "encoreUnlocked": false,
+        "rootUnlocked": true,
+        "majinCritical20": 25,
+        "majinCritical40": 25,
+        "majinPathCritical": false,
+        "leftLimitBreak": 0,
+        "inheritLevel": 0,
+        "actualAttack": null,
+        "actualMagic": null
+      }
+    },
+    {
+      "stats": {
+        "hp": 1453,
+        "mp": 777,
+        "attack": 1246,
+        "defense": 1197,
+        "magic": 430,
+        "heal": 321,
+        "speed": 1091,
+        "dex": 570
+      },
+      "actor": {
+        "member": 0,
+        "job": "job-0",
+        "weapon": "keki",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "maou-awakened",
+          "estark",
+          "killer",
+          "mikazuchi-awakened"
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "new-legend-head",
+          "adjust-body",
+          "adjust-legs",
+          "",
+          "",
+          "light-orb",
+          "yellow-dragon-ring-plus"
+        ],
+        "favored": false,
+        "initial": true,
+        "pathUnlocked": true,
+        "encoreUnlocked": false,
+        "rootUnlocked": false,
+        "majinCritical20": 25,
+        "majinCritical40": 25,
+        "majinPathCritical": false,
+        "leftLimitBreak": 0,
+        "inheritLevel": 0,
+        "actualAttack": null,
+        "actualMagic": null
+      }
+    },
+    {
+      "stats": {
+        "hp": 1268,
+        "mp": 1011,
+        "attack": 1011,
+        "defense": 1027,
+        "magic": 649,
+        "heal": 841,
+        "speed": 1129,
+        "dex": 666
+      },
+      "actor": {
+        "member": 3,
+        "job": "job-2",
+        "weapon": "eightdragon",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "god",
+          "killer",
+          "mikazuchi-awakened",
+          "maou-awakened"
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "ramia-feather",
+          "ramia-robe-body",
+          "ramia-robe-legs",
+          "element-pearl-s-4",
+          "element-pearl-s-4",
+          "goddess-ring-plus",
+          "light-orb"
+        ],
+        "favored": false,
+        "initial": true,
+        "pathUnlocked": true,
+        "encoreUnlocked": true,
+        "rootUnlocked": false,
+        "majinCritical20": 25,
+        "majinCritical40": 25,
+        "majinPathCritical": false,
+        "leftLimitBreak": 0,
+        "inheritLevel": 0,
+        "actualAttack": null,
+        "actualMagic": null
+      }
+    }
+  ],
+  "steps": [
+    {
+      "turn": 1,
+      "actor": 0,
+      "extra": false
+    },
+    {
+      "turn": 1,
+      "actor": 3,
+      "extra": false
+    },
+    {
+      "turn": 1,
+      "actor": 0,
+      "extra": true
+    },
+    {
+      "turn": 1,
+      "actor": 2,
+      "extra": false
+    },
+    {
+      "turn": 1,
+      "actor": 1,
+      "extra": false
+    },
+    {
+      "turn": 1,
+      "enemy": true
+    },
+    {
+      "turn": 2,
+      "actor": 3,
+      "extra": false
+    },
+    {
+      "turn": 2,
+      "actor": 0,
+      "extra": true
+    },
+    {
+      "turn": 2,
+      "actor": 2,
+      "extra": false
+    },
+    {
+      "turn": 2,
+      "actor": 1,
+      "extra": false
+    },
+    {
+      "turn": 2,
+      "actor": 0,
+      "extra": false
+    }
+  ],
+  "turnStarts": [
+    {
+      "turn": 1,
+      "states": [
+        {
+          "attackStages": 0,
+          "critStages": 0,
+          "critChanceStages": 0,
+          "skillBuff": 0,
+          "skillPowerStages": 0,
+          "charge": 1,
+          "tension": 0,
+          "zone": true,
+          "guaranteed": 0,
+          "heroBonus": 0,
+          "force": [
+            "イオ"
+          ],
+          "raceAmplify": 0,
+          "source": [
+            "未体験ゾーン：ドッペル系がいるため確定ゾーン",
+            "変異イオ：自身の無属性攻撃時のみイオ耐性50ポイント低下"
+          ],
+          "partners": [],
+          "partner": null,
+          "limit": 2,
+          "speedStages": 1,
+          "timers": {
+            "speedStages": {
+              "remaining": 2,
+              "max": 2
+            }
+          },
+          "fortuneRemaining": 0,
+          "guaranteedMax": 0,
+          "mutation": true,
+          "forceCharges": {},
+          "causalityStages": 0,
+          "element": null,
+          "ambiguous": false
+        },
+        {
+          "attackStages": 0,
+          "critStages": 0,
+          "critChanceStages": 0,
+          "skillBuff": 0,
+          "skillPowerStages": 0,
+          "charge": 1,
+          "tension": 0,
+          "zone": false,
+          "guaranteed": 1,
+          "heroBonus": 50,
+          "force": [],
+          "raceAmplify": 0,
+          "source": [
+            "会心必中：自身1行動・斬体50%"
+          ],
+          "partners": [],
+          "partner": null,
+          "limit": 2,
+          "speedStages": 1,
+          "timers": {
+            "speedStages": {
+              "remaining": 2,
+              "max": 2
+            }
+          },
+          "fortuneRemaining": 0,
+          "guaranteedMax": 1,
+          "forceCharges": {},
+          "causalityStages": 0,
+          "element": null,
+          "ambiguous": false
+        },
+        {
+          "attackStages": 0,
+          "critStages": 0,
+          "critChanceStages": 0,
+          "skillBuff": 0,
+          "skillPowerStages": 0,
+          "charge": 1,
+          "tension": 0,
+          "zone": false,
+          "guaranteed": 0,
+          "heroBonus": 0,
+          "force": [],
+          "raceAmplify": 0,
+          "source": [
+            "開幕の速度1段階アップを全員に適用"
+          ],
+          "partners": [],
+          "partner": null,
+          "limit": 2,
+          "speedStages": 1,
+          "timers": {
+            "speedStages": {
+              "remaining": 2,
+              "max": 2
+            }
+          },
+          "fortuneRemaining": 0,
+          "guaranteedMax": 0,
+          "forceCharges": {},
+          "causalityStages": 0,
+          "element": null,
+          "ambiguous": false
+        },
+        {
+          "attackStages": 0,
+          "critStages": 0,
+          "critChanceStages": 0,
+          "skillBuff": 0,
+          "skillPowerStages": 0,
+          "charge": 1,
+          "tension": 10,
+          "zone": false,
+          "guaranteed": 0,
+          "heroBonus": 0,
+          "force": [],
+          "raceAmplify": 0,
+          "source": [
+            "開幕テンション：乱数1〜2段階の下限1段階"
+          ],
+          "partners": [],
+          "partner": null,
+          "limit": 2,
+          "speedStages": 1,
+          "timers": {
+            "speedStages": {
+              "remaining": 2,
+              "max": 2
+            },
+            "tension": {
+              "remaining": 6,
+              "max": 6
+            }
+          },
+          "fortuneRemaining": 0,
+          "guaranteedMax": 0,
+          "forceCharges": {},
+          "causalityStages": 0,
+          "element": null,
+          "ambiguous": false
+        }
+      ]
+    },
+    {
+      "turn": 2,
+      "states": [
+        {
+          "attackStages": 2,
+          "critStages": 0,
+          "critChanceStages": 0,
+          "skillBuff": 0,
+          "skillPowerStages": 0,
+          "charge": 2.25,
+          "tension": 0,
+          "zone": true,
+          "guaranteed": 0,
+          "heroBonus": 0,
+          "force": [
+            "イオ"
+          ],
+          "raceAmplify": 0,
+          "source": [
+            "未体験ゾーン：ドッペル系がいるため確定ゾーン",
+            "変異イオ：自身の無属性攻撃時のみイオ耐性50ポイント低下",
+            "極限集中：次の一撃2.25倍",
+            "バイキルト：攻撃2段階"
+          ],
+          "partners": [],
+          "partner": null,
+          "limit": 2,
+          "speedStages": 0,
+          "timers": {
+            "attackStages": {
+              "remaining": 4,
+              "max": 4
+            }
+          },
+          "fortuneRemaining": 0,
+          "guaranteedMax": 0,
+          "mutation": true,
+          "forceCharges": {},
+          "causalityStages": 0,
+          "element": null,
+          "ambiguous": false
+        },
+        {
+          "attackStages": 0,
+          "critStages": 0,
+          "critChanceStages": 0,
+          "skillBuff": 0,
+          "skillPowerStages": 0,
+          "charge": 1,
+          "tension": 0,
+          "zone": false,
+          "guaranteed": 0,
+          "heroBonus": 0,
+          "force": [],
+          "raceAmplify": 0,
+          "source": [
+            "会心必中：自身1行動・斬体50%"
+          ],
+          "partners": [],
+          "partner": null,
+          "limit": 2,
+          "speedStages": 1,
+          "timers": {
+            "speedStages": {
+              "remaining": 1,
+              "max": 2
+            }
+          },
+          "fortuneRemaining": 0,
+          "guaranteedMax": 1,
+          "forceCharges": {},
+          "causalityStages": 0,
+          "element": null,
+          "ambiguous": false
+        },
+        {
+          "attackStages": 0,
+          "critStages": 0,
+          "critChanceStages": 0,
+          "skillBuff": 0,
+          "skillPowerStages": 0,
+          "charge": 1,
+          "tension": 0,
+          "zone": false,
+          "guaranteed": 0,
+          "heroBonus": 0,
+          "force": [],
+          "raceAmplify": 0,
+          "source": [
+            "開幕の速度1段階アップを全員に適用"
+          ],
+          "partners": [],
+          "partner": null,
+          "limit": 2,
+          "speedStages": 1,
+          "timers": {
+            "speedStages": {
+              "remaining": 1,
+              "max": 2
+            }
+          },
+          "fortuneRemaining": 0,
+          "guaranteedMax": 0,
+          "forceCharges": {},
+          "causalityStages": 0,
+          "element": null,
+          "ambiguous": false
+        },
+        {
+          "attackStages": 0,
+          "critStages": 0,
+          "critChanceStages": 0,
+          "skillBuff": 0,
+          "skillPowerStages": 0,
+          "charge": 1,
+          "tension": 10,
+          "zone": false,
+          "guaranteed": 0,
+          "heroBonus": 0,
+          "force": [],
+          "raceAmplify": 0,
+          "source": [
+            "開幕テンション：乱数1〜2段階の下限1段階"
+          ],
+          "partners": [],
+          "partner": null,
+          "limit": 2,
+          "speedStages": 1,
+          "timers": {
+            "speedStages": {
+              "remaining": 1,
+              "max": 2
+            },
+            "tension": {
+              "remaining": 5,
+              "max": 6
+            }
+          },
+          "fortuneRemaining": 0,
+          "guaranteedMax": 0,
+          "forceCharges": {},
+          "causalityStages": 0,
+          "element": null,
+          "ambiguous": false
+        }
+      ]
+    }
+  ],
+  "orderChecks": [
+    {
+      "turn": 1,
+      "first": 0,
+      "second": 3,
+      "firstSpeed": 1466,
+      "secondSpeed": 1354,
+      "required": 1625,
+      "certain": false
+    },
+    {
+      "turn": 1,
+      "first": 3,
+      "second": 2,
+      "firstSpeed": 1354,
+      "secondSpeed": 1309,
+      "required": 1571,
+      "certain": false
+    },
+    {
+      "turn": 1,
+      "first": 2,
+      "second": 1,
+      "firstSpeed": 1309,
+      "secondSpeed": 1297,
+      "required": 1557,
+      "certain": false
+    },
+    {
+      "turn": 2,
+      "first": 3,
+      "second": 2,
+      "firstSpeed": 1354,
+      "secondSpeed": 1309,
+      "required": 1571,
+      "certain": false
+    },
+    {
+      "turn": 2,
+      "first": 2,
+      "second": 1,
+      "firstSpeed": 1309,
+      "secondSpeed": 1297,
+      "required": 1557,
+      "certain": false
+    },
+    {
+      "turn": 2,
+      "first": 1,
+      "second": 0,
+      "firstSpeed": 1297,
+      "secondSpeed": 1222,
+      "required": 1467,
+      "certain": false
+    }
+  ],
+  "damage": 484013,
+  "killed": true,
+  "resourceOK": true,
+  "orderOK": false,
+  "enemyFirst": false
+}

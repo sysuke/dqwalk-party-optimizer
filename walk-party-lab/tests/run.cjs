@@ -1,0 +1,35 @@
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'../dist');const ctx=vm.createContext({console});ctx.window=ctx;
+for(const f of ['data/contents.js','data/profiles.js','domain/optimization/solver.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx);
+const E=ctx.PartySolver,master=ctx.PlannerData.demo,profile=ctx.PlannerData.profile(master),copy=x=>JSON.parse(JSON.stringify(x));let checks=0;
+function check(name,test){test();checks++;console.log('PASS '+name);}
+const result=E.solve(master,profile,'demo-boss',{maxNodes:100000}),farm=E.solve(master,profile,'demo-farm',{cycles:20,maxNodes:100000});
+check('2ターンの構成と操作を自動選定',()=>{assert.equal(result.status,'ok');assert(result.results[0].stable);assert.equal(result.results[0].turns,2);assert(result.results[0].outcome.steps.some(s=>s.skillId==='boost'));});
+check('4人共通の在庫、こころの同種排他、コスト',()=>{for(const t of result.results){for(const [id,n]of Object.entries(t.used))assert(n<=profile.inventory.find(i=>i.id===id).count);for(const b of t.builds){assert(b.cost<=b.baseCost+b.costBonus);assert.equal(new Set(b.hearts.map(h=>h.monster)).size,b.hearts.length);}assert(t.outcome.actors.every(a=>a.hp>0&&a.mp>=0));}});
+const physical=master.skills.find(s=>s.id==='slash'),enemy=master.contents[0].enemies[0],build={stats:{attack:1000},bonuses:[]};
+check('物理計算の基準値と乱数上下限',()=>{assert.equal(E.damage(build,physical,enemy),3420);assert.equal(E.damage(build,physical,enemy,[],[],1,true),3780);});
+check('非必中攻撃を最低ダメージに加算しない',()=>assert.equal(E.damage(build,{...physical,accuracy:.9},enemy),0));
+check('期限切れ補助は適用しない',()=>assert.equal(E.damage(build,physical,enemy,[{stat:'attack',group:'atk',value:1.4,until:0}]),3420));
+check('同群の攻撃バフは重複乗算しない',()=>{const e={stat:'attack',group:'atk',value:1.4,until:2};assert.equal(E.damage(build,physical,enemy,[e,e]),E.damage(build,physical,enemy,[e]));});
+check('呪文は魔力上限で頭打ち',()=>{const s=master.skills.find(s=>s.id==='spell');assert.equal(E.damage({stats:{magic:1000},bonuses:[]},s,enemy),E.damage({stats:{magic:5000},bonuses:[]},s,enemy));});
+check('属性無効は最低ダメージ0',()=>assert.equal(E.damage(build,physical,{...enemy,elements:{無:0}}),0));
+check('攻撃力バフで守備力項を拡大しない',()=>assert.equal(E.damage(build,physical,enemy,[{stat:'attack',group:'atk',value:1.4,until:2}]),4940));
+check('複数敵に全体攻撃、HP/MPを引き継ぐ連戦',()=>{assert(farm.results[0].stable);assert(farm.results[0].outcome.enemies.every(e=>e.hp===0));assert(farm.results[0].repeat);assert(farm.results[0].repeat.completed>0);assert(farm.results[0].repeat.completed<=20);if(farm.results[0].repeat.checks.length>1){const a=farm.results[0].repeat.checks;assert(a[1].every((x,i)=>x.mp<=a[0][i].mp));}});
+check('回復は最大HPを超えない、死亡から復活させない',()=>{const t=result.results[0],state=E.initState(t.builds,master.contents[0],[0,1,2,3]);state.actors[1].hp=0;const out=E.action(state,t.builds,master.contents[0],1,0,{skill:master.skills.find(s=>s.id==='heal'),target:null});assert.equal(out.actors[1].hp,0);assert(out.actors.every((a,i)=>a.hp<=t.builds[i].stats.hp));});
+check('未収録レベルを推測しない',()=>{const p=copy(profile);p.characters[0].levels['demo-job-0']=49;assert.equal(E.solve(master,p,'demo-boss').status,'missing-data');});
+check('実ゲームの未対応対象で成功判定しない',()=>{const m=ctx.PlannerData.real;assert.equal(E.solve(m,ctx.PlannerData.profile(m),'agiro').status,'missing-data');});
+check('武器不足を検出',()=>{const p=copy(profile);p.inventory.forEach(x=>x.count=0);assert.equal(E.solve(master,p,'demo-boss').status,'missing-data');});
+check('不可能なHP目標で討伐判定しない',()=>{const m=copy(master);m.contents[0].enemies[0].hp=99999999;assert(!E.solve(m,profile,'demo-boss',{maxNodes:10000}).results.some(t=>t.killed));});
+check('ノード上限を通知',()=>assert(E.solve(master,profile,'demo-boss',{maxNodes:2}).truncated));
+check('確率開幕補助を最低側に加算しない',()=>{const builds=copy(result.results[0].builds);builds[0].items.push({startEffects:[{stat:'attack',group:'x',value:2,duration:2,chance:.5}]});assert.equal(E.initState(builds,master.contents[0],[0,1,2,3]).actors[0].effects.length,0);});
+check('行動順の重複範囲は保証しない',()=>{const m=copy(master);m.contents[0].speedRatio=2;const r=E.solve(m,profile,'demo-boss',{maxNodes:30000});assert(!r.results.some(t=>t.stable));});
+check('全員先制の十分条件を満たす速度助言',()=>{const advice=result.results[0].speedAdvice;for(let i=0;i<advice.length-1;i++)assert(advice[i].required>advice[i+1].required*master.contents[0].speedRatio);assert(advice.at(-1).required>enemy.speedHigh);});
+// Render + import validation without evaluating browser-private state.
+const els=new Map();const element=s=>{if(!els.has(s))els.set(s,{innerHTML:'',textContent:'',querySelectorAll:()=>[]});return els.get(s);};ctx.document={querySelector:element,body:{dataset:{}}};ctx.localStorage={getItem:()=>null,setItem(){}};ctx.setTimeout=setTimeout;ctx.URL=URL;ctx.Blob=Blob;
+vm.runInContext(fs.readFileSync(path.join(root,'ui/app.js'),'utf8'),ctx);const ui=ctx.PlannerUI;
+check('3画面を描画、ダメージ手入力なし',()=>{for(const page of ['select','record','result']){ui.setPage(page);assert(element('#view').innerHTML.length>100);}ui.setPage('select');assert(!element('#view').innerHTML.includes('最低ダメージ<input'));});
+check('CSV引用符と改行の処理',()=>{assert.equal(ui.parseCSV('a,b\n"x,y",2')[1][0],'x,y');assert.throws(()=>ui.parseCSV('"unclosed'));});
+check('バックアップの異種マスター混入と負の在庫を拒否',()=>{assert.throws(()=>ui.validate(profile,ctx.PlannerData.real));let p=ctx.PlannerData.profile(ctx.PlannerData.real);p.inventory[0].count=-1;assert.throws(()=>ui.validate(p,ctx.PlannerData.real));});
+check('同じIDの二重在庫を拒否',()=>{let p=ctx.PlannerData.profile(ctx.PlannerData.real);p.inventory.push(p.inventory[0]);assert.throws(()=>ui.validate(p,ctx.PlannerData.real));});
+check('CSVは全体検証前に元の記録を変更しない',()=>{const before=JSON.stringify(ui.getState().profile);assert.throws(()=>ui.importCSV('kind,character,id,value\nlevel,1,job-0,80\nitem,,unknown,3'));assert.equal(JSON.stringify(ui.getState().profile),before);});
+console.log(`${checks} checks passed; boss ${result.nodes} nodes; farm ${farm.nodes} nodes / ${farm.results[0].repeat.completed} repeated fights`);

@@ -1,3 +1,25 @@
+# ウォーク編成ラボ：現行版の作業場所
+
+現在公開中の **0.38** は [`walk-party-lab/`](walk-party-lab/) にあります。既存のNext.js試作はそのまま残しています。
+
+```sh
+git clone https://github.com/sysuke/dqwalk-party-optimizer.git
+cd dqwalk-party-optimizer/walk-party-lab
+npm start
+```
+
+http://127.0.0.1:4173 を開いてください。Node.js 18以上が必要です。追加パッケージのインストールは不要。テストは同じフォルダで `npm test`（516件合格）。
+
+- [他のPCで作業を続ける手順・現在の状態](walk-party-lab/docs/CONTINUE.md)
+- [残課題](walk-party-lab/docs/REMAINING.md)
+- [コード構造](walk-party-lab/docs/ARCHITECTURE.md)
+
+所持品・レベル等のブラウザ保存データはソースと別です。必要なデータはアプリからJSONを書き出して移してください。GitHubへのpushは、所有者限定の公開サイトを自動更新しません。
+
+---
+
+以下は既存のNext.js試作についてのREADMEです。
+
 # DQ Walk パーティ編成オプティマイザ
 
 ドラクエウォークの所持装備・こころ・ジョブレベルから、メガモン・ほこら・錬金百式・覚醒千里などのコンテンツ向けに **1ターン撃破** を目指したパーティ編成を提案する Web ツールです。

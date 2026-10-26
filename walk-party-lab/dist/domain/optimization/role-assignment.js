@@ -1,0 +1,16 @@
+'use strict';
+(function(root){
+const clone=x=>JSON.parse(JSON.stringify(x)),gearKeys=['weapon','limitBreak','left','leftLimitBreak','inherit','inheritLevel','proficiency','hearts','armors','initial'];
+function calibrated(a){return a.actualAttack!=null||a.actualMagic!=null;}
+function favored(a,master){const type=root.Catalog9.weapons.find(w=>w.id===a.weapon)?.type;return !!master.jobs.find(j=>j.id===a.job)?.favoredTypes?.includes(type);}
+// Move the complete equipment/skill role while preserving each person's job,
+// levels, unlocks and job-specific conditions. Never carry calibrated display
+// stats over to different equipment.
+function exchange(config,i,j,master){if(calibrated(config.actors[i])||calibrated(config.actors[j]))return null;const q=clone(config),a=clone(q.actors[i]),b=clone(q.actors[j]);for(const key of gearKeys){if(b[key]===undefined)delete q.actors[i][key];else q.actors[i][key]=clone(b[key]);if(a[key]===undefined)delete q.actors[j][key];else q.actors[j][key]=clone(a[key]);}q.actors[i].favored=favored(q.actors[i],master);q.actors[j].favored=favored(q.actors[j],master);const remap=n=>n===i?j:n===j?i:n;q.actions=q.actions.map(a=>({...a,actor:remap(a.actor),...(a.target==null?{}:{target:remap(a.target)})}));return q;}
+function changeJob(config,index,job,master,profile,settings){const old=config.actors[index],level=profile.characters[old.member]?.levels[job]||0;if(!level||job===old.job||calibrated(old))return null;const q=clone(config),a=q.actors[index];a.job=job;a.pathUnlocked=!!settings.allowPaths&&level>=30;a.encoreUnlocked=a.pathUnlocked&&job==='job-2';a.rootUnlocked=a.pathUnlocked&&job==='job-8';a.cheerUnlocked=old.member===0&&settings.allowCheer!==false;a.magePath=a.pathUnlocked&&job==='job-1'?(settings.magePaths?.[old.member]||'none'):'none';a.majinCritical20=level>=20?(settings.majinCriticalPaths?.[old.member]?.lv20||0):0;a.majinCritical40=level>=40?(settings.majinCriticalPaths?.[old.member]?.lv40||0):0;a.majinPathCritical=false;a.favored=favored(a,master);return q;}
+function search(seeds,master,profile,settings,evaluate,compare,budget=96){let calls=0,improvements=0;const seen=new Set();let best=null;for(const seed of seeds)if(!best||compare(seed,best)<0)best=seed;if(!best)return {calls,improvements,best:null};const before=best.damage;
+ for(let round=0;round<2&&calls<budget;round++){const parents=round===0?seeds.slice(0,3):[best],start=JSON.stringify(best.config);for(const parent of parents){const candidates=[];for(let i=0;i<4;i++)for(let j=i+1;j<4;j++)candidates.push(exchange(parent.config,i,j,master));for(let i=0;i<4;i++)for(const job of master.jobs)candidates.push(changeJob(parent.config,i,job.id,master,profile,settings));for(const config of candidates){if(!config||calls>=budget)continue;const key=JSON.stringify([config.actors,config.actions]);if(seen.has(key))continue;seen.add(key);calls++;let result;try{result=evaluate(config);}catch{continue;}if(result?.resourceOK&&compare(result,best)<0){best=result;improvements++;}}}if(JSON.stringify(best.config)===start)break;}
+ return {calls,improvements,beforeDamage:before,afterDamage:best.damage,best,scope:'育成済み職業と装備・手順の役割を交換して再計算。職業固定の武器制限は加えない。'};
+}
+root.RoleAssignment38={exchange,changeJob,search};
+})(typeof window==='undefined'?globalThis:window);

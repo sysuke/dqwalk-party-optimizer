@@ -1,0 +1,15 @@
+const fs=require('fs'),path=require('path'),vm=require('vm'),A=require('assert/strict'),dir=path.resolve(__dirname,'../dist'),c=vm.createContext({console});c.window=c;for(const [,file]of fs.readFileSync(path.join(dir,'index.html'),'utf8').matchAll(/<script src="([^"]+)"/g))if(file!=='ui/app.js')vm.runInContext(fs.readFileSync(path.join(dir,file),'utf8'),c);
+const m=c.PlannerData.real,p=c.PlannerData.profile(m),f=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/speed26.json'),'utf8')),seed=c.PartyBattle.simulate(f.config,m,p,f.settings);let n=0;
+function test(name,fn){fn();console.log('PASS '+name);n++;}
+const good=()=>({resourceOK:true,killed:true,killTurn:2,killAction:9,damage:500000,enemyFirst:true,survivalKnown:true,hp:[100,200,300,400],mp:[10,20,30,40]});
+const run=(evaluate=good,budget=576,s=seed)=>c.OrderRobust27.verify(s,m,p,f.settings,evaluate,budget);
+test('all order battle conditions aggregate independently of exact ally order',()=>{const r=run();A(r.allKilled&&r.allEnemyFirst&&r.allSurvivalKnown&&r.allSurvived&&r.modelConditionsMet);A.equal(seed.orderOK,false);});
+test('one non-first-strike case blocks all-case first-strike claim',()=>{let i=0;const r=run(()=>({...good(),enemyFirst:++i!==300}));A(r.allKilled);A(!r.allEnemyFirst);A(!r.modelConditionsMet);});
+test('unknown incoming damage never certifies survival',()=>{const r=run(()=>({...good(),survivalKnown:false}));A(r.allKilled);A(!r.allSurvivalKnown);A(!r.allSurvived);A(!r.modelConditionsMet);});
+test('resource minima include every order, not just lowest damage case',()=>{let i=0;const r=run(()=>{i++;return {...good(),damage:500000+i,hp:[i,1000-i,300,400],mp:[i,1000-i,30,40]};});A.deepEqual(Array.from(r.minHP),[1,424,300,400]);A.deepEqual(Array.from(r.minMP),[1,424,30,40]);});
+test('death and MP shortage cannot be discarded as successful cases',()=>{let i=0;const r=run(()=>++i===2?{...good(),resourceOK:false,hp:[0,200,300,400],mp:[-1,20,30,40]}:good());A(!r.allKilled);A(!r.allSurvived);A(!r.modelConditionsMet);A.equal(r.minHP[0],0);A.equal(r.minMP[0],-1);});
+test('evaluation exceptions invalidate all-case resource bounds',()=>{let i=0;const r=run(()=>{if(++i===2)throw Error('missing data');return good();});A.equal(r.unknownCases,1);A.equal(r.minHP,null);A.equal(r.minMP,null);A(!r.modelConditionsMet);});
+test('partial enumeration never certifies first strike or survival',()=>{const r=run(good,2);A(!r.complete);A(!r.allEnemyFirst);A(!r.allSurvivalKnown);A(!r.allSurvived);A(!r.modelConditionsMet);});
+test('special mechanics prevent complete battle certification',()=>{const s=JSON.parse(JSON.stringify(seed));s.config.enemy.specialMechanics=true;const r=run(good,576,s);A(r.allKilled&&r.allSurvived);A(!r.modelConditionsMet);});
+test('real baseline with missing enemy inputs keeps conditions unknown',()=>{const r=run(q=>c.PartyBattle.simulate(q,m,p,f.settings));A(!r.allEnemyFirst);A(!r.allSurvivalKnown);A(!r.modelConditionsMet);A.equal(r.minHP.length,4);A.equal(r.minMP.length,4);});
+console.log(n+' battle condition checks passed');

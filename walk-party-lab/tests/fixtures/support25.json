@@ -1,0 +1,1466 @@
+{
+  "seeds": [
+    {
+      "config": {
+        "actors": [
+          {
+            "member": 2,
+            "job": "job-10",
+            "weapon": "gun",
+            "limitBreak": 0,
+            "left": "",
+            "inherit": "",
+            "hearts": [
+              "god",
+              "heart-0",
+              "killer",
+              "lamp"
+            ],
+            "armors": [
+              "",
+              "adjust-head",
+              "adjust-body",
+              "adjust-legs",
+              "element-pearl-s-4",
+              "element-pearl-s-4",
+              "goddess-ring-plus",
+              "light-orb"
+            ],
+            "favored": true,
+            "initial": true,
+            "pathUnlocked": true,
+            "encoreUnlocked": false,
+            "rootUnlocked": false,
+            "majinCritical20": 25,
+            "majinCritical40": 25,
+            "majinPathCritical": false,
+            "leftLimitBreak": 0,
+            "inheritLevel": 0,
+            "actualAttack": null,
+            "actualMagic": null
+          },
+          {
+            "member": 1,
+            "job": "job-8",
+            "weapon": "hero",
+            "limitBreak": 0,
+            "left": "",
+            "inherit": "",
+            "hearts": [
+              "lamp",
+              "estark",
+              "killer",
+              "heart-0"
+            ],
+            "armors": [
+              "roto-sacred-shield",
+              "adjust-head",
+              "adjust-body",
+              "adjust-legs",
+              "gaia-s",
+              "gaia-s",
+              "light-orb",
+              "yellow-dragon-ring-plus"
+            ],
+            "favored": true,
+            "initial": true,
+            "pathUnlocked": true,
+            "encoreUnlocked": false,
+            "rootUnlocked": true,
+            "majinCritical20": 25,
+            "majinCritical40": 25,
+            "majinPathCritical": false,
+            "leftLimitBreak": 0,
+            "inheritLevel": 0,
+            "actualAttack": null,
+            "actualMagic": null
+          },
+          {
+            "member": 0,
+            "job": "job-0",
+            "weapon": "wing",
+            "limitBreak": 0,
+            "left": "",
+            "inherit": "",
+            "hearts": [
+              "god",
+              "heart-0",
+              "estark",
+              "lamp"
+            ],
+            "armors": [
+              "ouroboros-shield",
+              "blackking-helm",
+              "blackking-body",
+              "blackking-legs",
+              "element-pearl-s-5",
+              "element-pearl-s-5",
+              "mage-general-ring-plus",
+              "light-orb"
+            ],
+            "favored": true,
+            "initial": true,
+            "pathUnlocked": true,
+            "encoreUnlocked": false,
+            "rootUnlocked": false,
+            "majinCritical20": 25,
+            "majinCritical40": 25,
+            "majinPathCritical": false,
+            "leftLimitBreak": 0,
+            "inheritLevel": 0,
+            "actualAttack": null,
+            "actualMagic": null
+          },
+          {
+            "member": 3,
+            "job": "job-2",
+            "weapon": "eightdragon",
+            "limitBreak": 0,
+            "left": "",
+            "inherit": "",
+            "hearts": [
+              "god",
+              "killer",
+              "mikazuchi-awakened",
+              "maou-awakened"
+            ],
+            "armors": [
+              "roto-sacred-shield",
+              "ramia-feather",
+              "ramia-robe-body",
+              "ramia-robe-legs",
+              "element-pearl-s-4",
+              "element-pearl-s-4",
+              "goddess-ring-plus",
+              "light-orb"
+            ],
+            "favored": false,
+            "initial": true,
+            "pathUnlocked": true,
+            "encoreUnlocked": true,
+            "rootUnlocked": false,
+            "majinCritical20": 25,
+            "majinCritical40": 25,
+            "majinPathCritical": false,
+            "leftLimitBreak": 0,
+            "inheritLevel": 0,
+            "actualAttack": null,
+            "actualMagic": null
+          }
+        ],
+        "actions": [
+          {
+            "actor": 0,
+            "turn": 1,
+            "skill": "dragonfang",
+            "target": 0
+          },
+          {
+            "actor": 3,
+            "turn": 1,
+            "skill": "encore",
+            "target": 0
+          },
+          {
+            "actor": 0,
+            "turn": 1,
+            "skill": "concentrate",
+            "target": 0
+          },
+          {
+            "actor": 1,
+            "turn": 1,
+            "skill": "eradicate-fullslash",
+            "target": 1
+          },
+          {
+            "actor": 2,
+            "turn": 1,
+            "skill": "godpower",
+            "target": 2
+          },
+          {
+            "actor": 0,
+            "turn": 2,
+            "skill": "dragonfang",
+            "target": 0
+          },
+          {
+            "actor": 3,
+            "turn": 2,
+            "skill": "encore",
+            "target": 0
+          },
+          {
+            "actor": 0,
+            "turn": 2,
+            "skill": "dragonfang",
+            "target": 0
+          },
+          {
+            "actor": 1,
+            "turn": 2,
+            "skill": "fullslash",
+            "target": 1
+          },
+          {
+            "actor": 2,
+            "turn": 2,
+            "skill": "godpower",
+            "target": 2
+          }
+        ],
+        "enemy": {
+          "name": "Dオルゴデミーラ（強）",
+          "firepowerOnly": false,
+          "typeResistances": {
+            "斬撃": 0,
+            "体技": 0,
+            "呪文": 0,
+            "ブレス": 0
+          },
+          "race": "ドッペル系",
+          "defense": 2000,
+          "count": 1,
+          "typeResistance": 0,
+          "enemyTension": 0,
+          "elements": {
+            "無": 0,
+            "メラ": 60,
+            "ヒャド": 40,
+            "ギラ": 60,
+            "バギ": 0,
+            "イオ": 40,
+            "ドルマ": -50,
+            "デイン": 20,
+            "ジバリア": 80,
+            "ザバ": 80
+          },
+          "specialMechanics": false,
+          "enemies": [
+            {
+              "name": "Dオルゴデミーラ（強）",
+              "firepowerOnly": false,
+              "typeResistances": {
+                "斬撃": 0,
+                "体技": 0,
+                "呪文": 0,
+                "ブレス": 0
+              },
+              "race": "ドッペル系",
+              "defense": 2000,
+              "count": 1,
+              "typeResistance": 0,
+              "enemyTension": 0,
+              "elements": {
+                "無": 0,
+                "メラ": 60,
+                "ヒャド": 40,
+                "ギラ": 60,
+                "バギ": 0,
+                "イオ": 40,
+                "ドルマ": -50,
+                "デイン": 20,
+                "ジバリア": 80,
+                "ザバ": 80
+              },
+              "specialMechanics": false,
+              "hp": 480000
+            }
+          ]
+        },
+        "domain": "auto",
+        "weather": "unknown",
+        "timeOfDay": "unknown",
+        "strictDurations": true
+      },
+      "steps": [
+        {
+          "actor": 0,
+          "skill": "dragonfang",
+          "damage": {
+            "min": 47950
+          }
+        },
+        {
+          "actor": 3,
+          "skill": "encore",
+          "damage": null
+        },
+        {
+          "actor": 0,
+          "skill": "concentrate",
+          "damage": null
+        },
+        {
+          "actor": 1,
+          "skill": "eradicate-fullslash",
+          "damage": {
+            "min": 77266
+          }
+        },
+        {
+          "actor": 2,
+          "skill": "godpower",
+          "damage": {
+            "min": 32903
+          }
+        },
+        {
+          "damage": null
+        },
+        {
+          "actor": 0,
+          "skill": "dragonfang",
+          "damage": {
+            "min": 107887
+          }
+        },
+        {
+          "actor": 3,
+          "skill": "encore",
+          "damage": null
+        },
+        {
+          "actor": 0,
+          "skill": "dragonfang",
+          "damage": {
+            "min": 47950
+          }
+        },
+        {
+          "actor": 1,
+          "skill": "fullslash",
+          "damage": {
+            "min": 18461
+          }
+        },
+        {
+          "actor": 2,
+          "skill": "godpower",
+          "damage": {
+            "min": 32903
+          }
+        },
+        {
+          "damage": null
+        }
+      ]
+    },
+    {
+      "config": {
+        "actors": [
+          {
+            "member": 2,
+            "job": "job-10",
+            "weapon": "gun",
+            "limitBreak": 0,
+            "left": "",
+            "inherit": "",
+            "hearts": [
+              "god",
+              "heart-0",
+              "killer",
+              "lamp"
+            ],
+            "armors": [
+              "",
+              "adjust-head",
+              "adjust-body",
+              "adjust-legs",
+              "element-pearl-s-4",
+              "element-pearl-s-4",
+              "goddess-ring-plus",
+              "light-orb"
+            ],
+            "favored": true,
+            "initial": true,
+            "pathUnlocked": true,
+            "encoreUnlocked": false,
+            "rootUnlocked": false,
+            "majinCritical20": 25,
+            "majinCritical40": 25,
+            "majinPathCritical": false,
+            "leftLimitBreak": 0,
+            "inheritLevel": 0,
+            "actualAttack": null,
+            "actualMagic": null
+          },
+          {
+            "member": 1,
+            "job": "job-8",
+            "weapon": "hero",
+            "limitBreak": 0,
+            "left": "",
+            "inherit": "",
+            "hearts": [
+              "lamp",
+              "estark",
+              "killer",
+              "heart-0"
+            ],
+            "armors": [
+              "roto-sacred-shield",
+              "adjust-head",
+              "adjust-body",
+              "adjust-legs",
+              "gaia-s",
+              "gaia-s",
+              "light-orb",
+              "yellow-dragon-ring-plus"
+            ],
+            "favored": true,
+            "initial": true,
+            "pathUnlocked": true,
+            "encoreUnlocked": false,
+            "rootUnlocked": true,
+            "majinCritical20": 25,
+            "majinCritical40": 25,
+            "majinPathCritical": false,
+            "leftLimitBreak": 0,
+            "inheritLevel": 0,
+            "actualAttack": null,
+            "actualMagic": null
+          },
+          {
+            "member": 0,
+            "job": "job-0",
+            "weapon": "wing",
+            "limitBreak": 0,
+            "left": "",
+            "inherit": "",
+            "hearts": [
+              "god",
+              "heart-0",
+              "estark",
+              "lamp"
+            ],
+            "armors": [
+              "ouroboros-shield",
+              "blackking-helm",
+              "blackking-body",
+              "blackking-legs",
+              "element-pearl-s-5",
+              "element-pearl-s-5",
+              "mage-general-ring-plus",
+              "light-orb"
+            ],
+            "favored": true,
+            "initial": true,
+            "pathUnlocked": true,
+            "encoreUnlocked": false,
+            "rootUnlocked": false,
+            "majinCritical20": 25,
+            "majinCritical40": 25,
+            "majinPathCritical": false,
+            "leftLimitBreak": 0,
+            "inheritLevel": 0,
+            "actualAttack": null,
+            "actualMagic": null
+          },
+          {
+            "member": 3,
+            "job": "job-2",
+            "weapon": "eightdragon",
+            "limitBreak": 0,
+            "left": "",
+            "inherit": "",
+            "hearts": [
+              "god",
+              "killer",
+              "mikazuchi-awakened",
+              "maou-awakened"
+            ],
+            "armors": [
+              "roto-sacred-shield",
+              "ramia-feather",
+              "ramia-robe-body",
+              "ramia-robe-legs",
+              "element-pearl-s-4",
+              "element-pearl-s-4",
+              "goddess-ring-plus",
+              "light-orb"
+            ],
+            "favored": false,
+            "initial": true,
+            "pathUnlocked": true,
+            "encoreUnlocked": true,
+            "rootUnlocked": false,
+            "majinCritical20": 25,
+            "majinCritical40": 25,
+            "majinPathCritical": false,
+            "leftLimitBreak": 0,
+            "inheritLevel": 0,
+            "actualAttack": null,
+            "actualMagic": null
+          }
+        ],
+        "actions": [
+          {
+            "actor": 0,
+            "turn": 1,
+            "skill": "concentrate",
+            "target": 0
+          },
+          {
+            "actor": 3,
+            "turn": 1,
+            "skill": "encore",
+            "target": 0
+          },
+          {
+            "actor": 0,
+            "turn": 1,
+            "skill": "dragonfang",
+            "target": 0
+          },
+          {
+            "actor": 1,
+            "turn": 1,
+            "skill": "eradicate-fullslash",
+            "target": 1
+          },
+          {
+            "actor": 2,
+            "turn": 1,
+            "skill": "godpower",
+            "target": 2
+          },
+          {
+            "actor": 0,
+            "turn": 2,
+            "skill": "dragonfang",
+            "target": 0
+          },
+          {
+            "actor": 3,
+            "turn": 2,
+            "skill": "encore",
+            "target": 0
+          },
+          {
+            "actor": 0,
+            "turn": 2,
+            "skill": "dragonfang",
+            "target": 0
+          },
+          {
+            "actor": 1,
+            "turn": 2,
+            "skill": "fullslash",
+            "target": 1
+          },
+          {
+            "actor": 2,
+            "turn": 2,
+            "skill": "godpower",
+            "target": 2
+          }
+        ],
+        "enemy": {
+          "name": "Dオルゴデミーラ（強）",
+          "firepowerOnly": false,
+          "typeResistances": {
+            "斬撃": 0,
+            "体技": 0,
+            "呪文": 0,
+            "ブレス": 0
+          },
+          "race": "ドッペル系",
+          "defense": 2000,
+          "count": 1,
+          "typeResistance": 0,
+          "enemyTension": 0,
+          "elements": {
+            "無": 0,
+            "メラ": 60,
+            "ヒャド": 40,
+            "ギラ": 60,
+            "バギ": 0,
+            "イオ": 40,
+            "ドルマ": -50,
+            "デイン": 20,
+            "ジバリア": 80,
+            "ザバ": 80
+          },
+          "specialMechanics": false,
+          "enemies": [
+            {
+              "name": "Dオルゴデミーラ（強）",
+              "firepowerOnly": false,
+              "typeResistances": {
+                "斬撃": 0,
+                "体技": 0,
+                "呪文": 0,
+                "ブレス": 0
+              },
+              "race": "ドッペル系",
+              "defense": 2000,
+              "count": 1,
+              "typeResistance": 0,
+              "enemyTension": 0,
+              "elements": {
+                "無": 0,
+                "メラ": 60,
+                "ヒャド": 40,
+                "ギラ": 60,
+                "バギ": 0,
+                "イオ": 40,
+                "ドルマ": -50,
+                "デイン": 20,
+                "ジバリア": 80,
+                "ザバ": 80
+              },
+              "specialMechanics": false,
+              "hp": 480000
+            }
+          ]
+        },
+        "domain": "auto",
+        "weather": "unknown",
+        "timeOfDay": "unknown",
+        "strictDurations": true
+      },
+      "steps": [
+        {
+          "actor": 0,
+          "skill": "concentrate",
+          "damage": null
+        },
+        {
+          "actor": 3,
+          "skill": "encore",
+          "damage": null
+        },
+        {
+          "actor": 0,
+          "skill": "dragonfang",
+          "damage": {
+            "min": 107887
+          }
+        },
+        {
+          "actor": 1,
+          "skill": "eradicate-fullslash",
+          "damage": {
+            "min": 77266
+          }
+        },
+        {
+          "actor": 2,
+          "skill": "godpower",
+          "damage": {
+            "min": 32903
+          }
+        },
+        {
+          "damage": null
+        },
+        {
+          "actor": 0,
+          "skill": "dragonfang",
+          "damage": {
+            "min": 47950
+          }
+        },
+        {
+          "actor": 3,
+          "skill": "encore",
+          "damage": null
+        },
+        {
+          "actor": 0,
+          "skill": "dragonfang",
+          "damage": {
+            "min": 47950
+          }
+        },
+        {
+          "actor": 1,
+          "skill": "fullslash",
+          "damage": {
+            "min": 18461
+          }
+        },
+        {
+          "actor": 2,
+          "skill": "godpower",
+          "damage": {
+            "min": 32903
+          }
+        },
+        {
+          "damage": null
+        }
+      ]
+    }
+  ],
+  "pools": [
+    [
+      {
+        "actor": {
+          "member": 0,
+          "job": "job-5",
+          "weapon": "keki",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "killer",
+            "mikazuchi-awakened",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": false,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "rondo",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 0,
+          "job": "job-0",
+          "weapon": "keki",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "estark",
+            "killer",
+            "mikazuchi-awakened"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": false,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "rondo",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 0,
+          "job": "job-5",
+          "weapon": "lucky",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "killer",
+            "mikazuchi-awakened",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": true,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "fortune",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 0,
+          "job": "job-0",
+          "weapon": "lucky",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "estark",
+            "killer",
+            "mikazuchi-awakened"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": false,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "fortune",
+        "bestSkill": "wait"
+      }
+    ],
+    [
+      {
+        "actor": {
+          "member": 1,
+          "job": "job-3",
+          "weapon": "keki",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "mikazuchi-awakened",
+            "maou-awakened",
+            "god",
+            "killer"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": true,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "rondo",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 1,
+          "job": "job-4",
+          "weapon": "keki",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "mikazuchi-awakened",
+            "estark",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": false,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "rondo",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 1,
+          "job": "job-3",
+          "weapon": "lucky",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "mikazuchi-awakened",
+            "maou-awakened",
+            "god",
+            "killer"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": false,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "fortune",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 1,
+          "job": "job-4",
+          "weapon": "lucky",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "mikazuchi-awakened",
+            "estark",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": false,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "fortune",
+        "bestSkill": "wait"
+      }
+    ],
+    [
+      {
+        "actor": {
+          "member": 2,
+          "job": "job-10",
+          "weapon": "keki",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "mikazuchi-awakened",
+            "ryu-awakened",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": false,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "rondo",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 2,
+          "job": "job-1",
+          "weapon": "keki",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "mikazuchi-awakened",
+            "ryu-awakened",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": true,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "rondo",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 2,
+          "job": "job-1",
+          "weapon": "lucky",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "mikazuchi-awakened",
+            "ryu-awakened",
+            "lamp"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": false,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "fortune",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 2,
+          "job": "job-10",
+          "weapon": "lucky",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "mikazuchi-awakened",
+            "ryu-awakened",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": false,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "fortune",
+        "bestSkill": "wait"
+      }
+    ],
+    [
+      {
+        "actor": {
+          "member": 3,
+          "job": "job-2",
+          "weapon": "eightdragon",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "god",
+            "killer",
+            "mikazuchi-awakened",
+            "maou-awakened"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "ramia-feather",
+            "ramia-robe-body",
+            "ramia-robe-legs",
+            "element-pearl-s-4",
+            "element-pearl-s-4",
+            "goddess-ring-plus",
+            "light-orb"
+          ],
+          "favored": false,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": true,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "encore",
+        "bestSkill": "dragonsoul"
+      },
+      {
+        "actor": {
+          "member": 3,
+          "job": "job-2",
+          "weapon": "roto-kai3",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "killer",
+            "mikazuchi-awakened",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "element-pearl-s-6",
+            "element-pearl-s-6",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": false,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": true,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "encore",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 3,
+          "job": "job-2",
+          "weapon": "keki",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "killer",
+            "mikazuchi-awakened",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": true,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": true,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "rondo",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 3,
+          "job": "job-7",
+          "weapon": "keki",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "mikazuchi-awakened",
+            "ryu-awakened",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": true,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "rondo",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 3,
+          "job": "job-2",
+          "weapon": "lucky",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "killer",
+            "mikazuchi-awakened",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": true,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": true,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "fortune",
+        "bestSkill": "wait"
+      },
+      {
+        "actor": {
+          "member": 3,
+          "job": "job-7",
+          "weapon": "lucky",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "maou-awakened",
+            "mikazuchi-awakened",
+            "ryu-awakened",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "gaia-s",
+            "gaia-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": true,
+          "initial": true,
+          "pathUnlocked": true,
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 25,
+          "majinCritical40": 25,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        "supportKind": "fortune",
+        "bestSkill": "wait"
+      }
+    ]
+  ],
+  "settings": {
+    "majinCriticalPaths": [
+      {
+        "lv20": 25,
+        "lv40": 25
+      },
+      {
+        "lv20": 25,
+        "lv40": 25
+      },
+      {
+        "lv20": 25,
+        "lv40": 25
+      },
+      {
+        "lv20": 25,
+        "lv40": 25
+      }
+    ],
+    "hp": 480000,
+    "turns": 2,
+    "incoming": null,
+    "enemySpeedMax": null,
+    "ratio": 1.2,
+    "minHP": 0,
+    "minSpeed": 0,
+    "requireOrder": false,
+    "requireSurvival": false,
+    "allowPaths": true,
+    "costLimit": null,
+    "objective": "turns",
+    "cycles": 20,
+    "passiveRecovery": true,
+    "allowDual": true,
+    "allowInheritance": false,
+    "maxNodes": 12000,
+    "_pathComparison": true
+  }
+}

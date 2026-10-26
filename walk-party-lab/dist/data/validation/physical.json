@@ -1,0 +1,15 @@
+{
+  "reference": "https://github.com/AruDqw/dqw-damege-calc",
+  "sha256": "871613e1ab0066ea2e6a7407674bede62bbd196b9aa6cad04e3982adb20f4e6d",
+  "cases": 10000,
+  "mismatches": 0,
+  "examples": [],
+  "normalization": [
+    "All reference Math.floor operations use +1e-8 to remove decimal floating-point boundary artifacts.",
+    "Negative reference damage is clamped to zero.",
+    "Fixtures validate the mathematical reference model, not measurements from the game."
+  ],
+  "checked": "2026-10-22",
+  "gameMeasurements": 0,
+  "generator": "xorshift32 seed 220026"
+}

@@ -1,0 +1,35 @@
+'use strict';
+(function(root){
+const clone=x=>JSON.parse(JSON.stringify(x)),slots=GearOptimizer.slots;
+function solve(config,master,profile,options={},progress=()=>{}){
+ const actor=Number(options.actor??3),action=Number(options.action??config.actions.length-1),objective=options.objective||'min',width=options.width??6,maxNodes=options.maxNodes??60000;
+ if(!Number.isInteger(actor)||actor<0||actor>3||!Number.isInteger(action)||config.actions[action]?.actor!==actor||!['min','max'].includes(objective)||!Number.isInteger(width)||width<1||width>20||!Number.isInteger(maxNodes)||maxNodes<1||maxNodes>200000)throw Error('探索するキャラ・攻撃・範囲を確認してください。');
+ const baseline=SequenceEngine.simulate(config,master,profile).logs[action].damage;if(!baseline||baseline.hybrid)throw Error('現在の手順にある、計算対応済みの物理攻撃または呪文攻撃を選んでください。');
+ const stock=new Map();for(const x of profile.inventory){if(stock.has(x.id)||!Number.isInteger(x.count)||x.count<0)throw Error('所持数が不正です。');stock.set(x.id,x.count);}
+ const weapons=Catalog9.weapons,hearts=Catalog9.hearts,weaponItem=(id,lb)=>master.items.find(i=>i.slot==='weapon'&&i.name===weapons.find(w=>w.id===id)?.name&&(i.limitBreak||0)===(lb||0)),heartItem=id=>master.items.find(i=>i.slot==='heart'&&(i.id===id||i.name===hearts.find(h=>h.id===id)?.name));
+ const fixed=new Map(),add=(map,id)=>{if(id)map.set(id,(map.get(id)||0)+1);};
+ function reserve(a,map,gear=true,heart=true){const w=weaponItem(a.weapon,a.limitBreak);if(!w)throw Error('未登録の武器です。');add(map,w.id);for(const [id,lb]of [[a.left,a.leftLimitBreak],[a.inherit,0]])if(id){const item=weaponItem(id,lb);if(!item)throw Error('左手・継承の所持品対応がありません。');add(map,item.id);}if(gear)for(const id of a.armors||[])add(map,id);if(heart)for(const id of a.hearts||[]){if(!id)continue;const item=heartItem(id);if(!item)throw Error('こころの所持品対応がありません。');add(map,item.id);}}
+ config.actors.forEach((a,i)=>{if(i!==actor)reserve(a,fixed);});for(const [id,n]of fixed)if(n>(stock.get(id)||0))throw Error('固定する他キャラの装備が所持数を超えています：'+(master.items.find(i=>i.id===id)?.name||id));
+ const original=config.actors[actor],originalWeapon=weapons.find(w=>w.id===original.weapon),raw=SequenceEngine.build({...original,actualAttack:null,actualMagic:null},master,profile,config),offset={attack:original.actualAttack==null?null:original.actualAttack-raw.stats.attack,magic:original.actualMagic==null?null:original.actualMagic-raw.stats.magic};
+ const favored=options.favoredTypes??master.jobs.find(j=>j.id===original.job)?.favoredTypes??(original.favored?[originalWeapon.type]:[]);if(!Array.isArray(favored)||favored.some(t=>typeof t!=='string'))throw Error('得意武器の条件が不正です。');
+ const remain=id=>(stock.get(id)||0)-(fixed.get(id)||0),hp=hearts.filter(h=>heartItem(h.id)&&remain(heartItem(h.id).id)>0),gp=slots.map(slot=>['',...master.items.filter(i=>i.verifiedModel&&i.slot===slot&&remain(i.id)>0&&(!i.jobs||i.jobs.includes(original.job))&&!(slot==='shield'&&original.left)).map(i=>i.id)]);
+ let nodes=0,valid=0,truncated=false,firstError='',all=[],counts={weapons:0,skills:0},cache=new Map();
+ const key=r=>[r.actor.weapon,r.actor.limitBreak,r.skill,...r.actor.hearts,'|',...r.actor.armors].join('/'),compare=(a,b)=>b.damage[objective]-a.damage[objective]||b.damage[objective==='min'?'max':'min']-a.damage[objective==='min'?'max':'min']||key(a).localeCompare(key(b));
+ function evaluate(a,skill){const k=[a.weapon,a.limitBreak,skill,...a.hearts,'|',...a.armors].join('/');if(cache.has(k))return cache.get(k);if(nodes>=maxNodes){truncated=true;return null;}nodes++;if(nodes%250===0)progress({nodes,valid});const used=new Map(fixed);try{reserve(a,used);if([...used].some(([id,n])=>n>(stock.get(id)||0)))return null;const q=clone(config),b=clone(a);b.actualAttack=null;b.actualMagic=null;q.actors[actor]=b;q.actions[action].skill=skill;if(offset.attack!==null||offset.magic!==null){const computed=SequenceEngine.build(b,master,profile,q);if(offset.attack!==null)b.actualAttack=computed.stats.attack+offset.attack;if(offset.magic!==null)b.actualMagic=computed.stats.magic+offset.magic;}const r=SequenceEngine.simulate(q,master,profile),damage=r.logs[action].damage;if(!damage||damage.hybrid)return null;valid++;const row={actor:clone(b),skill,damage:clone(damage),stats:r.builds[actor].stats,cost:r.builds[actor].cost,costLimit:r.builds[actor].costLimit,domain:r.domain,estimated:r.estimated,complete:r.complete};cache.set(k,row);return row;}catch(e){if(!firstError)firstError=e.message;cache.set(k,null);return null;}}
+ const trim=rows=>{const seen=new Set();return rows.filter(Boolean).sort(compare).filter(r=>{const k=key(r);if(seen.has(k))return false;seen.add(k);return true;}).slice(0,width);};
+ for(const w of weapons){if(truncated)break;for(const limitBreak of [0,4]){if(truncated)break;if(w.id==='lucky'&&limitBreak===4)continue;const item=weaponItem(w.id,limitBreak);if(!item||remain(item.id)<=0)continue;if(original.left&&w.type!=='片手剣'||original.inherit&&weapons.find(x=>x.id===original.inherit)?.type!==w.type)continue;const a={...clone(original),weapon:w.id,limitBreak,favored:favored.includes(w.type),actualAttack:null,actualMagic:null};const skills=SequenceEngine.available(a).filter(s=>s.kind==='attack'&&(w.skills.includes(s.id)||s.eradicate||s.id===config.actions[action].skill));if(!skills.length)continue;counts.weapons++;
+ for(const s of skills){if(truncated)break;counts.skills++;let beam=trim([evaluate({...a,hearts:[...(a.hearts||[])],armors:[...(a.armors||[])]},s.id),evaluate({...a,hearts:[],armors:[]},s.id)]);if(!beam.length)continue;
+ // Revisit hearts after equipment so elemental and critical gear can change
+ // which hearts survive the bounded beam. Each weapon/skill retains its beam.
+ for(let pass=0;pass<2&&!truncated;pass++){
+ for(let index=0;index<4&&!truncated;index++){const next=[...beam];for(const row of beam)for(const id of ['',...hp.map(h=>h.id)]){const b=clone(row.actor);b.hearts=Array.from({length:4},(_,n)=>b.hearts[n]||'');b.hearts[index]=id;next.push(evaluate(b,s.id));if(truncated)break;}beam=trim(next);}
+ for(let index=0;index<8&&!truncated;index++){const next=[...beam];for(const row of beam)for(const id of gp[index]){const b=clone(row.actor);b.armors=Array.from({length:8},(_,n)=>b.armors[n]||'');b.armors[index]=id;next.push(evaluate(b,s.id));if(truncated)break;}beam=trim(next);}
+ }
+ all.push(...beam);all=trim(all).slice(0,Math.max(3,width));
+ }
+ }}
+ const results=all.sort(compare).slice(0,3);if(!results.length)throw Error('成立する候補がありません。固定した補助スキル・左手・継承・所持数を確認してください。'+(firstError?' 最初の除外理由：'+firstError:''));
+ return {actor,action,objective,results,nodes,valid,truncated,exact:false,approximate:true,width,counts,baseline:clone(baseline),favoredTypes:favored,scope:'選択キャラの主武器（0/4凸）・攻撃スキル・こころ4枠・防具・心珠・アクセを近似探索。職業・左手・継承・補助手順・他の3人は固定。',limits:['武器・スキルごとに上位候補を残す段階探索のため、大域最適は保証しない。','現在の補助スキルを使用できなくなる武器・こころ、在庫不足、コスト超過、同種こころ・アクセの重複を除外。','武器変更で開幕効果・領域も再計算。確率効果を成功へ変更しない。','HP・MP・生存・速度順は探索条件に含まない。実機の装備差分補正は全武器・こころに共通と仮定。','こころ道を解放するためのこころ消費・武器熟練度・職業ごとの未収録効果は未判定。']};
+}
+root.LoadoutOptimizer={solve};
+})(typeof window==='undefined'?globalThis:window);
