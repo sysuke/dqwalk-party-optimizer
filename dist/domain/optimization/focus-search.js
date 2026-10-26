@@ -11,7 +11,7 @@ function patterns(config,lead,settings){
    if(k.kind==='encore'){for(let t=1;t<=turns;t++)parts[t-1]=[action(k.id,t,lead),{actor:lead,turn:t,skill:skill(attack)?.eradicate?'fullslash':attack,target:lead}];for(const prep of SequenceEngine.available(config.actors[lead]).filter(x=>['charge','zoneCharge','spellCharge','absolutecrit','critBuff'].includes(x.kind))){const prepared=clone(parts);prepared[0]=[action(k.id,1,lead),{actor:lead,turn:1,skill:prep.id,target:lead}];rows.push({parts:prepared,roles:['encore','preparation'],weight:7});}}
    else if(k.kind==='rondo'||k.kind==='attackBuff')for(let t=1;t<=turns;t++)parts[t-1]=[action(k.id,t,lead)];
    const weight={skillBuff:5,adaptiveBuff:5,rondo:4,jobPrayer:5,encore:3,attackBuff:3,extendBuff:1,domain:1}[k.kind]||0;
-   rows.push({parts,roles:[k.kind],weight});
+   rows.push({parts,roles:[k.kind],weight});if(turns===2&&k.kind==='skillBuff')rows.push({parts:[[action(k.id,1,lead)],[action('wait',2)]],roles:[k.kind],weight});
    if(turns===2&&k.kind==='adaptiveBuff')for(const after of available.filter(x=>['rondo','skillBuff'].includes(x.kind)))rows.push({parts:[[action(k.id,1,lead)],[action(after.id,2,lead)]],roles:[k.kind,after.kind],weight:weight+2});
   }
   // Restrict each actor's options by role diversity, never by the weak setup hit.

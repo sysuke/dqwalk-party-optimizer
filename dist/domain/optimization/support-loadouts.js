@@ -47,6 +47,16 @@ function search(seeds,pools,master,profile,settings,evaluate,budget=768){
    }
    const sets=candidates.map(x=>[x]);
    for(let a=0;a<candidates.length;a++)for(let b=a+1;b<candidates.length;b++)if(candidates[a].actor!==candidates[b].actor&&candidates[a].row.supportKind!==candidates[b].row.supportKind)sets.push([candidates[a],candidates[b]]);
+   // Reserve complete three-support setups before single swaps consume the
+   // budget. Keep one loadout per actor/role here; ordinary swaps retain both.
+   const roles=[...new Map(candidates.map(x=>[x.actor+':'+x.row.supportKind,x])).values()],triples=[];
+   for(let a=0;a<roles.length;a++)for(let b=a+1;b<roles.length;b++)for(let c=b+1;c<roles.length;c++){
+    const set=[roles[a],roles[b],roles[c]],kinds=new Set(set.map(x=>x.row.supportKind));
+    if(new Set(set.map(x=>x.actor)).size===3&&kinds.size===3)triples.push(set);
+   }
+   const priority=set=>set.reduce((n,x)=>n+Number(['encore','adaptiveBuff','rondo'].includes(x.row.supportKind)),0);triples.sort((a,b)=>priority(b)-priority(a));
+   const singles=sets.filter(x=>x.length===1),pairs=sets.filter(x=>x.length===2);sets.length=0;
+   for(let i=0;i<Math.max(triples.length,pairs.length,singles.length);i++)for(const bucket of [triples,pairs,singles])if(bucket[i])sets.push(bucket[i]);
    for(const set of sets){
     if(calls>=budget)return {calls,valid};
     const base=clone(seed.config),changed=set.map(x=>x.actor);for(const {actor,row}of set)base.actors[actor]=clone(row.actor);
