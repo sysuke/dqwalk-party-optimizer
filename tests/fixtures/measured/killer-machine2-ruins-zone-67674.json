@@ -1,0 +1,108 @@
+{
+  "id": "ancient-ruins-killer-machine2-zone-dragonfang-67674",
+  "provenance": "user-reported-game-measurement",
+  "recordedOn": "2026-10-26",
+  "enemy": {
+    "name": "キラーマシン2",
+    "content": "古代の遺跡",
+    "buffs": [
+      "キラーマシン2強化Lv4",
+      "凍結Lv1",
+      "不運【呪文】"
+    ],
+    "countAtAttack": null
+  },
+  "actor": {
+    "job": "魔人",
+    "level": 94,
+    "displayAttackBeforeBuffs": null,
+    "weapon": "祖竜【理】の銃剣",
+    "limitBreak": null,
+    "twoHanded": true,
+    "inheritance": {
+      "weapon": "大太刀・桃源郷",
+      "proficiency": 4
+    },
+    "equipment": [
+      "ユグノアのかぶと",
+      "調停者のよろい上",
+      "世界樹の鎧下【滅】",
+      "はぐめたのお守り",
+      "スラいいねの勲章＋"
+    ],
+    "hearts": [
+      "闇の覇者 蒼き竜王（覚醒）",
+      "天魔王オルゴ・デミーラ（覚醒）",
+      "地獄の帝王エスターク",
+      "魔王ウルノーガ"
+    ],
+    "pearls": [
+      {
+        "天超えし竜牙ダメージ": 10,
+        "スキルの会心ダメージ": 5
+      },
+      {
+        "天超えし竜牙ダメージ": 10,
+        "スキルの会心ダメージ": 5
+      }
+    ],
+    "heartPath": "だいたい超魔道",
+    "buffs": [
+      "ゾーン 魔人",
+      "すばやさ増加Lv2",
+      "変異イオフォース",
+      "まもりのたて",
+      "会心率増加Lv2",
+      "会心ダメージ増加Lv1",
+      "限界突破",
+      "こうげき力増加Lv1"
+    ],
+    "extremeConcentrationActive": null,
+    "buffStateSource": "今回のユーザー列挙。ゾーンあり、テンションの列挙なし。"
+  },
+  "domain": "領域 新世界・赤",
+  "observation": {
+    "skill": "天超えし竜牙",
+    "displayedCriticalType": "超会心",
+    "damagePerHit": 67674,
+    "hitCountObserved": 1
+  },
+  "normalization": {
+    "equipmentAndHearts": "今回も同じ装備・こころをユーザーが再提示",
+    "inheritedUnconfirmed": {
+      "displayAttackBeforeBuffs": 1796,
+      "limitBreak": 0,
+      "extremeConcentrationActive": false,
+      "enemyCountAtAttack": 1
+    },
+    "domain": "ゾーンがあっても領域はユーザー表記の通常「新世界・赤」を維持。超越へ自動変更しない。"
+  },
+  "unknowns": [
+    "遺跡固有の強化Lv4の正確な守備力・各耐性",
+    "凍結Lv1と他の被ダメージ補正の合成・丸め",
+    "こころ道の各ノード",
+    "他の味方のゾーン状態",
+    "今回も表示攻撃力1796・0凸・極限集中未使用・敵1体か",
+    "攻撃直前の通常／超越領域表示"
+  ],
+  "validation": {
+    "status": "pending-independent-parameters",
+    "mustNotFitReductionToObservation": true
+  },
+  "followup": {
+    "raw": "大体同じ、おそらく超越領域",
+    "domainLikely": "超越領域 新世界・赤",
+    "status": "probable-not-confirmed",
+    "comparisonControl": "大体同じとの回答。厳密なゾーンだけの比較とは未確認"
+  },
+  "comparison": {
+    "baseline": "ancient-ruins-killer-machine2-dragonfang-43197",
+    "observedRatio": 1.5666365719841655,
+    "status": "single-observation-pair-not-a-calibrated-multiplier"
+  },
+  "itemClarification": {
+    "source": "user-followup",
+    "raw": "世界樹の鎧下【滅】、覚醒版",
+    "recordedOn": "2026-10-26"
+  }
+}

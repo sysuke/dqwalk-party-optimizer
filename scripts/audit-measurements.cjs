@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),c=vm.createContext({console});c.window=c;
+for(const f of require('./entrypoints.cjs').browser.filter(f=>f!=='ui/app.js'))vm.runInContext(fs.readFileSync(path.join(root,'dist',f),'utf8'),c,{filename:f});
+const catalog=c.Catalog9,items=c.PlannerData.real.items;
+const normalize=s=>s.normalize('NFKC').replace(/[\s【】（）()・]/g,'');
+const find=(rows,name)=>rows.filter(r=>normalize(r.name)===normalize(name)).map(r=>({id:r.id,name:r.name,bonuses:r.bonuses,unmodeled:r.unmodeled,assumptions:r.assumptions}));
+const cases=fs.readdirSync(path.join(root,'tests/fixtures/measured')).filter(n=>n.endsWith('.json')).map(n=>JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/measured',n),'utf8')));
+const report=cases.map(x=>({id:x.id,observed:x.observation.damagePerHit,status:'not-comparable-until-independent-inputs-complete',missingIndependentInputs:x.unknowns,coverage:{weapon:find(catalog.weapons,x.actor.weapon),inheritance:find(catalog.weapons,x.actor.inheritance.weapon),hearts:x.actor.hearts.map(name=>({name,matches:find(catalog.hearts,name)})),equipment:x.actor.equipment.map(name=>({name,matches:find(items,name)}))}}));
+console.log(JSON.stringify({cases:report,observedRatio:6055/551,warning:'Ratio is descriptive, not a fitted damage or resistance coefficient.'},null,2));

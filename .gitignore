@@ -1,39 +1,15 @@
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
+node_modules/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
 .DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# imported game data (user-managed)
-/data/imported/
+Thumbs.db
+.sites-runtime/
+.sites-checkout*/
+.openai/*
+!.openai/hosting.json
+work/
+*.tar.gz
+*.zip

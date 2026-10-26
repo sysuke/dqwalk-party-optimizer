@@ -1,0 +1,90 @@
+{
+  "id": "greynarl-rift-majin-dragonfang-6055",
+  "provenance": "user-reported-game-measurement",
+  "recordedOn": "2026-10-26",
+  "enemy": {
+    "name": "黒き偽竜グレイナル",
+    "content": "時空の歪み",
+    "buffs": [
+      "テンション4段階【100】",
+      "会心ガード",
+      "まもりのたて",
+      "いてつくはどうガード"
+    ]
+  },
+  "actor": {
+    "job": "魔人",
+    "level": 94,
+    "displayAttackBeforeBuffs": 1796,
+    "weapon": "祖竜【理】の銃剣",
+    "limitBreak": 0,
+    "twoHanded": true,
+    "inheritance": {
+      "weapon": "大太刀・桃源郷",
+      "proficiency": 4
+    },
+    "equipment": [
+      "ユグノアのかぶと",
+      "調停者のよろい上",
+      "世界樹の鎧下【滅】",
+      "はぐめたのお守り",
+      "スラいいねの勲章＋"
+    ],
+    "hearts": [
+      "闇の覇者 蒼き竜王（覚醒）",
+      "天魔王オルゴ・デミーラ（覚醒）",
+      "地獄の帝王エスターク",
+      "魔王ウルノーガ"
+    ],
+    "pearls": [
+      {
+        "天超えし竜牙ダメージ": 10,
+        "スキルの会心ダメージ": 5
+      },
+      {
+        "天超えし竜牙ダメージ": 10,
+        "スキルの会心ダメージ": 5
+      }
+    ],
+    "heartPath": "だいたい超魔道",
+    "buffs": [
+      "ゾーン 魔人",
+      "テンション2段階【20】",
+      "すばやさ増加Lv2",
+      "変異イオフォース",
+      "まもりのたて",
+      "会心率増加Lv2",
+      "会心ダメージ増加Lv1",
+      "限界突破",
+      "こうげき力増加Lv1"
+    ]
+  },
+  "domain": "超越領域 新世界・赤",
+  "observation": {
+    "skill": "天超えし竜牙",
+    "displayedCriticalType": "超会心",
+    "damagePerHit": 6055,
+    "hitCountObserved": 1
+  },
+  "normalization": {
+    "rawTension": "テンション段階ー２【２０】",
+    "interpretedTensionStage": 2,
+    "reason": "表示値【20】に対応する正の2段階と解釈"
+  },
+  "unknowns": [
+    "敵守備力の独立した検証値",
+    "この敵の会心ガード軽減率",
+    "こころの装着枠とSランク確認",
+    "超魔道の各ノード選択",
+    "他の味方のゾーン状態"
+  ],
+  "validation": {
+    "status": "pending-independent-parameters",
+    "mustNotFitReductionToObservation": true
+  },
+  "itemClarification": {
+    "source": "user-followup",
+    "raw": "世界樹の鎧下【滅】、覚醒版",
+    "recordedOn": "2026-10-26"
+  }
+}

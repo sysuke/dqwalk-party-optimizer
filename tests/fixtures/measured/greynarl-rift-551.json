@@ -1,0 +1,20 @@
+{
+  "id": "greynarl-rift-dragonfang-551",
+  "provenance": "user-reported-game-measurement",
+  "recordedOn": "2026-10-26",
+  "enemy": {"name": "黒き偽竜グレイナル", "content": "時空の歪み", "buffs": ["テンション4段階【100】", "会心ガード", "まもりのたて", "いてつくはどうガード"]},
+  "actor": {
+    "job": "時渡りの剣士", "level": 86, "displayAttackBeforeBuffs": 1514,
+    "weapon": "祖竜【理】の銃剣", "limitBreak": 0,
+    "inheritance": {"weapon": "大太刀・桃源郷", "proficiency": 1},
+    "equipment": ["調停者の盾", "調停者のかぶと", "調停者のよろい上", "調停者のよろい下", "バトルマスターの極意書", "ほしふるうでわ"],
+    "hearts": ["かみさま（覚醒）", "リュウちゃん（覚醒）", "地獄の帝王エスターク", "魔王ウルノーガ"],
+    "pearls": [{"天超えし竜牙ダメージ": 10, "スキルの会心ダメージ": 5}, {"天超えし竜牙ダメージ": 10, "スキルの会心ダメージ": 5}],
+    "heartPath": "全て巡行道",
+    "buffs": ["テンション1段階【5】", "時間レベル1", "すばやさ増加Lv1", "会心率増加Lv1", "変異フォース"]
+  },
+  "domain": "新世界・赤",
+  "observation": {"skill": "天超えし竜牙", "displayedCriticalType": "超会心", "damagePerHit": 551, "hitCountObserved": 1},
+  "unknowns": ["敵守備力の独立した検証値", "この敵の会心ガード軽減率", "こころの装着枠とSランク確認", "巡行道の各ノード選択"],
+  "validation": {"status": "pending-independent-parameters", "mustNotFitReductionToObservation": true}
+}
