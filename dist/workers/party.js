@@ -38,6 +38,7 @@ importScripts(
   '../domain/optimization/plan-search.js',
   '../domain/optimization/focus-search.js',
   '../domain/optimization/support-loadouts.js',
+  '../domain/optimization/damage-goal-search.js',
   '../domain/optimization/speed-tuner.js',
   '../domain/optimization/order-robust.js',
   '../domain/optimization/role-assignment.js',
