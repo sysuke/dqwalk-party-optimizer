@@ -105,6 +105,7 @@ function script(variant='user',preparation='eradicate',support='support'){
  if(variant==='article')out.push({turn:2,actor:1,skill:'timewave'});else out.push({turn:2,actor:3,skill:'fullslash'});
  out.push({turn:2,actor:3,skill:'fullslash'});return out;
 }
-root.CombatRules={sources,skills,skill,resolve,roles,articleRoles,template,assignments,speedCheck,shieldHit,advance,cost,simulate,script};
+ function breakPriority(a,b){const score=r=>{const x=r.breakChallenge||{},full=x.maxSimultaneous===4;return [Number(!!r.resourceOK),Number(full),x.maxSimultaneous||0,full?Number(!!r.killed):0,full?-(x.breakTurn||99):0,full?-(r.killTurn||99):0,full?-(x.breakAction||99):0,x.largestUnbroken||0,x.totalBroken||0,-(r.remaining||0)];};const x=score(a),y=score(b);for(let i=0;i<x.length;i++)if(x[i]!==y[i])return y[i]-x[i];return 0;}
+ root.CombatRules={sources,skills,skill,resolve,roles,articleRoles,template,assignments,speedCheck,shieldHit,breakPriority,advance,cost,simulate,script};
 if(typeof module!=='undefined')module.exports=root.CombatRules;
 })(typeof window==='undefined'?globalThis:window);

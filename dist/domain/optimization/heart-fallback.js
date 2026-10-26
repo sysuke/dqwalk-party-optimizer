@@ -4,7 +4,7 @@
     return function(master,profile,enemy,settings={},progress=()=>{}) {
       settings={...settings,_deadline:settings._deadline??Date.now()+(settings.maxTimeMs??({quick:15000,balanced:45000,thorough:120000}[settings.searchMode||'balanced']))};
       const primary=run(master,profile,enemy,settings,progress);
-      if(Date.now()>=settings._deadline||settings.objective==='damage'||settings.heartFallback===false||primary.results?.some(row=>row.killed&&row.resourceOK)||!profile.inventory.some(row=>ids.includes(row.id)&&row.count>0))return primary;
+      if(Date.now()>=settings._deadline||settings.objective==='damage'||settings.objective==='break'||settings.heartFallback===false||primary.results?.some(row=>row.killed&&row.resourceOK)||!profile.inventory.some(row=>ids.includes(row.id)&&row.count>0))return primary;
       const remaining=settings.maxNodes==null?null:Math.max(0,settings.maxNodes-(primary.nodes||0));
       if(remaining===0)return primary;
       const alternate=JSON.parse(JSON.stringify(profile));

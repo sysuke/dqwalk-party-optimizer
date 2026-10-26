@@ -4,9 +4,9 @@ const clone=x=>JSON.parse(JSON.stringify(x)),skill=id=>Catalog9.skills.find(k=>k
 // A target is an attack-time state, never a free buff granted to an actor.
 // Every probe includes its providers and is evaluated by the normal battle model.
 function search(config,settings,evaluate,budget=192){
- let calls=0,probes=0,verified=0;const seen=new Map(),target=settings.objective==='damage'?null:settings.hp,deadline=settings._deadline||Infinity;
+ let calls=0,probes=0,verified=0;const seen=new Map(),target=settings.objective==='damage'?null:settings.objective==='break'?Math.round((settings.shieldMaxHP??2400000)*.5):settings.hp,deadline=settings._deadline||Infinity;
  const run=cfg=>{const key=JSON.stringify(cfg.actions);if(seen.has(key))return seen.get(key);if(calls>=budget||Date.now()>=deadline)return null;calls++;const r=evaluate(cfg);seen.set(key,r);return r;};
- const hit=(r,lead)=>Math.max(0,...(r?.steps||[]).filter(s=>s.actor===lead&&s.damage).map(s=>s.damage.min||0));
+ const hit=(r,lead)=>Math.max(0,...(r?.steps||[]).filter(s=>s.actor===lead&&s.damage&&(settings.objective!=='break'||s.shieldHit&&s.shieldHit.totalBroken-s.shieldHit.broken===0)).map(s=>s.damage.min||0));
  const make=(lead,id,parts,order)=>{const actions=[];for(let turn=0;turn<settings.turns;turn++)for(const actor of order)actions.push(...parts[actor][turn]);return {...config,actions};};
  const baseline=(lead,id)=>config.actors.map((_,actor)=>Array.from({length:settings.turns},(_,t)=>[{actor,turn:t+1,skill:actor===lead?(t&&skill(id)?.eradicate?'fullslash':id):'wait',target:actor}]));
  // Compare resistance-adjusted damage, not raw attack/magic or skill percentage.
@@ -45,7 +45,7 @@ function search(config,settings,evaluate,budget=192){
    for(const ord of orders){if(calls>=limit)break;const complete=make(lead,id,combination.parts,ord),variants=[];
     if(target!=null){const one=clone(complete),attacks=one.actions.filter(a=>a.actor===lead&&skill(a.skill)?.kind==='attack'),last=attacks.at(-1);one.actions=one.actions.map(a=>a.actor===lead&&skill(a.skill)?.kind==='attack'&&a!==last?{...a,skill:'wait'}:a===last&&skill(id)?.eradicate?{...a,skill:id}:a);variants.push(one);}
     variants.push(complete);for(const cfg of variants){if(calls>=limit)break;const r=run(cfg);if(!r||!r.resourceOK)continue;verified++;
-    const attacks=r.steps.filter(s=>s.actor===lead&&s.damage),largest=attacks.reduce((best,s)=>(s.damage.min||0)>(best?.damage.min||-1)?s:best,null),lower=largest?.damage.min||0;
+    const attacks=r.steps.filter(s=>s.actor===lead&&s.damage),largest=attacks.filter(s=>settings.objective!=='break'||s.shieldHit&&s.shieldHit.totalBroken-s.shieldHit.broken===0).reduce((best,s)=>(s.damage.min||0)>(best?.damage.min||-1)?s:best,null),lower=largest?.damage.min||0;
     r.damageGoal={target,lead,skill:id,singleLower:lower,shortfall:target==null?null:Math.max(0,target-lower),mode:target==null?'maximum':lower>=target?'single':'multiple',attackCount:attacks.length,buffs:clone(largest?.before||{}),verified:true};
     }
    }
@@ -78,5 +78,6 @@ function repair(seed,master,profile,settings,evaluate,budget=192){
 }
 root.DamageGoalSearch={search,repair};
 })(typeof window==='undefined'?globalThis:window);
+
 
 

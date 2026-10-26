@@ -20,7 +20,9 @@ function scenario(config,master,profile,settings){
  const damage=base.builds.map((_,actor)=>base.steps.filter(s=>s.actor===actor&&s.damage).reduce((n,s)=>n+s.damage.min,0)),lead=damage.indexOf(Math.max(...damage)),q=clear(config),a=q.actors[lead];
  if(settings.zoneScenario==='main'&&!a.zone){a.zone=true;a.assumedZone=true;}
  if(settings.conditionalTension>0&&(base.turnStarts[0].states[lead].tension||0)<[0,10,20,30,50][settings.conditionalTension]){a.tensionBeforeAssumption=a.tensionLevel??'auto';a.tensionLevel=settings.conditionalTension;a.assumedTension=true;}
- const r=PartyBattle.simulate(q,master,profile,settings);r.scenarioComparison={lead,without:{damage:base.damage,damageMax:base.damageMax,killed:base.killed,resourceOK:base.resourceOK},with:{damage:r.damage,damageMax:r.damageMax,killed:r.killed,resourceOK:r.resourceOK},scope:'装備・手順を固定。指定した確率ゾーン・テンションの成立前提だけを比較。他の指定した確率効果は維持。'};return r;
+ const r=PartyBattle.simulate(q,master,profile,settings);r.conditionsMet=false;r.scenarioComparison={lead,without:{damage:base.damage,damageMax:base.damageMax,maxSimultaneous:base.breakChallenge?.maxSimultaneous,killed:base.killed,resourceOK:base.resourceOK},with:{damage:r.damage,damageMax:r.damageMax,maxSimultaneous:r.breakChallenge?.maxSimultaneous,killed:r.killed,resourceOK:r.resourceOK},scope:'装備・手順を固定。指定した確率ゾーン・テンションの成立前提だけを比較。他の指定した確率効果は維持。'};return r;
 }
 root.ProcProbability35={summarize,clear,scenario};
 })(typeof window==='undefined'?globalThis:window);
+
+
