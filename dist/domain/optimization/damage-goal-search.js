@@ -53,6 +53,30 @@ function search(config,settings,evaluate,budget=192){
  }
  return {calls,probes,verified,target,scope:'耐性別攻撃候補→攻撃時状態→実行可能な補助手順。単発と複数攻撃を同じ戦闘モデルで比較'};
 }
-root.DamageGoalSearch={search};
+// Repair a finalist as a complete role/gear/action combination. Changing a job
+// while preserving 'wait' cannot discover its newly available support skill.
+function repair(seed,master,profile,settings,evaluate,budget=192){
+ let calls=0,valid=0;const seen=new Set(),config=seed.config,damage=config.actors.map((_,i)=>seed.steps.filter(s=>s.actor===i&&s.damage).reduce((n,s)=>n+s.damage.min,0)),lead=damage.indexOf(Math.max(...damage));
+ const main=config.actors[lead],attack=seed.steps.find(s=>s.actor===lead&&skill(s.skill)?.eradicate)?.skill||seed.steps.filter(s=>s.actor===lead&&s.damage).at(-1)?.skill;if(!attack)return {calls,valid};
+ const variants=[clone(config)],stock=new Map(profile.inventory.map(x=>[x.id,x.count]));
+ if(main.actualAttack==null&&main.actualMagic==null)for(const h of Catalog9.hearts.filter(h=>(h.skills||[]).some(id=>skill(id)?.kind==='charge')&&(stock.get(master.items.find(i=>i.slot==='heart'&&(i.id===h.id||i.name===h.name))?.id)||0)>0))for(let slot=0;slot<4;slot++){const q=clone(config);q.actors[lead].hearts[slot]=h.id;variants.push(q);}
+ for(const base of variants){const jobs=[base];for(let actor=0;actor<4;actor++)if(actor!==lead){const changed=RoleAssignment38.changeJob(base,actor,'job-5',master,profile,settings);if(changed&&SequenceEngine.available(changed.actors[actor]).some(k=>k.kind==='skillBuff'))jobs.push(changed);}
+  for(const q of jobs){const available=q.actors.map(a=>SequenceEngine.available(a)),prep=available[lead].find(k=>k.kind==='charge'||k.kind==='zoneCharge'),support=[0,1,2,3].filter(i=>i!==lead),rondo=support.find(i=>available[i].some(k=>k.kind==='rondo')),encore=support.filter(i=>available[i].some(k=>k.kind==='encore'));
+   const orders=[support.concat(lead)];if(rondo!=null)orders.push(support.filter(i=>i!==rondo).concat(rondo,lead));for(const e of encore)orders.push([e,...support.filter(i=>i!==e&&i!==rondo),...(rondo==null?[]:[rondo]),lead]);
+   for(const order of orders.map(order=>[...new Set(order)]))for(const charge of prep?[false,true]:[false])for(const timing of [1,settings.turns]){
+    if(calls>=budget||Date.now()>=(settings._deadline||Infinity))return {calls,valid};const actions=[];
+    for(let turn=1;turn<=settings.turns;turn++)for(const actor of order){const row=available[actor],add=(id,target=lead)=>actions.push({actor,turn,skill:id,target});if(actor===lead){add(turn>1&&skill(attack)?.eradicate?'fullslash':attack);continue;}
+     const e=row.find(k=>k.kind==='encore'),r=row.find(k=>k.kind==='rondo'),buff=row.find(k=>k.kind==='skillBuff');
+     if(e){add(e.id);actions.push({actor:lead,turn,skill:charge?prep.id:skill(attack)?.eradicate?'fullslash':attack,target:lead});}
+     else if(r)add(r.id);else if(buff&&turn===timing)add(buff.id);else {const original=config.actions.find(a=>a.actor===actor&&(a.turn||1)===turn);add(original&&row.some(k=>k.id===original.skill)?original.skill:'wait',original?.target??actor);}
+    }
+    const cfg={...q,actions},key=JSON.stringify([cfg.actors,actions]);if(seen.has(key))continue;seen.add(key);calls++;try{const r=evaluate(cfg);if(r?.resourceOK)valid++;}catch{/* Inventory, cost, unavailable skill and MP checks still apply. */}
+   }
+  }
+ }
+ return {calls,valid};
+}
+root.DamageGoalSearch={search,repair};
 })(typeof window==='undefined'?globalThis:window);
+
 
