@@ -54,11 +54,11 @@ function search(seeds,pools,master,profile,settings,evaluate,budget=768){
      if(!fit(base,changed,master,profile))continue;
      const initial=SequenceEngine.simulate({...base,actions:base.actors.map((_,actor)=>({actor,turn:1,skill:'wait'}))},master,profile);
      const order=states=>[0,1,2,3].sort((a,b)=>{const speed=i=>initial.builds[i].stats.speed*(1+.2*states[i].speedStages+(states[i].worldSpeed||0)/100);return speed(b)-speed(a)||a-b;});
-     for(const buffFirst of [false,true]){
+     const prepares=SequenceEngine.available(base.actors[lead]).filter(k=>['charge','zoneCharge','spellCharge','absolutecrit','critBuff'].includes(k.kind));for(const preparation of [null,...(set.some(x=>x.row.supportKind==='encore')?prepares:[])])for(const buffFirst of [false,true]){
       if(calls>=budget)return {calls,valid};
       let plan=chunks(seed.config.actions);
       for(const {actor,row}of set){const available=SequenceEngine.available(base.actors[actor]),buff=available.find(k=>k.kind==='attackBuff');for(let turn=1;turn<=settings.turns;turn++){
-       let part;if(row.supportKind==='encore')part=[{actor,turn,skill:available.find(k=>k.kind==='encore').id,target:lead},{actor:lead,turn,skill:extraAttack,target:lead}];
+       let part;if(row.supportKind==='encore')part=[{actor,turn,skill:available.find(k=>k.kind==='encore').id,target:lead},{actor:lead,turn,skill:preparation&&turn===1?preparation.id:extraAttack,target:lead}];
        else if(row.supportKind==='skillBuff'||row.supportKind==='adaptiveBuff'){const k=available.find(k=>k.kind===row.supportKind);part=[{actor,turn,skill:turn===(row.supportKind==='skillBuff'?settings.turns:1)?k.id:'wait',target:lead}];}
        else if(row.supportKind==='jobPrayer'){if(base.actors[lead].job!=='job-1')continue;part=[{actor,turn,skill:turn===1?'dharma-prayer':'wait',target:lead}];}
        else if(row.supportKind==='domain')part=[{actor,turn,skill:turn===1?'new-world':'wait',target:actor}];

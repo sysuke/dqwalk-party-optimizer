@@ -42,7 +42,7 @@ add({id:'timeblade',name:'時もどしの刃',kind:'attack',type:'斬撃',elemen
 add({id:'chronostance',name:'会心必中のかまえ・刻',kind:'unsupported',mpRate:.1,source:src(17787),note:'確定会心は次のターン。現在の1ターン検証では攻撃へ即適用しない。'});
 add({id:'phoenix',name:'不死鳥のほむら',kind:'attack',type:'体技',elements:['イオ','メラ'],multipliers:[440],hits:1,nextBuff:'phoenix',mp:57,source:src(12461)});
 add({id:'gigablade',name:'ギガブレード',kind:'attack',type:'斬撃',elements:['デイン'],multipliers:[730],hits:1,direct:true,mp:51,source:src(12235)});
-add({id:'normalcharge',name:'きあいため',kind:'charge',value:2,self:true,mp:15,source:src(12235)});
+add({id:'normalcharge',name:'きあいため',kind:'charge',value:2,self:true,mp:5,source:src(12235)});
 add({id:'nebula',name:'グランドネビュラ',kind:'attack',type:'斬撃',elements:['ヒャド','ドルマ'],multipliers:[530],hits:1,mp:58,source:src(13223)});
 add({id:'yaegasumi',name:'八重霞',kind:'attack',type:'斬撃',elements:['メラ'],multipliers:[390],hits:1,mp:31,source:h('blair-awakened').source,note:'火種の確率付与と撃破時450%追撃は不算入。'});
 add({id:'rukani',name:'ルカニ',kind:'defenseBuff',stages:-2,mp:10,source:h('maou-awakened').source,note:'成功時のみ適用。成否を行動欄で指定。'});

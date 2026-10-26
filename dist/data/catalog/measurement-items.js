@@ -1,6 +1,8 @@
 'use strict';
 (function(root){
 const C=root.Catalog9,m=root.PlannerData.real;
+// This S heart grants the ordinary charge skill independently of the weapon.
+const armLion=C.hearts.find(h=>h.id==='arm-lion');if(armLion)armLion.skills=[...new Set([...(armLion.skills||[]),'normalcharge'])];
 const blueDragon={id:'blue-dragonlord-awakened',name:'闇の覇者 蒼き竜王（覚醒）',family:'blue-dragonlord',color:'黄',rank:'S覚醒',cost:183,costBonus:4,stats:{hp:162,mp:87,attack:161,defense:93,magic:29,heal:58,speed:97,dex:39},bonuses:[{group:'general',type:'斬撃',value:.12},{group:'general',type:'体技',value:.12},{group:'element',element:'ドルマ',type:'斬撃',value:.12},{group:'element',element:'ドルマ',type:'体技',value:.12},{group:'element',value:.12},{group:'critical',value:.12}],skills:[],effects:['ターン開始時MP12回復','魅了耐性12%'],source:'https://gamewith.jp/dq-walk/article/show/537960',checked:'2026-10-26',unmodeled:['追い覚醒・覚醒+の個体追加値は含まない。','MP回復・魅了耐性の生存計算への接続は未確認。']};
 if(!C.hearts.some(x=>x.id===blueDragon.id)){C.hearts.push(blueDragon);m.items.push({...blueDragon,slot:'heart',verifiedModel:true,ready:false,skillIds:[]});}
 // Explicitly selected sub-effect, not an invented perfect random pearl.
