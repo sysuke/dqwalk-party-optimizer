@@ -20,6 +20,7 @@ function audit(){const c=load(),catalog=c.Catalog9,items=c.PlannerData.real.item
  const report=cases.map(x=>{const coverage={weapon:resolve(catalog.weapons,x.actor.weapon),inheritance:resolve(catalog.weapons,x.actor.inheritance.weapon),hearts:x.actor.hearts.map(name=>resolve(catalog.hearts,name)),equipment:x.actor.equipment.map(name=>resolve(items,name))};
   const all=[coverage.weapon,coverage.inheritance,...coverage.hearts,...coverage.equipment];
   return {id:x.id,observed:x.observation.damagePerHit,status:'not-comparable-until-independent-inputs-complete',missingIndependentInputs:x.unknowns,
+   confirmedCalculatorInputs:{weather:x.environment?.weather||null,majinCritical20:x.actor.confirmedHeartPath?.lv20==='超魔道'?25:null,majinCritical40:x.actor.confirmedHeartPath?.lv40==='超魔道'?25:null},
    domain:{reported:x.domain,followup:x.followup?.domainLikely||null,certainty:x.followup?.status||'as-reported'},
    unresolvedCatalogue:all.filter(r=>r.status!=='matched').map(r=>({name:r.name,status:r.status})),coverage};});
  return {cases:report,warning:'Coverage does not validate ranks, heart slots, buffs, resistances or the damage formula. No observation is fitted into a coefficient.'};

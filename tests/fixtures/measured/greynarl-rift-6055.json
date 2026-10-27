@@ -57,7 +57,11 @@
       "会心ダメージ増加Lv1",
       "限界突破",
       "こうげき力増加Lv1"
-    ]
+    ],
+    "confirmedHeartPath": {
+      "lv20": "超魔道",
+      "lv40": "超魔道"
+    }
   },
   "domain": "超越領域 新世界・赤",
   "observation": {
@@ -75,7 +79,7 @@
     "敵守備力の独立した検証値",
     "この敵の会心ガード軽減率",
     "こころの装着枠とSランク確認",
-    "超魔道の各ノード選択",
+    "Lv20・Lv40の会心ノード以外のこころ道選択",
     "他の味方のゾーン状態"
   ],
   "validation": {
@@ -86,5 +90,14 @@
     "source": "user-followup",
     "raw": "世界樹の鎧下【滅】、覚醒版",
     "recordedOn": "2026-10-26"
+  },
+  "environment": {
+    "weather": "sunny"
+  },
+  "conditionClarification": {
+    "source": "user-followup",
+    "recordedOn": "2026-10-27",
+    "raw": "両方超魔道、晴れ",
+    "scope": "魔人Lv94のLv20/Lv40会心こころ道と測定時の天候"
   }
 }
