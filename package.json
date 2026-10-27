@@ -1,6 +1,6 @@
 {
   "name": "walk-party-planner",
-  "version": "0.51.0",
+  "version": "0.52.0",
   "private": true,
   "description": "Dragon Quest Walk party and damage planner",
   "scripts": {
@@ -9,6 +9,7 @@
     "sync:entrypoints": "node scripts/sync-entrypoints.cjs --write",
     "start": "node scripts/serve.cjs",
     "dev": "node scripts/serve.cjs",
+    "audit:measurements": "node scripts/audit-measurements.cjs",
     "audit:data": "node scripts/catalog-audit.cjs",
     "check:pages": "node scripts/check-pages.cjs"
   },

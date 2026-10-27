@@ -29,6 +29,7 @@ const sandy={id:'sandy',name:'サンディとアギロ',family:'sandy',color:'�
 C.hearts.push(sandy);
 Object.assign(m.items.find(x=>x.id==='sandy'),sandy,{verifiedModel:true,verified:['S全8能力・黄紫・コスト171・常時の斬体呪文/属性補正を再照合。'],assumptions:sandy.unmodeled});
 const measuredAccessories=[
+ {id:'meteor-bracelet',name:'ほしふるうでわ',stats:{speed:60},bonuses:[],source:'https://9db.jp/dqwalk/data/13260',assumptions:['掲載性能はすばやさ60。直接のダメージ補正はない。']},
  {id:'hagumeta-charm',name:'はぐメタのお守り',stats:{mp:8,speed:16},bonuses:[],source:'https://game8.jp/dqwalk/366728',assumptions:['イオ属性耐性5%は被ダメージ計算へ未接続。火力ボーナスはない。']},
  {id:'slalike-medal-plus',name:'スラいいね！の勲章＋',stats:{speed:25},bonuses:[{group:'general',type:'体技',value:.05},{group:'general',type:'呪文',value:.03}],source:'https://gamewith.jp/dq-walk/article/show/396459',assumptions:['眠り耐性10%は生存計算へ未接続。斬撃に体技5%を加算しない。']},
  {id:'battlemaster-book',name:'バトルマスターの極意書',stats:{},bonuses:[],source:'https://game8.jp/dqwalk/638541',assumptions:['バトマス専用会心率4%。特級職への適用対応の確認待ち。全職への常時4%を仮定せず、確定超会心の威力には加算しない。']}
