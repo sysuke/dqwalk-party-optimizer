@@ -6,11 +6,11 @@ function patterns(config,lead,settings){
  return config.actors.map((a,i)=>{
   const available=SequenceEngine.available(a),action=(id,turn,target=i)=>({actor:i,skill:id,turn,target}),allTurns=id=>Array.from({length:turns},(_,n)=>[action(n>0&&skill(id)?.eradicate?'fullslash':id,n+1)]),rows=[{parts:allTurns(attackFor(i)),roles:[],weight:0}];
   if(i===lead){if(settings.allowAI&&skill(attack)?.type==='呪文')for(const k of available.filter(k=>k.kind==='mageChant'))rows.push({parts:[[action(k.id,1),action(attack,1)],...(turns===2?[[action(attack,2)]]:[])],roles:['mage-chant'],weight:3});if(turns===2)for(const k of available.filter(k=>['critBuff','charge','zoneCharge','absolutecrit','spellCharge','autoRelease'].includes(k.kind)&&(k.kind!=='autoRelease'||settings.allowAI))){rows.push({parts:[[action(k.id,1)],[action(attack,2)]],roles:['self-'+k.kind],weight:2});if(available.some(k=>k.kind==='overdrive'))rows.push({parts:[[action('overdrive',1),action(k.id,1)],[action(attack,2)]],roles:['self-'+k.kind,'extension'],weight:3});}return rows;}
-  for(const k of available.filter(k=>supportKinds.has(k.kind))){if(k.kind==='jobPrayer'&&config.actors[lead].job!=='job-1')continue;if(k.kind==='domain'&&k.domain!=='newworld')continue;
+  for(const k of available.filter(k=>supportKinds.has(k.kind)||k.nextBuff==='phoenix')){if(k.kind==='jobPrayer'&&config.actors[lead].job!=='job-1')continue;if(k.kind==='domain'&&k.domain!=='newworld')continue;
    const parts=allTurns('wait'),buffTurn=k.kind==='skillBuff'?turns:1;parts[buffTurn-1]=[action(k.id,buffTurn,lead)];
    if(k.kind==='encore'){for(let t=1;t<=turns;t++)parts[t-1]=[action(k.id,t,lead),{actor:lead,turn:t,skill:skill(attack)?.eradicate?'fullslash':attack,target:lead}];for(const prep of SequenceEngine.available(config.actors[lead]).filter(x=>['charge','zoneCharge','spellCharge','absolutecrit','critBuff'].includes(x.kind))){const prepared=clone(parts);prepared[0]=[action(k.id,1,lead),{actor:lead,turn:1,skill:prep.id,target:lead}];rows.push({parts:prepared,roles:['encore','preparation'],weight:7});}}
    else if(k.kind==='rondo'||k.kind==='attackBuff')for(let t=1;t<=turns;t++)parts[t-1]=[action(k.id,t,lead)];
-   const weight={skillBuff:5,adaptiveBuff:5,rondo:4,jobPrayer:5,encore:3,attackBuff:3,extendBuff:1,domain:1}[k.kind]||0;
+   const weight={nextBuff:5,skillBuff:5,adaptiveBuff:5,rondo:4,jobPrayer:5,encore:3,attackBuff:3,extendBuff:1,domain:1}[k.nextBuff==='phoenix'?'nextBuff':k.kind]||0;
    rows.push({parts,roles:[k.kind],weight});if(turns===2&&k.kind==='skillBuff')rows.push({parts:[[action(k.id,1,lead)],[action('wait',2)]],roles:[k.kind],weight});
    if(turns===2&&k.kind==='adaptiveBuff')for(const after of available.filter(x=>['rondo','skillBuff'].includes(x.kind)))rows.push({parts:[[action(k.id,1,lead)],[action(after.id,2,lead)]],roles:[k.kind,after.kind],weight:weight+2});
   }
@@ -29,3 +29,4 @@ function refine(config,settings,evaluate,budget=128){
 }
 root.FocusSearch35={refine,patterns,supportKinds};
 })(typeof window==='undefined'?globalThis:window);
+

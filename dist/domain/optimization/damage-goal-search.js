@@ -76,8 +76,61 @@ function repair(seed,master,profile,settings,evaluate,budget=192){
  }
  return {calls,valid};
 }
-root.DamageGoalSearch={search,repair};
+function complete(seeds,pools,master,profile,settings,evaluate,compare,budget=192){
+ let calls=0,valid=0,improvements=0;const seen=new Set(),stock=new Map(profile.inventory.map(x=>[x.id,x.count])),external=new Set(['attackBuff','adaptiveBuff','skillBuff','jobPrayer','rondo','extendBuff','domain']),support=k=>external.has(k.kind)||k.nextBuff==='phoenix';
+ let best=seeds[0];if(!best)return {calls,valid,improvements};const original=best;
+ const attempt=cfg=>{if(calls>=budget||Date.now()>=(settings._deadline||Infinity))return null;const key=JSON.stringify([cfg.actors,cfg.actions]);if(seen.has(key))return null;seen.add(key);calls++;try{const r=evaluate(cfg);if(r?.resourceOK){valid++;if(compare(r,best)<0){best=r;improvements++;}return r;}}catch{}return null;};
+ const waits=r=>r.steps.filter(s=>!s.enemy&&!s.extra&&s.skill==='wait'),leadOf=r=>{const d=r.config.actors.map((_,i)=>r.steps.filter(s=>s.actor===i&&s.damage).reduce((n,s)=>n+s.damage.min,0));return d.indexOf(Math.max(...d));};
+ const insert=(cfg,parts,from,to,after=false)=>{const moved=parts.splice(from,1)[0],anchor=parts.indexOf(to);parts.splice(anchor+(after?1:0),0,moved);return {...cfg,actions:parts.flat()};};
+ // Move a one-use buff after an earlier preparation action. Keep neutral setup
+ // variants so the newly freed later turn can be used in the next phase.
+ const setup=[...seeds],setupLimit=Math.floor(budget*.2);
+ for(const seed of seeds)for(const idle of waits(seed))for(const action of seed.config.actions.filter(a=>a.actor===idle.actor&&a.turn>idle.turn&&skill(a.skill)?.maxUses===1&&external.has(skill(a.skill)?.kind))){
+  if(calls>=setupLimit)break;const parts=SupportLoadouts25.chunks(seed.config.actions),i=parts.findIndex(c=>c[0].actor===idle.actor&&c[0].turn===idle.turn),later=parts.find(c=>c[0].actor===action.actor&&c[0].turn===action.turn),lead=leadOf(seed),anchor=parts.find(c=>c[0].actor===lead&&c[0].turn===idle.turn);if(i<0||!later||!anchor||idle.actor===lead)continue;
+  parts[i]=[{...action,turn:idle.turn}];later.splice(0,later.length,{actor:action.actor,turn:action.turn,skill:'wait',target:action.actor});const r=attempt(insert(seed.config,parts,i,anchor,true));if(r&&compare(r,seed)<=0)setup.unshift(r);
+ }
+ const ready=setup.sort(compare).slice(0,4),attackLimit=Math.floor(budget*.45);
+ // A weak attack is only considered after the four-shield burst, never used to
+ // chip a shield prematurely merely to replace a wait.
+ for(const seed of ready)for(const idle of waits(seed)){
+  if(calls>=attackLimit)break;const hit=seed.steps.find(s=>s.shieldHit?.broken===4);if(settings.objective==='break'&&(!hit||idle.turn!==hit.turn))continue;
+  const available=SequenceEngine.available(seed.config.actors[idle.actor]).filter(k=>k.kind==='attack'&&!k.eradicate).sort((a,b)=>(b.multipliers?.[0]||0)*(b.hits||1)-(a.multipliers?.[0]||0)*(a.hits||1)).slice(0,3);
+  for(const k of available){if(calls>=attackLimit)break;const parts=SupportLoadouts25.chunks(seed.config.actions),i=parts.findIndex(c=>c[0].actor===idle.actor&&c[0].turn===idle.turn);if(i<0)continue;parts[i]=[{actor:idle.actor,turn:idle.turn,skill:k.id,target:idle.actor}];const anchor=hit&&parts.find(c=>c.some(a=>a.actor===hit.actor&&a.turn===hit.turn&&a.skill===hit.skill));attempt(anchor?insert(seed.config,parts,i,anchor,true):{...seed.config,actions:parts.flat()});}
+ }
+ // Complete remaining waits using actual owned skill providers. Search hearts
+ // and shields independently of their raw damage score; also preserve the
+ // current opening equipment while moving a support heart between supports.
+ const parents=[best,...ready].filter((r,i,a)=>a.findIndex(x=>JSON.stringify(x.config)===JSON.stringify(r.config))===i).slice(0,3);
+ for(const seed of parents){const lead=leadOf(seed);for(const idle of waits(seed)){
+  if(calls>=budget)break;const old=seed.config.actors[idle.actor],providers=[clone(old)],add=a=>providers.push(a),owned=(id,slot)=>stock.get(master.items.find(i=>i.slot===slot&&(i.id===id||i.name===Catalog9.hearts.find(h=>h.id===id)?.name))?.id)||0;
+  if(old.actualAttack==null&&old.actualMagic==null){
+   for(const h of Catalog9.hearts.filter(h=>owned(h.id,'heart')&&(h.skills||[]).some(id=>support(skill(id)||{}))))for(let slot=0;slot<4;slot++){const a=clone(old);a.hearts=Array.from({length:4},(_,i)=>a.hearts?.[i]||'');a.hearts[slot]=h.id;add(a);}
+   for(const row of pools[old.member]||[])if(SequenceEngine.available(row.actor).some(support))add(clone(row.actor));
+   for(const w of Catalog9.weapons.filter(w=>w.skills.some(id=>support(skill(id)||{}))))for(const lb of [0,4])if(stock.get(master.items.find(i=>i.slot==='weapon'&&i.name===w.name&&(i.limitBreak||0)===lb)?.id)>0){const a={...clone(old),weapon:w.id,limitBreak:lb,left:'',inherit:'',inheritLevel:0,favored:!!master.jobs.find(j=>j.id===old.job)?.favoredTypes?.includes(w.type)};add(a);}
+   for(const g of master.items.filter(g=>g.slot==='shield'&&(stock.get(g.id)||0)>0&&(g.skills||[]).some(id=>skill(id)?.kind==='overdrive'))){if(old.left)continue;const a=clone(old);const index=a.armors.findIndex(id=>master.items.find(g=>g.id===id)?.slot==='shield');if(index>=0)a.armors[index]=g.id;else a.armors.push(g.id);add(a);}
+  }
+  const unique=[...new Map(providers.map(a=>[JSON.stringify(a),a])).values()];
+  for(const actor of unique){if(calls>=budget)break;const cfg=clone(seed.config);cfg.actors[idle.actor]=actor;const changed=[0,1,2,3].filter(i=>i!==lead&&i!==idle.actor&&cfg.actors[i].actualAttack==null&&cfg.actors[i].actualMagic==null).concat(idle.actor);try{if(!SupportLoadouts25.fit(cfg,changed,master,profile))continue;}catch{continue;}
+   if(cfg.actors.some((a,i)=>cfg.actions.some(action=>action.actor===i&&!SequenceEngine.available(a).some(k=>k.id===action.skill))))continue;
+   const targets=[...new Set([lead,...seed.steps.filter(s=>s.damage&&(s.turn>idle.turn||s.order>idle.order)).map(s=>s.actor)])],skills=SequenceEngine.available(actor).filter(k=>support(k)||k.kind==='overdrive');
+   for(const k of skills)for(const target of external.has(k.kind)&&!['extendBuff','domain','rondo'].includes(k.kind)?targets:[lead]){
+    if(calls>=budget)break;if(k.kind==='jobPrayer'&&cfg.actors[target].job!=='job-1')continue;
+    const parts=SupportLoadouts25.chunks(cfg.actions),i=parts.findIndex(c=>c[0].actor===idle.actor&&c[0].turn===idle.turn);if(i<0)continue;
+    if(k.maxUses===1)for(const c of parts)if(c[0].actor===idle.actor&&c[0].skill===k.id)c.splice(0,c.length,{actor:idle.actor,turn:c[0].turn,skill:'wait',target:idle.actor});
+    const options=k.kind==='overdrive'?skills.filter(x=>support(x)&&x.kind!=='overdrive'):[k];
+    for(const follow of options){const p=clone(parts);if(k.kind==='overdrive'&&follow.maxUses===1)for(const c of p)if(c[0].actor===idle.actor&&c[0].skill===follow.id)c.splice(0,c.length,{actor:idle.actor,turn:c[0].turn,skill:'wait',target:idle.actor});p[i]=[{actor:idle.actor,turn:idle.turn,skill:k.id,target}];if(k.kind==='overdrive')p[i].push({actor:idle.actor,turn:idle.turn,skill:follow.id,target});attempt({...cfg,actions:p.flat()});
+     const anchor=p.find(c=>c[0].actor===target&&c[0].turn===idle.turn);if(anchor&&anchor!==p[i]&&(k.kind==='rondo'||k.nextBuff==='phoenix'||follow.kind==='rondo'||follow.nextBuff==='phoenix'))attempt(insert(cfg,p,i,anchor));
+     if(calls>=budget)break;
+    }
+   }
+  }
+ }}
+ best.supportCompletion={calls,beforeWaits:waits(original).length,afterWaits:waits(best).length};
+ return {calls,valid,improvements,beforeDamage:original.damage,afterDamage:best.damage,beforeWaits:waits(original).length,afterWaits:waits(best).length};
+}
+root.DamageGoalSearch={search,repair,complete};
 })(typeof window==='undefined'?globalThis:window);
+
 
 
 

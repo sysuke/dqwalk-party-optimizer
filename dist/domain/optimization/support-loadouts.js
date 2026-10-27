@@ -73,6 +73,7 @@ function search(seeds,pools,master,profile,settings,evaluate,budget=768){
        else if(row.supportKind==='jobPrayer'){if(base.actors[lead].job!=='job-1')continue;part=[{actor,turn,skill:turn===1?'dharma-prayer':'wait',target:lead}];}
        else if(row.supportKind==='domain')part=[{actor,turn,skill:turn===1?'new-world':'wait',target:actor}];
        else if(row.supportKind==='extendBuff')part=[{actor,turn,skill:turn===settings.turns?'time-interference':'wait',target:actor}];
+       else if(row.supportKind==='nextBuff')part=[{actor,turn,skill:available.find(k=>k.nextBuff==='phoenix').id,target:lead}];
        else if(row.supportKind==='rondo')part=[{actor,turn,skill:buffFirst&&turn===1&&buff?buff.id:available.find(k=>k.kind==='rondo').id,target:lead}];
        else part=[{actor,turn,skill:row.bestSkill||'wait',target:actor}];
        const i=plan.findIndex(c=>c[0].actor===actor&&c[0].turn===turn);if(i>=0)plan[i]=part;
@@ -83,7 +84,7 @@ function search(seeds,pools,master,profile,settings,evaluate,budget=768){
       const key=JSON.stringify(config);if(seen.has(key))continue;seen.add(key);calls++;const result=evaluate(config);if(result?.resourceOK)valid++;
       // Rondo buffs the next actor, not its target field. Compare its complete
       // setup-and-hit sequence even when the natural order inserts a third actor.
-      for(const {actor,row}of set.filter(x=>x.row.supportKind==='rondo')){if(calls>=budget)break;const adjacent=[];for(let t=1;t<=settings.turns;t++){const turnPlan=plan.filter(c=>c[0].turn===t),support=turnPlan.find(c=>c[0].actor===actor);for(const chunk of turnPlan){if(chunk===support)continue;if(chunk[0].actor===lead&&support)adjacent.push(support);adjacent.push(chunk);}}const cfg={...base,actions:adjacent.flat()},key2=JSON.stringify(cfg);if(seen.has(key2))continue;seen.add(key2);calls++;const improved=evaluate(cfg);if(improved?.resourceOK)valid++;}
+      for(const {actor,row}of set.filter(x=>['rondo','nextBuff'].includes(x.row.supportKind))){if(calls>=budget)break;const adjacent=[];for(let t=1;t<=settings.turns;t++){const turnPlan=plan.filter(c=>c[0].turn===t),support=turnPlan.find(c=>c[0].actor===actor);for(const chunk of turnPlan){if(chunk===support)continue;if(chunk[0].actor===lead&&support)adjacent.push(support);adjacent.push(chunk);}}const cfg={...base,actions:adjacent.flat()},key2=JSON.stringify(cfg);if(seen.has(key2))continue;seen.add(key2);calls++;const improved=evaluate(cfg);if(improved?.resourceOK)valid++;}
      }
     }catch{/* Invalid loadouts and unsupported follow-ups are not candidates. */}
    }
@@ -93,3 +94,4 @@ function search(seeds,pools,master,profile,settings,evaluate,budget=768){
 }
 root.SupportLoadouts25={search,fit,chunks,feasibleTeams};
 })(typeof window==='undefined'?globalThis:window);
+
