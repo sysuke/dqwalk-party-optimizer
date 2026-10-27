@@ -11,8 +11,8 @@ test('a normalized collision stays ambiguous rather than taking the first row',(
  A.equal(resolve([{id:'a',name:'はぐメタ'},{id:'b',name:'はぐめた'}],'はぐめた').status,'ambiguous');
 });
 const report=audit();
-test('all four reported loadouts resolve except the unconfirmed Estark variant',()=>{
- A.equal(report.cases.length,4);for(const row of report.cases){A.deepEqual(row.unresolvedCatalogue,[{name:'地獄の帝王エスターク',status:'variant-unconfirmed'}]);A(row.status.startsWith('not-comparable'));A(row.missingIndependentInputs.length>0);}
+test('all four reported loadouts resolve after the user confirms awakened Estark',()=>{
+ A.equal(report.cases.length,4);for(const row of report.cases){A.deepEqual(row.unresolvedCatalogue,[]);A(row.coverage.hearts.some(h=>h.matches.some(m=>m.id==='estark')));A(row.status.startsWith('not-comparable'));A(row.missingIndependentInputs.length>0);}
  A.equal(report.cases[0].coverage.equipment.find(x=>x.name==='ほしふるうでわ').matches[0].id,'meteor-bracelet');
 });
 test('likely transcendent domain remains a qualified followup instead of a confirmed replacement',()=>{

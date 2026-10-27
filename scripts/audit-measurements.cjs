@@ -26,4 +26,4 @@ function audit(){const c=load(),catalog=c.Catalog9,items=c.PlannerData.real.item
  return {cases:report,warning:'Coverage does not validate ranks, heart slots, buffs, resistances or the damage formula. No observation is fitted into a coefficient.'};
 }
 if(require.main===module)console.log(JSON.stringify(audit(),null,2));
-module.exports={audit,resolve,normalize};
+module.exports={audit,resolve,normalize,load};

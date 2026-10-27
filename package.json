@@ -9,6 +9,7 @@
     "sync:entrypoints": "node scripts/sync-entrypoints.cjs --write",
     "start": "node scripts/serve.cjs",
     "dev": "node scripts/serve.cjs",
+    "diagnose:measurements": "node scripts/measured-corrections.cjs",
     "audit:measurements": "node scripts/audit-measurements.cjs",
     "audit:data": "node scripts/catalog-audit.cjs",
     "check:pages": "node scripts/check-pages.cjs"
