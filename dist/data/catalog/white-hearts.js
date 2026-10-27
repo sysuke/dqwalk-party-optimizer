@@ -11,6 +11,8 @@
     const {values,...record}=row;
     const h={...record,stats:Object.fromEntries(keys.map((key,i)=>[key,values[i]])),family:'phantom-dragon',cost:167,costBonus:4,checked,source,sources:[source,'https://game8.jp/dqwalk/832739','https://9db.jp/dqwalk/data/20139'],skills:[],effects:['最大コスト+4','ターン開始MP'+row.recovery.mp+'回復'],unmodeled:['追い覚醒・プラ魂・ウラ魂の追加値は含まない。','回復技のHP回復効果は未対応。']};
     C.hearts.push(h);m.items.push({...h,slot:'heart',ready:false,verifiedModel:true,skillIds:[],verified:['S/覚醒の8能力・コスト・攻撃補正・固定MP回復を照合。'],assumptions:h.unmodeled});
+    // Retain the saved bootstrap ID, but never leave its old stats/family active.
+    if(row.id==='phantom-dragon'){const legacy=m.items.find(item=>item.id==='heart-1');if(legacy)Object.assign(legacy,h,{id:legacy.id,verifiedModel:true,assumptions:h.unmodeled,verified:['通常Sの詳細カタログと同期。旧IDは所持データ互換のため維持。']});}
   }
   const previous=root.PlannerData.profile;
   root.PlannerData.profile=function(master){const p=previous(master);if(master===m)for(const item of p.inventory)if(hearts.some(h=>h.id===item.id))item.count=1;return p;};

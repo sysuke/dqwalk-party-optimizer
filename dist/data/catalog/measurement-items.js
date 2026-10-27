@@ -24,6 +24,10 @@ if(!m.items.some(x=>x.name===legs.name&&!(x.limitBreak||0)))m.items.push(legs);
 // Inheritance metadata is independent of the main weapon's active mechanics.
 C.weapons.push({id:'tougenkyo',name:'大太刀・桃源郷',type:'両手剣',stats0:{attack:187},stats4:{attack:244},twoHand0:93,twoHand4:122,favored:{attack:12},bonuses:[{group:'race',race:'ゾンビ系',value:.05},{group:'race',race:'物質系',value:.05}],twoHandBonuses:[{group:'general',type:'斬撃',value:.03},{group:'element',value:.03}],limitBonus:.28,skills:['tougen-strike'],initial:[],inherit:{skill:'tougen-strike',favoredAttack4:12,physical10:.07},source:'https://9db.jp/dqwalk/data/17980',unmodeled:['主武器としての陶酔・開幕属性補助・挑戦スキルは未対応。継承効果の検証用。']});
 C.skills.push({id:'tougen-strike',name:'天上天下討鬼斬',kind:'unsupported',mp:61,source:'https://9db.jp/dqwalk/data/17980',note:'陶酔による倍率・属性耐性・延長の手順再現は未対応。継承の能力値・特殊効果のみ対応。'});
+// 2026-10-27: replace the bootstrap green placeholder with the published S heart.
+const sandy={id:'sandy',name:'サンディとアギロ',family:'sandy',color:'黄+紫',rank:'S',cost:171,costBonus:4,stats:{hp:158,mp:72,attack:36,defense:117,magic:131,heal:52,speed:50,dex:50},bonuses:[...['斬撃','体技','呪文'].map(type=>({group:'general',type,value:.07})),...['バギ','デイン'].map(element=>({group:'element',element,value:.07}))],skills:[],effects:['最大コスト+4','プチおうえん（未対応）','スキルHP回復効果+7%（未対応）'],source:'https://game8.jp/dqwalk/815712',sources:['https://game8.jp/dqwalk/815712','https://gamewith.jp/dq-walk/article/show/576835'],checked:'2026-10-27',unmodeled:['プチおうえんの対象・持続・重複関係は未接続。通常のおうえんとして代用しない。','回復効果7%は回復計算へ未接続。']};
+C.hearts.push(sandy);
+Object.assign(m.items.find(x=>x.id==='sandy'),sandy,{verifiedModel:true,verified:['S全8能力・黄紫・コスト171・常時の斬体呪文/属性補正を再照合。'],assumptions:sandy.unmodeled});
 const originalProfile=root.PlannerData.profile;
 root.PlannerData.profile=function(master){const p=originalProfile(master);if(master===m&&!p.inventory.some(x=>x.id===pearl.id))p.inventory.push({id:pearl.id,count:2});return p;};
 })(typeof window==='undefined'?globalThis:window);

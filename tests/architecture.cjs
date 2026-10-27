@@ -11,6 +11,7 @@ test('HTML and all workers match the declared dependency order', () => {
   require('../scripts/sync-entrypoints.cjs').sync();
 });
 test('Active entrypoints cannot load the legacy calculation path', () => {
+  assert(!fs.existsSync(path.join(dist, 'legacy')), 'Historical fixtures must not be deployed');
   for (const file of [...browser, ...Object.values(workers).flat()]) {
     assert(!file.startsWith('legacy/'), file);
     assert(fs.statSync(path.join(dist, file)).isFile(), file);
