@@ -28,6 +28,7 @@ importScripts(
   '../data/catalog/support-tools.js',
   '../data/catalog/mana-skills.js',
   '../data/catalog/mage-tools.js',
+  '../data/catalog/physical-equipment.js',
   '../data/catalog/measurement-items.js',
   '../domain/battle/buff-state.js',
   '../domain/battle/proc-probability.js',

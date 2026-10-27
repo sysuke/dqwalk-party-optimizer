@@ -1,8 +1,9 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path');
-const {load,resolve}=require('./audit-measurements.cjs');
+const {resolve}=require('./audit-measurements.cjs');
+const {loadRuntime}=require('./runtime.cjs');
 function report(){
- const c=load(),master=c.PlannerData.real,catalog=c.Catalog9;
+ const c=loadRuntime(),master=c.PlannerData.real,catalog=c.Catalog9;
  const cases=fs.readdirSync(path.resolve(__dirname,'../tests/fixtures/measured')).filter(f=>f.endsWith('.json')).map(f=>JSON.parse(fs.readFileSync(path.resolve(__dirname,'../tests/fixtures/measured',f),'utf8')));
  return cases.filter(row=>row.actor.job==='魔人'&&row.actor.confirmedHeartPath).map(row=>{
   const profile=c.PlannerData.profile(master);profile.characters[0].levels['job-8']=row.actor.level;

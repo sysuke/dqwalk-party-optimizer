@@ -1,10 +1,8 @@
 'use strict';
 // Inspect the final loaded catalogue, not superseded bootstrap records.
-const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const {loadRuntime}=require('./runtime.cjs');
 function audit(){
-  const context=vm.createContext({console});context.window=context;
-  for(const file of require('./entrypoints.cjs').browser.filter(f=>f.startsWith('data/')||f.startsWith('domain/')))
-    vm.runInContext(fs.readFileSync(path.resolve(__dirname,'../dist',file),'utf8'),context,{filename:file});
+  const context=loadRuntime();
   const master=context.PlannerData.real,catalog=context.Catalog9;
   const concerns=row=>[...new Set([...(row.assumptions||[]),...(row.unmodeled||[])])];
   const review=rows=>rows.map(row=>({id:row.id,name:row.name,source:row.source,checked:row.checked||null,stats:row.stats,color:row.color,cost:row.cost,bonuses:row.bonuses,

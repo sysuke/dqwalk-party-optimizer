@@ -31,3 +31,5 @@
 配信対象のdist/legacyを削除。参照のないapp.js、engine.js、battle.js、battle-engine.jsはGit履歴から復元できる。sequence-engineはtests/fixtures/sequence-v8.jsへ移動し、17件の旧仕様回帰テストのためだけに保持する。現行版はdomain/battle/sequence-engine.jsを使う。
 
 保存キー、所持品ID、公開範囲は維持。旧試作という名前だけを理由に、使用中の現行機能やテストを削除しない。
+
+0.53追補：世界樹の鎧下【滅】・ユグノアのかぶと・カミュのズボンの守備力を出典照合して補完済み。カミュのローブは未収録を維持。[今回の調査](CLEANUP-0.53.md)。冒頭の件数は0.49当時の監査スナップショット。

@@ -17,6 +17,12 @@ test('Active entrypoints cannot load the legacy calculation path', () => {
     assert(fs.statSync(path.join(dist, file)).isFile(), file);
   }
 });
+test('Every deployed JavaScript file has a declared browser or worker consumer',()=>{
+  function files(directory){return fs.readdirSync(directory,{withFileTypes:true}).flatMap(entry=>entry.isDirectory()?files(path.join(directory,entry.name)):[path.join(directory,entry.name)]);}
+  const actual=files(dist).filter(file=>file.endsWith('.js')).map(file=>path.relative(dist,file).replace(/\\/g,'/')).sort();
+  const declared=[...new Set([...browser,...Object.keys(workers),...Object.values(workers).flat()])].sort();
+  assert.deepEqual(actual,declared,'Remove orphan code or declare its active consumer');
+});
 test('Every UI worker URL resolves from the document root', () => {
   const referenced = new Set();
   for (const file of browser.filter(file => file.startsWith('ui/'))) {
