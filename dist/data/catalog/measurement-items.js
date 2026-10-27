@@ -28,6 +28,12 @@ C.skills.push({id:'tougen-strike',name:'天上天下討鬼斬',kind:'unsupported
 const sandy={id:'sandy',name:'サンディとアギロ',family:'sandy',color:'黄+紫',rank:'S',cost:171,costBonus:4,stats:{hp:158,mp:72,attack:36,defense:117,magic:131,heal:52,speed:50,dex:50},bonuses:[...['斬撃','体技','呪文'].map(type=>({group:'general',type,value:.07})),...['バギ','デイン'].map(element=>({group:'element',element,value:.07}))],skills:[],effects:['最大コスト+4','プチおうえん（未対応）','スキルHP回復効果+7%（未対応）'],source:'https://game8.jp/dqwalk/815712',sources:['https://game8.jp/dqwalk/815712','https://gamewith.jp/dq-walk/article/show/576835'],checked:'2026-10-27',unmodeled:['プチおうえんの対象・持続・重複関係は未接続。通常のおうえんとして代用しない。','回復効果7%は回復計算へ未接続。']};
 C.hearts.push(sandy);
 Object.assign(m.items.find(x=>x.id==='sandy'),sandy,{verifiedModel:true,verified:['S全8能力・黄紫・コスト171・常時の斬体呪文/属性補正を再照合。'],assumptions:sandy.unmodeled});
+const measuredAccessories=[
+ {id:'hagumeta-charm',name:'はぐメタのお守り',stats:{mp:8,speed:16},bonuses:[],source:'https://game8.jp/dqwalk/366728',assumptions:['イオ属性耐性5%は被ダメージ計算へ未接続。火力ボーナスはない。']},
+ {id:'slalike-medal-plus',name:'スラいいね！の勲章＋',stats:{speed:25},bonuses:[{group:'general',type:'体技',value:.05},{group:'general',type:'呪文',value:.03}],source:'https://gamewith.jp/dq-walk/article/show/396459',assumptions:['眠り耐性10%は生存計算へ未接続。斬撃に体技5%を加算しない。']},
+ {id:'battlemaster-book',name:'バトルマスターの極意書',stats:{},bonuses:[],source:'https://game8.jp/dqwalk/638541',assumptions:['バトマス専用会心率4%。特級職への適用対応の確認待ち。全職への常時4%を仮定せず、確定超会心の威力には加算しない。']}
+];
+for(const accessory of measuredAccessories)m.items.push({...accessory,slot:'accessory',verifiedModel:true,ready:false,skillIds:[],checked:'2026-10-27',verified:['掲載された能力・特殊効果を照合。未接続分は注記。']});
 const originalProfile=root.PlannerData.profile;
 root.PlannerData.profile=function(master){const p=originalProfile(master);if(master===m&&!p.inventory.some(x=>x.id===pearl.id))p.inventory.push({id:pearl.id,count:2});return p;};
 })(typeof window==='undefined'?globalThis:window);
