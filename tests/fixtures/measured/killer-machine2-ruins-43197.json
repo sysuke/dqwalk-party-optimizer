@@ -10,7 +10,22 @@
       "凍結Lv1",
       "不運【呪文】"
     ],
-    "countAtAttack": 1
+    "countAtAttack": 1,
+    "researchEvidence": [
+      {
+        "source": "https://9db.jp/dqwalk/data/8573",
+        "checkedOn": "2026-10-27",
+        "scope": "古代の遺跡・キラーマシン2・遺跡の力強化4段階",
+        "reportedDamageTakenReductionPercent": 80,
+        "reportedAppliesTo": [
+          "物理",
+          "呪文",
+          "ブレス"
+        ],
+        "status": "secondary-source-reported-not-integrated",
+        "limits": "種類耐性・属性耐性・守備上昇への置換はしない。凍結との合成順・丸めは未確定。実測値から逆算していない。"
+      }
+    ]
   },
   "actor": {
     "job": "魔人",

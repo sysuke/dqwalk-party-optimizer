@@ -5,8 +5,8 @@ function audit(){
   const context=loadRuntime();
   const master=context.PlannerData.real,catalog=context.Catalog9;
   const concerns=row=>[...new Set([...(row.assumptions||[]),...(row.unmodeled||[])])];
-  const review=rows=>rows.map(row=>({id:row.id,name:row.name,source:row.source,checked:row.checked||null,stats:row.stats,color:row.color,cost:row.cost,bonuses:row.bonuses,
-    needsReview:concerns(row),placeholderNotes:concerns(row).filter(s=>/仮値|仮置|未確認|仮の|推定|は仮|仮。/.test(s))}));
+  const review=rows=>rows.map(row=>({id:row.id,name:row.name,source:row.source,checked:row.checked||null,costSource:row.costSource,costChecked:row.costChecked,stats:row.stats,color:row.color,cost:row.cost,bonuses:row.bonuses,
+    needsReview:concerns(row),missingDataNotes:concerns(row).filter(s=>/未収録|未対応|未接続|未反映|確認待ち/.test(s)),placeholderNotes:concerns(row).filter(s=>/仮値|仮置|未確認|仮の|推定|は仮|仮。/.test(s))}));
   const issues=[];
   for(const [kind,rows] of [['items',master.items],['weapons',catalog.weapons],['hearts',catalog.hearts],['skills',catalog.skills]]){
     const seen=new Set();for(const row of rows){if(seen.has(row.id))issues.push(kind+': duplicate '+row.id);seen.add(row.id);}

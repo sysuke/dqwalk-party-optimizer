@@ -13,4 +13,16 @@ test('所持装備の速度調整で順序を改善し、元の編成を保持',
 test('未所持品とMP不足の候補を採用しない',()=>{const t=toy(),seed=t.evaluate(t.config);t.p.inventory[0].count=0;A.equal(t.d.SpeedTuner26.tune(seed,t.m,t.p,t.settings,t.evaluate,8).result.orderOK,false);t.p.inventory[0].count=1;A.equal(t.d.SpeedTuner26.tune(seed,t.m,t.p,t.settings,q=>({...t.evaluate(q),resourceOK:false}),8).result.orderOK,false);});
 test('4人の丸め・複数辺・先制条件を含む全数探索と一致',()=>{let seed=260026;const random=n=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return (seed>>>0)%n;};const factors=[.4,.8,1,1.2,1.4],ratios=[1,1.2,1.5];for(let k=0;k<160;k++){const edges=Array.from({length:1+random(7)},()=>{const a=random(4);return edge(a,(a+1+random(3))%4,factors[random(5)],factors[random(5)],ratios[random(3)]);}),floors=k%3?[{actor:random(4),factor:factors[random(5)],speed:random(7)+.1}]:[];let brute=false;for(let a=1;a<=5;a++)for(let b=1;b<=5;b++)for(let d=1;d<=5;d++)for(let e=1;e<=5;e++){const speeds=[a,b,d,e];if(edges.every(x=>Math.floor(speeds[x.first]*x.firstFactor)>Math.floor(speeds[x.second]*x.secondFactor)*x.ratio)&&floors.every(x=>Math.floor(speeds[x.actor]*x.factor)>x.speed))brute=true;}A.equal(!!c.SpeedTuner26.propagate(edges,floors,[1,1,1,1],5),brute,'system '+k);}});
 test('実収録装備の調整で速度比1の固定手順を成立させる',()=>{const m=c.PlannerData.real,p=c.PlannerData.profile(m),config=JSON.parse(JSON.stringify(fixture.config)),settings={...fixture.settings,hp:1e8,ratio:1,turns:1};config.actions=[3,0,2,1].map(actor=>({actor,turn:1,skill:'wait'}));const seed=c.PartyBattle.simulate(config,m,p,settings),r=c.SpeedTuner26.tune(seed,m,p,settings,q=>{try{return c.PartyBattle.simulate(q,m,p,settings);}catch{return null;}},48);A(!seed.orderOK);A(r.result.orderOK);A(r.calls<=48);A.equal(c.PartyBattle.inventory(r.result.config,m,p).issues.length,0);A.equal(c.PartyBattle.simulate(r.result.config,m,p,settings).orderOK,true);});
+test('所持1個の速度装備を討伐条件を保って同時交換し小規模全列挙と一致',()=>{
+ const t=toy();t.config.actors[1].armors=['','fast'];
+ const evaluate=q=>{const r=t.evaluate(q);r.killed=q.actors.some(a=>(a.armors||[]).includes('fast'));return r;};
+ const seed=evaluate(t.config),before=JSON.stringify(seed),possible=[];
+ for(let owner=-1;owner<4;owner++){const q=JSON.parse(JSON.stringify(t.config));q.actors.forEach((a,i)=>a.armors=['',i===owner?'fast':'']);const r=evaluate(q);if(!t.d.PartyBattle.inventory(q,t.m,t.p).issues.length&&r.killed&&r.orderOK)possible.push(r);}
+ A.equal(possible.length,1);const tuned=t.d.SpeedTuner26.tune(seed,t.m,t.p,t.settings,evaluate,8);
+ A(tuned.result.killed);A(tuned.result.orderOK);A.equal(tuned.result.damage,possible[0].damage);A(tuned.calls<=8);
+ A.equal(tuned.result.config.actors[0].armors[1],'fast');A.equal(tuned.result.config.actors[1].armors[1],'');
+ A.equal(t.d.PartyBattle.inventory(tuned.result.config,t.m,t.p).issues.length,0);A.equal(JSON.stringify(seed),before);
+ const blocked=t.d.SpeedTuner26.tune(seed,t.m,t.p,t.settings,q=>({...evaluate(q),resourceOK:false}),8);A.equal(blocked.result,seed);
+ A.equal(t.d.SpeedTuner26.tune(seed,t.m,t.p,t.settings,evaluate,0).calls,0);
+});
 console.log(n+' speed checks passed');

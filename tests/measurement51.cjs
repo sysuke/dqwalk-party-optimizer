@@ -22,3 +22,14 @@ test('measurement snapshot preserves equipment and hearts even if the live build
  const q=setup(),r=c.SequenceEngine.simulate(q,m,p),record=M.create({result:r,configuration:q,profile:p,order:4,observations:[r.logs[3].damage.min],kind:'measured'}),saved=clone(record.predicted.equipment);
  r.builds[3].parts.length=0;A.deepEqual(JSON.parse(JSON.stringify(record.predicted.equipment)),saved);A(record.predicted.equipment.some(x=>x.label.includes('祖竜')));
 });
+test('measurement UI displays the combined damage-taken factor without multiplying its components again',()=>{
+ const q=setup(),r=c.SequenceEngine.simulate(q,m,p);
+ const record=M.create({result:r,configuration:q,profile:p,order:4,observations:[r.logs[3].damage.min],kind:'measured'});
+ record.predicted.params.freezeLevel=1;record.predicted.params.typeDebuff=20;
+ c.localStorage={getItem:()=>JSON.stringify([record])};
+ const nodes={},node=s=>nodes[s]||(nodes[s]={innerHTML:'',querySelector:node,querySelectorAll:()=>[]});
+ c.MeasurementUI36.mount({target:node('target'),result:r,configuration:q,profile:p,master:m});
+ const html=node('#measure-records').innerHTML;
+ A(html.includes('凍結＋斬体被ダメージ補正（合成） ×1.3'));
+ A(!html.includes('凍結 ×1.1'));A(!html.includes('被ダメージ増加 ×1.2'));A(!html.includes('damageTakenGroup'));
+});

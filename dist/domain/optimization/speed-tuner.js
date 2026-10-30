@@ -16,11 +16,25 @@ function tune(seed,master,profile,settings,evaluate,budget=128){
  const better=(a,b)=>{const ga=gap(a,settings),gb=gap(b,settings);return ga.count-gb.count||ga.total-gb.total||b.damage-a.damage;};
  for(let round=0;round<6&&calls<budget;round++){
   const before=current,candidates=[],actors=new Set(current.orderChecks.filter(x=>!x.certain).flatMap(x=>[x.first,x.second]));if(!actors.size&&settings.enemySpeedMax!=null)current.builds.forEach((_,i)=>actors.add(i));
+  // Transfer scarce equipment atomically: removing it first can lose a kill,
+  // while equipping the recipient first can exceed shared inventory.
+  const consider=(config,changed,family)=>{
+   const key=JSON.stringify(config.actors);if(seen.has(key))return;seen.add(key);
+   try{if(PartyBattle.inventory(config,master,profile).issues.length)return;
+    const builds=[...current.builds];for(const actor of changed){const b=SequenceEngine.build(config.actors[actor],master,profile,settings);if(b.stats.hp<settings.minHP||b.stats.speed<settings.minSpeed||settings.costLimit!=null&&b.cost>settings.costLimit)return;builds[actor]=b;}
+    const proxy={...current,builds};if(better(proxy,current)<0)candidates.push({config,proxy,family});
+   }catch{}
+  };
   for(const actor of actors)for(const field of ['hearts','armors'])for(let slot=0;slot<(field==='hearts'?4:8);slot++){
    const ids=['',...(field==='hearts'?hearts.map(h=>h.id):gear.filter(g=>g.slot===slots[slot]).map(g=>g.id))];
-   for(const id of ids){if((current.config.actors[actor][field]?.[slot]||'')===id)continue;const config=clone(current.config);config.actors[actor][field]=Array.from({length:field==='hearts'?4:8},(_,i)=>config.actors[actor][field]?.[i]||'');config.actors[actor][field][slot]=id;const key=JSON.stringify(config.actors);if(seen.has(key))continue;seen.add(key);
-    try{if(PartyBattle.inventory(config,master,profile).issues.length)continue;const b=SequenceEngine.build(config.actors[actor],master,profile,settings);if(b.stats.hp<settings.minHP||b.stats.speed<settings.minSpeed||settings.costLimit!=null&&b.cost>settings.costLimit)continue;const builds=[...current.builds];builds[actor]=b;const proxy={...current,builds};if(better(proxy,current)>=0)continue;candidates.push({config,proxy,family:actor+':'+field+':'+slot});}catch{}
+   for(const id of ids){if((current.config.actors[actor][field]?.[slot]||'')===id)continue;const config=clone(current.config);config.actors[actor][field]=Array.from({length:field==='hearts'?4:8},(_,i)=>config.actors[actor][field]?.[i]||'');config.actors[actor][field][slot]=id;consider(config,[actor],actor+':'+field+':'+slot);
    }
+  }
+  for(const actor of actors)for(let other=0;other<current.config.actors.length;other++)if(other!==actor)for(const field of ['hearts','armors'])for(let slot=0;slot<(field==='hearts'?4:8);slot++){
+   const first=current.config.actors[actor][field]?.[slot]||'',second=current.config.actors[other][field]?.[slot]||'';if(first===second)continue;
+   const config=clone(current.config);for(const index of [actor,other])config.actors[index][field]=Array.from({length:field==='hearts'?4:8},(_,i)=>config.actors[index][field]?.[i]||'');
+   config.actors[actor][field][slot]=second;config.actors[other][field][slot]=first;
+   consider(config,[actor,other],'swap:'+actor+':'+other+':'+field+':'+slot);
   }
   const sorted=candidates.sort((a,b)=>better(a.proxy,b.proxy)),families=new Set(),diverse=[];for(const row of sorted)if(!families.has(row.family)){families.add(row.family);diverse.push(row);}for(const row of sorted)if(!diverse.includes(row))diverse.push(row);
   for(const row of diverse.slice(0,24)){if(calls>=budget)break;calls++;let r;try{r=evaluate(row.config);}catch{continue;}if(r?.resourceOK&&(!seed.killed||r.killed)&&better(r,current)<0)current=r;}

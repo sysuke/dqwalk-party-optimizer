@@ -5,11 +5,12 @@ m.revision=4;m.quickStart=true;m.name='ドラクエウォーク・概算';
 m.assumptions=['職業の基礎能力はLv80の仮値を基準に線形補間。永続効果・こころ道・熟練度・心珠は未反映。','通常・会心・超会心・暴走・超暴走・領域・テンション・継承・追撃等を完全再現していない。','攻撃・回復・補助の式や上限、敵の行動と速度には仮値がある。仮定条件での参考計算で、確定討伐や実際の先制を保証しない。'];
 const weaponSource='https://game8.jp/dqwalk/292422',heartSource='https://game8.jp/dqwalk/500917';
 const stats=(hp,mp,attack,defense,magic,heal,speed)=>({hp,mp,attack,defense,magic,heal,speed});
-const costMap={50:532,55:546,60:565,65:581,70:592,75:620,80:643,85:673,90:700,95:730};
-function cost(lv){const keys=Object.keys(costMap).map(Number);if(lv<50)return Math.round(150+lv*7.64);const low=keys.filter(k=>k<=lv).at(-1),hi=keys.find(k=>k>=lv);return low===hi?costMap[low]:Math.floor(costMap[low]+(costMap[hi]-costMap[low])*(lv-low)/(hi-low));}
+// Published special-job base cost for every level; no interpolation.
+const costMap={"1":259,"2":264,"3":270,"4":275,"5":280,"6":284,"7":292,"8":296,"9":304,"10":308,"11":314,"12":318,"13":324,"14":328,"15":334,"16":338,"17":344,"18":348,"19":354,"20":358,"21":364,"22":368,"23":374,"24":378,"25":384,"26":390,"27":395,"28":401,"29":406,"30":412,"31":418,"32":423,"33":429,"34":434,"35":440,"36":446,"37":452,"38":458,"39":464,"40":470,"41":476,"42":482,"43":488,"44":494,"45":500,"46":506,"47":513,"48":519,"49":526,"50":532,"51":535,"52":538,"53":541,"54":544,"55":546,"56":550,"57":554,"58":558,"59":562,"60":565,"61":569,"62":572,"63":575,"64":578,"65":581,"66":583,"67":585,"68":588,"69":590,"70":592,"71":598,"72":603,"73":609,"74":614,"75":620,"76":625,"77":629,"78":634,"79":638,"80":643,"81":649,"82":655,"83":661,"84":667,"85":673,"86":678,"87":683,"88":689,"89":694,"90":700,"91":706,"92":712,"93":718,"94":724,"95":730};
+function cost(lv){return costMap[lv];}
 const base=[stats(720,300,430,420,100,100,480),stats(520,550,170,280,650,220,580),stats(580,530,200,340,350,620,460),stats(650,350,380,340,160,160,760),stats(650,400,430,320,480,150,500),stats(850,350,340,540,160,220,400),stats(780,330,460,390,180,130,520),stats(610,480,260,330,500,480,510),stats(760,330,480,400,180,140,540),stats(680,430,420,370,300,200,610),stats(640,450,400,350,520,200,620)];
 const slots=[['虹','赤+黄','赤','黄'],['虹','紫','紫','黄+紫'],['虹','緑','緑','青+緑'],['虹','赤+青','青','青'],['虹','赤+紫','赤','紫'],['虹','黄','黄','緑'],['虹','赤+黄','青','黄'],['虹','紫+緑','紫','緑'],['虹','赤','黄','青'],['虹','赤+青','紫','青'],['虹','赤+紫','紫','青']];
-m.jobs=m.jobs.map((j,i)=>({...j,slots:slots[i],levels:Object.fromEntries(Array.from({length:95},(_,n)=>{const lv=n+1;return [lv,{cost:cost(lv),stats:Object.fromEntries(Object.entries(base[i]).map(([k,v])=>[k,Math.max(1,Math.round(v*(.35+.65*lv/80)))]))}];})),skillIds:i===5?['ouen']:[],assumptions:['基礎能力・一部の枠色・職業補正は仮。レベル50〜95の5刻みコストのみ参照値、間は補間。'],source:'https://9db.jp/dqwalk/data/1426'}));
+m.jobs=m.jobs.map((j,i)=>({...j,slots:slots[i],levels:Object.fromEntries(Array.from({length:95},(_,n)=>{const lv=n+1;return [lv,{cost:cost(lv),stats:Object.fromEntries(Object.entries(base[i]).map(([k,v])=>[k,Math.max(1,Math.round(v*(.35+.65*lv/80)))]))}];})),skillIds:i===5?['ouen']:[],costSource:'https://9db.jp/dqwalk/data/1426',costChecked:'2026-10-29',assumptions:['基礎能力・一部の枠色・職業補正は仮。こころ基本コストはLv1〜95の掲載値。'],source:'https://9db.jp/dqwalk/data/1426'}));
 m.skills=[];
 const physical=(id,name,type,elements,multiplier,target,mp,source,extra={})=>{const ids=[];for(const element of elements){const key=id+'-'+element;ids.push(key);m.skills.push({id:key,name:name+(elements.length>1?'（'+element+'）':''),kind:'damage',type,element,target,mp,accuracy:1,ready:true,formula:{kind:'physical',multiplier,randomMin:.95,randomMax:1.05,...extra},source,assumptions:['0凸・通常時の簡略式。会心/超会心・追撃・特殊効果は別途未反映。命中は暫定100%。']});}return ids;};
 const spell=(id,name,elements,mp,source)=>{const ids=[];for(const element of elements){const key=id+'-'+element;ids.push(key);m.skills.push({id:key,name:name+(elements.length>1?'（'+element+'）':''),kind:'damage',type:'呪文',element,target:'all',mp,accuracy:1,ready:true,formula:{kind:'spell',slope:3.4,intercept:1500,cap:1950,randomMin:.95,randomMax:1.05},source,assumptions:['呪文係数3.4・切片1500・魔力上限1950・消費MPは仮値（個別検証前）。敵数変化・暴走・超暴走は未反映。']});}return ids;};
@@ -27,13 +28,22 @@ weapon('gear-0','女神ペルセリアのつえ','https://game8.jp/dqwalk/831539
 weapon('gear-1','祖竜【理】の銃剣','https://game8.jp/dqwalk/815288',physJobs,{attack:250},[...physical('dragon','天超えし竜牙','斬撃',['イオ'],17,'all',64,'https://game8.jp/dqwalk/815288'),'charge'],{twoHanded:true});
 weapon('gear-2','堕天の翼爪','https://game8.jp/dqwalk/818884',physJobs,{attack:189},physical('wing','神を封じたチカラ','体技',['イオ','ドルマ'],17,'one',62,'https://game8.jp/dqwalk/818884'));
 weapon('hero','勇者のつるぎ','https://game8.jp/dqwalk/785465',physJobs,{attack:245},[...physical('hero-single','全身全霊斬り','斬撃',['無'],11,'one',58,'https://game8.jp/dqwalk/785465',{ignoreDefense:true}),...physical('hero-all','ギガクラッシュ','斬撃',['デイン'],8,'all',62,'https://game8.jp/dqwalk/785465')]);
-weapon('ocean','真竜槍・オチェアーノ','https://game8.jp/dqwalk/769134',physJobs,{attack:230},physical('vortex','グランヴォルテクス','斬撃',['ヒャド','バギ','ザバ'],7.3,'all',61,'https://game8.jp/dqwalk/769134'));
+weapon('ocean','真竜槍・オチェアーノ','https://game8.jp/dqwalk/769134',physJobs,{attack:187},physical('vortex','グランヴォルテクス','斬撃',['ヒャド','バギ','ザバ'],7.3,'all',61,'https://game8.jp/dqwalk/769134'));
+// Published maximum-level attack, independently confirmed for each limit break.
+for(const row of weapons.filter(row=>['ocean-0','ocean-4'].includes(row.id))){row.stats={attack:row.limitBreak===4?244:187};row.checked='2026-10-29';row.verified=['最大レベル攻撃力：0凸187・4凸244を直接照合。'];row.assumptions=['凸4の斬体+28%は簡略モデル。いきなり・挑戦・継承・ずぶ濡れ等は未再現。攻撃力の確認は全効果の完成を意味しない。'];}
 weapon('cloud','あまぐもの杖','https://game8.jp/dqwalk/640479',mageJobs,{magic:140},spell('rain','ざざん波',['ザバ'],60,'https://game8.jp/dqwalk/640479'));
 weapon('paradox','パラドクスの杖','https://game8.jp/dqwalk/763997',mageJobs,{magic:160},spell('forbidden','フォビドゥンバースト',['イオ'],74,'https://game8.jp/dqwalk/763997'));m.skills.filter(s=>s.id.startsWith('forbidden')).forEach(s=>s.target='one');
 weapon('dharma','ダーマの神杖','https://game8.jp/dqwalk/778125',healJobs,{heal:180,mp:30},[heal('light','道示す光',70,'https://game8.jp/dqwalk/778125'),...spell('holy','聖なるマヒャド',['ヒャド'],50,'https://game8.jp/dqwalk/778125')]);
 weapon('keki','ケキちゃん','https://game8.jp/dqwalk/687405',[...new Set([...physJobs,...mageJobs,...healJobs])],{attack:160,speed:30},['baiki']);
 weapon('moon','はてんの月輪','https://game8.jp/dqwalk/788128',physJobs,{attack:230,speed:30},physical('breaker','デュアルブレイカー','体技',['無'],12,'all',61,'https://game8.jp/dqwalk/788128'));
-weapon('crystal','しんぴの水晶',weaponSource,healJobs,{heal:160},[heal('crystal-heal','回復スキル（仮の簡略モデル）',60,weaponSource)]);
+const crystalSource='https://game8.jp/dqwalk/595626';
+weapon('crystal','しんぴの水晶',crystalSource,healJobs,{attack:61,magic:17,heal:105},[heal('crystal-heal','いやしの占術（回復式は仮）',63,crystalSource)]);
+for(const row of weapons.filter(row=>['crystal-0','crystal-4'].includes(row.id))){
+ const baseStats=row.limitBreak===4?{attack:80,magic:20,heal:100}:{attack:61,magic:17,heal:85};
+ row.baseStats={...baseStats};row.levelStatBonuses={heal:20};row.stats={...baseStats,heal:baseStats.heal+20};
+ row.bonuses=[];row.checked='2026-10-29';row.verified=['最大レベルの0凸/4凸能力値とLv1回復魔力20を分離して照合。'];
+ row.assumptions=['回復魔力は武器本体85/100とLv1効果20の合計105/120。','スキルHP回復10%・凸のとくぎHP回復10%・MP回復・開幕効果・確率バフは未接続。回復式は仮のまま。'];
+}
 weapon('chrono','クロノスソード',weaponSource,physJobs,{attack:245},physical('chrono-hit','主要攻撃（1500%を使う仮モデル）','斬撃',['無'],15,'one',60,weaponSource));
 m.items=weapons;
 const heart=(id,name,color,costValue,values,source,bonuses=[],extra={})=>({id,name,monster:name.replace(/（.*?）|\(.*?\)/g,''),rank:'S',slot:'heart',color,cost:costValue,costBonus:4,stats:stats(...values),bonuses,ready:true,source,assumptions:['会心率・各種耐性・職業特有効果・未収録の特殊効果を省略。'],...extra});

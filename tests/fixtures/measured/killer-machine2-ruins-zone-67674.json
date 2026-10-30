@@ -10,14 +10,29 @@
       "凍結Lv1",
       "不運【呪文】"
     ],
-    "countAtAttack": null
+    "countAtAttack": null,
+    "researchEvidence": [
+      {
+        "source": "https://9db.jp/dqwalk/data/8573",
+        "checkedOn": "2026-10-27",
+        "scope": "古代の遺跡・キラーマシン2・遺跡の力強化4段階",
+        "reportedDamageTakenReductionPercent": 80,
+        "reportedAppliesTo": [
+          "物理",
+          "呪文",
+          "ブレス"
+        ],
+        "status": "secondary-source-reported-not-integrated",
+        "limits": "種類耐性・属性耐性・守備上昇への置換はしない。凍結との合成順・丸めは未確定。実測値から逆算していない。"
+      }
+    ]
   },
   "actor": {
     "job": "魔人",
     "level": 94,
     "displayAttackBeforeBuffs": null,
     "weapon": "祖竜【理】の銃剣",
-    "limitBreak": null,
+    "limitBreak": 0,
     "twoHanded": true,
     "inheritance": {
       "weapon": "大太刀・桃源郷",
@@ -75,7 +90,6 @@
     "equipmentAndHearts": "今回も同じ装備・こころをユーザーが再提示",
     "inheritedUnconfirmed": {
       "displayAttackBeforeBuffs": 1796,
-      "limitBreak": 0,
       "extremeConcentrationActive": false,
       "enemyCountAtAttack": 1
     },
@@ -86,7 +100,7 @@
     "凍結Lv1と他の被ダメージ補正の合成・丸め",
     "Lv20・Lv40の会心ノード以外のこころ道選択",
     "他の味方のゾーン状態",
-    "今回も表示攻撃力1796・0凸・極限集中未使用・敵1体か",
+    "今回も表示攻撃力1796・極限集中未使用・敵1体か",
     "攻撃直前の通常／超越領域表示"
   ],
   "validation": {
@@ -126,5 +140,12 @@
       "recordedOn": "2026-10-27",
       "raw": "覚醒版"
     }
+  },
+  "weaponClarification": {
+    "source": "user-followup",
+    "recordedOn": "2026-10-27",
+    "raw": "①ゲーム中の敵のステータス表示②わからない③わからない、とつは0",
+    "confirmedLimitBreak": 0,
+    "scope": "武器0凸のみ確定。攻撃力・領域・他の味方のゾーンは未確定。敵ステータス表示の具体的な軽減率・耐性値は未提供。"
   }
 }

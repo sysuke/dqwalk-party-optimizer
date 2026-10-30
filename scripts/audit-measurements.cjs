@@ -1,7 +1,6 @@
 'use strict';
-const fs=require('node:fs'),path=require('node:path');
+const {loadMeasuredCases}=require('./measurement-fixtures.cjs');
 const {loadRuntime}=require('./runtime.cjs');
-const root=path.resolve(__dirname,'..');
 // Ignore orthographic differences, but retain rank/awakening markers.
 const normalize=s=>s.normalize('NFKC').replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60)).replace(/[\s【】（）()・!！]/g,'');
 function resolve(rows,name){
@@ -13,10 +12,11 @@ function resolve(rows,name){
  return {name,status:alternatives.length?'variant-unconfirmed':'missing',matches:[],alternatives:alternatives.map(summarize)};
 }
 function audit(){const c=loadRuntime(),catalog=c.Catalog9,items=c.PlannerData.real.items;
- const cases=fs.readdirSync(path.join(root,'tests/fixtures/measured')).filter(n=>n.endsWith('.json')).map(n=>JSON.parse(fs.readFileSync(path.join(root,'tests/fixtures/measured',n),'utf8')));
+ const cases=loadMeasuredCases();
  const report=cases.map(x=>{const coverage={weapon:resolve(catalog.weapons,x.actor.weapon),inheritance:resolve(catalog.weapons,x.actor.inheritance.weapon),hearts:x.actor.hearts.map(name=>resolve(catalog.hearts,name)),equipment:x.actor.equipment.map(name=>resolve(items,name))};
   const all=[coverage.weapon,coverage.inheritance,...coverage.hearts,...coverage.equipment];
   return {id:x.id,observed:x.observation.damagePerHit,status:'not-comparable-until-independent-inputs-complete',missingIndependentInputs:x.unknowns,
+   researchEvidence:x.enemy.researchEvidence||[],
    confirmedCalculatorInputs:{weather:x.environment?.weather||null,majinCritical20:x.actor.confirmedHeartPath?.lv20==='超魔道'?25:null,majinCritical40:x.actor.confirmedHeartPath?.lv40==='超魔道'?25:null},
    domain:{reported:x.domain,followup:x.followup?.domainLikely||null,certainty:x.followup?.status||'as-reported'},
    unresolvedCatalogue:all.filter(r=>r.status!=='matched').map(r=>({name:r.name,status:r.status})),coverage};});
