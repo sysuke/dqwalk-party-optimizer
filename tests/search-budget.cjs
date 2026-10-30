@@ -1,0 +1,11 @@
+'use strict';
+const A=require('node:assert/strict'),{loadRuntime}=require('../scripts/runtime.cjs');
+const c=loadRuntime(),m=c.PlannerData.real,p=c.PlannerData.profile(m);
+for(const ch of p.characters)ch.levels={'job-8':80};
+const enemy={name:'探索予算の検証',race:'その他',defense:1000,count:1,typeResistance:0,enemyTension:0,elements:{無:0}},phases=[];
+const r=c.PartyPlanner.solve(m,p,enemy,{objective:'damage',hp:1e7,turns:1,allowPaths:true,maxNodes:40,maxPoolNodes:4000,maxTimeMs:30000},row=>phases.push(row.phase));
+A.equal(phases.filter(s=>/キャラ[1-4]の候補$/.test(s)).length,4,'装備候補を解放なし/ありで二重に作らない');
+A.equal(r.settings.allowPaths,true);A.equal(r.searchSummary.pathMode,'optional');A(r.nodes<=40);
+const skills=c.SequenceEngine.available({member:0,job:'job-8',weapon:'hero',pathUnlocked:true,rootUnlocked:true}).map(s=>s.id);
+A(skills.includes('fullslash'));A(skills.includes('eradicate-fullslash'));
+console.log('PASS 解放技と通常技を同じ探索で比較し、装備探索を二重に消費しない');
