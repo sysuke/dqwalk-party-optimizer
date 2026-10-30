@@ -12,3 +12,18 @@ test('連続呪文とやまびこの同じ攻撃行動はブレイク判定で�
 test('2ターン目の根絶やしと守り人・アンコール役の同時再割当を比較する',()=>{const q=config();q.actors.forEach((a,i)=>{a.member=[3,2,1,0][i];a.actualAttack=null;a.actualMagic=null;});Object.assign(q.actors[0],{job:'job-9',weapon:'roto'});Object.assign(q.actors[1],{job:'job-1',weapon:'moon',inherit:'keki',inheritLevel:1});Object.assign(q.actors[2],{hearts:['arm-lion'],rootUnlocked:true,pathUnlocked:true});Object.assign(q.actors[3],{job:'job-2',weapon:'god-bird-axe',encoreUnlocked:true,pathUnlocked:true});q.actions=[{actor:0,turn:1,skill:'wait'},{actor:3,turn:1,skill:'encore',target:2},{actor:2,turn:1,skill:'normalcharge'},{actor:1,turn:1,skill:'rondo'},{actor:2,turn:1,skill:'eradicate-fullslash'}];const s={...settings,allowPaths:true,allowCheer:true},seed=c.PartyBattle.simulate(q,m,p,s);let found=false;const checked=c.DamageGoalSearch.repair(seed,m,p,s,cfg=>{const r=c.PartyBattle.simulate(cfg,m,p,s);if(cfg.actors[0].job==='job-2'&&cfg.actors[3].job==='job-5'&&cfg.actions.some(a=>a.actor===2&&a.turn===2&&a.skill==='eradicate-fullslash')&&!cfg.actions.some(a=>a.actor===2&&a.turn===1&&c.Catalog9.skills.find(k=>k.id===a.skill)?.kind==='attack'))found=true;return r;},192);A(found);A(checked.calls<=192);});
 
 
+// Distinct boss thresholds must survive both ordinary damage and break searches.
+test('敵別の閾値で火力比較にもシールド上限を適用し、討伐と区別する',()=>{
+ for(const [id,thresholds] of [['agiro',[240000,480000,720000,1200000]],['d-hargon',[240000,480000,720000,1200000]],['giga',[250000,500000,750000,1250000]]]){
+  const model=m.contents.find(x=>x.id===id).breakChallenge,s={objective:'damage',turns:1,hp:id==='giga'?50000000:1200000,shieldMaxHP:model.maxHP,shieldRates:Array.from(model.rates)};
+  A.deepEqual(Array.from(c.PartyBattle.shieldThresholds(s)),thresholds);
+  const r=c.PartyBattle.simulate(config(),m,p,s);A.equal(r.breakChallenge.maxSimultaneous,4);A.equal(r.breakChallenge.target,thresholds[3]);A.equal(r.effectiveDamage,thresholds[0]);A.equal(r.remaining,s.hp-thresholds[0]);A.equal(r.killed,false);
+ }
+});
+test('特ギガの逆算目標は最大HPの50%ではなく2.5%',()=>{
+ const s={...settings,hp:50000000,shieldMaxHP:50000000,shieldRates:[.005,.01,.015,.025]},stats=c.DamageGoalSearch.search(config(),{...s,master:m,profile:p},()=>null,0);A.equal(stats.target,1250000);
+});
+test('不正なシールド割合と火力比較時の最大HP不整合も拒否する',()=>{
+ for(const shieldRates of [[],[.1,.2,.3],[.1,.2,.2,.5],[.1,.2,.3,Infinity],[.1,.2,.3,1.1]])A.throws(()=>c.PartyBattle.validate({...settings,shieldRates}),/割合/);
+ A.throws(()=>c.PartyBattle.validate({...settings,objective:'damage',shieldRates:[.1,.2,.3,.5],shieldMaxHP:1000000}),/最大HP/);
+});

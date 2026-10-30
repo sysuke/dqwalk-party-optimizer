@@ -12,7 +12,9 @@
     "diagnose:measurements": "node scripts/measured-corrections.cjs",
     "audit:measurements": "node scripts/audit-measurements.cjs",
     "audit:data": "node scripts/catalog-audit.cjs",
-    "check:pages": "node scripts/check-pages.cjs"
+    "check:pages": "node scripts/check-pages.cjs",
+    "test:ui": "node scripts/test.cjs ui",
+    "test:measurements": "node scripts/test.cjs measurements"
   },
   "engines": {
     "node": ">=18"

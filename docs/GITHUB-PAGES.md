@@ -18,8 +18,16 @@ Pagesサイトの初回有効化は管理者が設定画面で行います。通
 標準の予定URLは https://sysuke.github.io/dqwalk-party-optimizer/ 。成功したdeploy出力を正として確認してください。
 
 非公開リポジトリのPagesにはGitHub Pro等の対象プランが必要です。
-設定画面でプラン制限が表示された場合は、プラン変更または公開リポジトリ化が必要です。
-リポジトリの公開範囲はこの移行で変更していません。Pagesサイトは一般公開する方針をユーザー確認済みです。
+設定画面でプラン制限が表示された場合は、対象プランを確認してください。Pagesのためにリポジトリの公開範囲を自動変更しません。
+Pages有効化はサイトの公開につながります。既存Sitesの所有者限定設定とは別です。
+
+## `configure-pages` が404で失敗するとき
+
+2026-10-30の読み取り確認では、リポジトリは `visibility: public`、`has_pages: false`、Pages APIは404だった。クラウドから公開範囲・Pages設定は変更していない。
+
+`enablement: false` はこのActionの通常の既定値であり、アプリのビルド失敗ではない。まずSettings → PagesでSourceをGitHub Actionsに設定し、その後Actionsの失敗した実行からRe-run failed jobs、またはRun workflowを実行する。`enablement: true` で自動公開する変更は行わない。
+
+Sourceの選択肢が出ない場合は、リポジトリ管理権限や組織のPagesポリシーを確認する。設定が反映されても失敗する場合は、Pages APIの状態と新しいログで切り分ける。
 
 ## 更新
 

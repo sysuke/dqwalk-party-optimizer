@@ -4,7 +4,7 @@ const clone=x=>JSON.parse(JSON.stringify(x)),skill=id=>Catalog9.skills.find(k=>k
 // A target is an attack-time state, never a free buff granted to an actor.
 // Every probe includes its providers and is evaluated by the normal battle model.
 function search(config,settings,evaluate,budget=192){
- let calls=0,probes=0,verified=0;const seen=new Map(),target=settings.objective==='damage'?null:settings.objective==='break'?Math.round((settings.shieldMaxHP??2400000)*.5):settings.hp,deadline=settings._deadline||Infinity;
+ let calls=0,probes=0,verified=0;const seen=new Map(),target=settings.objective==='damage'?null:settings.objective==='break'?PartyBattle.shieldThresholds(settings)[3]:settings.hp,deadline=settings._deadline||Infinity;
  const run=cfg=>{const key=JSON.stringify(cfg.actions);if(seen.has(key))return seen.get(key);if(calls>=budget||Date.now()>=deadline)return null;calls++;const r=evaluate(cfg);seen.set(key,r);return r;};
  const hit=(r,lead)=>Math.max(0,...(r?.steps||[]).filter(s=>s.actor===lead&&s.damage&&(settings.objective!=='break'||s.shieldHit&&s.shieldHit.totalBroken-s.shieldHit.broken===0)).map(s=>s.damage.min||0));
  const make=(lead,id,parts,order)=>{const actions=[];for(let turn=0;turn<settings.turns;turn++)for(const actor of order)actions.push(...parts[actor][turn]);return {...config,actions};};

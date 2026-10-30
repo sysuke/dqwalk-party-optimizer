@@ -9,3 +9,9 @@ test('確定のテンションを下げたり確率条件に置き換えない',
 test('自動探索でゾーン成立率50%の候補が下限50%を通過する',()=>{const profile=clone(p);for(const ch of profile.characters)for(const j of m.jobs)ch.levels[j.id]=j.id==='job-8'?94:0;for(const row of profile.inventory){const item=m.items.find(i=>i.id===row.id);row.count=16;}const r=c.PartyPlanner.solve(m,profile,config().enemy,{turns:1,hp:1e7,objective:'damage',zoneScenario:'main',minProcProbability:50,procRates:{zone:50},maxNodes:160,maxPoolNodes:4000,maxTimeMs:30000});A.equal(r.status,'ok',JSON.stringify(r.issues));A(r.nodes<=160);A(r.results.every(x=>x.realization.probability===.5));A(r.results.every(x=>x.scenarioComparison));});
 
 
+test('発動率不明と既知の下限未満を区別し、未達理由を返す',()=>{
+ const profile=clone(p);for(const ch of profile.characters)for(const j of m.jobs)ch.levels[j.id]=j.id==='job-8'?94:0;for(const row of profile.inventory)row.count=16;
+ const s={turns:1,hp:1e7,objective:'damage',zoneScenario:'main',minProcProbability:50,maxNodes:160,maxPoolNodes:4000,maxTimeMs:30000};
+ const unknown=c.PartyPlanner.solve(m,profile,config().enemy,s);A.equal(unknown.status,'infeasible');A.equal(unknown.results.length,0);A.equal(unknown.probabilityDiagnostics.minPercent,50);A(unknown.probabilityDiagnostics.unknownLabels.some(s=>s.includes('ゾーン')));A(unknown.diagnostics['必要な効果の発動率が不明、または独立性が未指定']>0);
+ const below=c.PartyPlanner.solve(m,profile,config().enemy,{...s,procRates:{zone:40}});A.equal(below.status,'infeasible');A.equal(below.probabilityDiagnostics.unknownLabels.length,0);A(below.diagnostics['同時発動率が指定下限未満']>0);
+});
