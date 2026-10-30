@@ -7,6 +7,12 @@ const { browser, workers } = require('../scripts/entrypoints.cjs');
 const dist = path.resolve(__dirname, '../dist');
 function test(name, run) { run(); console.log('PASS ' + name); }
 
+test('Pages configuration does not try to create a site with GITHUB_TOKEN', () => {
+  const workflow = fs.readFileSync(path.resolve(__dirname, '../.github/workflows/pages.yml'), 'utf8');
+  const configure = workflow.match(/^      - uses: actions\/configure-pages@[^\n]+(?:\n(?!      -)[^\n]*)*/m);
+  assert(configure, 'Pages configuration step must exist');
+  assert.doesNotMatch(configure[0], /enablement:\s*true/);
+});
 test('HTML and all workers match the declared dependency order', () => {
   require('../scripts/sync-entrypoints.cjs').sync();
 });

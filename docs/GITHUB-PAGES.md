@@ -4,10 +4,12 @@
 
 ## 初回だけ行う設定
 
-1. Actions → Test and deploy GitHub Pages → Run workflow で main を実行する。
-2. deploy成功後、Pages画面または実行結果の公開URLを開く。
+1. リポジトリの管理者が Settings → Pages → Build and deployment → Source で **GitHub Actions** を選択する。
+2. Actions → Test and deploy GitHub Pages → Run workflow で main を実行する。
+3. deploy成功後、Pages画面または実行結果の公開URLを開く。
 
-deployジョブはPagesサイトが未設定の場合、GitHub Actionsを公開元として自動で有効化します。
+Pagesサイトの初回有効化は管理者が設定画面で行います。通常の `GITHUB_TOKEN` は `pages:write` があってもサイトを新規作成できないため、deployジョブでは自動有効化しません。
+`Get Pages site failed` や `Create Pages site failed: Resource not accessible by integration` が出た場合は、上記の Source 設定を確認してからワークフローを再実行してください。
 リポジトリの設定やプランによって有効化できない場合は、Settings → Pages の案内に従ってください。
 
 設定画面：https://github.com/sysuke/dqwalk-party-optimizer/settings/pages
