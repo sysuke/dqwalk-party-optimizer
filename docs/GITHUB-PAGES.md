@@ -4,10 +4,11 @@
 
 ## 初回だけ行う設定
 
-1. リポジトリの Settings → Pages を開く。
-2. Build and deployment → Source で **GitHub Actions** を選択。
-3. Actions → Test and deploy GitHub Pages → Run workflow で main を実行。
-4. deploy成功後、Pages画面または実行結果の公開URLを開く。
+1. Actions → Test and deploy GitHub Pages → Run workflow で main を実行する。
+2. deploy成功後、Pages画面または実行結果の公開URLを開く。
+
+deployジョブはPagesサイトが未設定の場合、GitHub Actionsを公開元として自動で有効化します。
+リポジトリの設定やプランによって有効化できない場合は、Settings → Pages の案内に従ってください。
 
 設定画面：https://github.com/sysuke/dqwalk-party-optimizer/settings/pages
 実行画面：https://github.com/sysuke/dqwalk-party-optimizer/actions/workflows/pages.yml
