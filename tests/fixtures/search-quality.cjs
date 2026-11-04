@@ -2,7 +2,7 @@
 // Structural benchmarks, not measured game damage or a claim of optimal play.
 function cases(c){
  const m=c.PlannerData.real,copy=x=>JSON.parse(JSON.stringify(x));
- return [2,5,9].map(turns=>{
+ const physical=[2,5,9].map(turns=>{
   const profile=c.PlannerData.profile(m),job=m.jobs.find(j=>j.id==='job-8'),base=job.levels[80];
   profile.characters.forEach(ch=>ch.levels={'job-8':80});
   profile.baseOverrides=Object.fromEntries([0,1,2,3].map(i=>[i+':job-8',{level:80,cost:base.cost,stats:{...base.stats,attack:2000,mp:300}}]));
@@ -12,5 +12,13 @@ function cases(c){
   const config={actors,enemy:copy(enemy),domain:'none',actions:Array.from({length:turns},(_,i)=>actors.map((_,actor)=>({actor,turn:i+1,skill:i<Math.min(turns,3)?'fullslash':'wait',target:actor}))).flat()};
   return {id:'physical-mp-'+turns+'t',kind:'synthetic',description:'MP内で強い技を使い、残りを待機する固定手順',profile,enemy,settings,reference:config};
  });
+ const profile=c.PlannerData.profile(m),jobs=['job-5','job-0','job-1','job-2'],levels=[87,89,84,87],weapons=['gun','moon','paradox-staff','dharma-staff'];
+ profile.characters.forEach((ch,i)=>ch.levels={[jobs[i]]:levels[i]});
+ const actors=weapons.map((weapon,member)=>({member,job:jobs[member],weapon,limitBreak:0,left:'',inherit:member===1?'keki':'',inheritLevel:member===1?1:0,inheritLimitBreak:0,initial:true,pathUnlocked:true,cheerUnlocked:member===0,encoreUnlocked:member===3,hearts:[],armors:[]}));
+ const slot=m.jobs.find(j=>j.id===jobs[0]).slots.map((s,i)=>s==='虹'?i:-1).filter(i=>i>=0).at(-1)??0;actors[0].hearts[slot]='phantom-dragon-awakened';actors[0].hearts[slot===0?1:0]='donburi-king';actors[2].armors=['adjust-shield'];actors[2].zone=true;actors[2].confirmedSpellCritical=true;
+ const content=m.contents.find(x=>x.id==='giga'),e=content.enemies[0],enemy={name:e.name,count:1,race:e.race,defense:e.defense,enemyTension:0,typeResistance:60,typeResistances:{斬撃:60,体技:60,呪文:30},elements:Object.fromEntries(Object.entries(e.elements).map(([k,v])=>[k,Math.round((1-v)*100)])),specialMechanics:true};
+ const reference={actors,enemy,domain:'auto',aiPolicy:'assume-selected',strictDurations:true,actions:[{actor:1,turn:1,skill:'rondo'},{actor:2,turn:1,skill:'overdrive'},{actor:2,turn:1,skill:'true-magic-release'},{actor:0,turn:1,skill:'tokumori',target:2},{actor:3,turn:1,skill:'dharma-prayer',target:2},{actor:1,turn:2,skill:'rondo'},{actor:2,turn:2,skill:'forbidden-burst'},{actor:0,turn:2,skill:'cheer',target:2},{actor:3,turn:2,skill:'encore',target:2},{actor:2,turn:2,skill:'forbidden-burst'}]};
+ const used=c.PartyBattle.inventory(reference,m,profile).used;profile.inventory.forEach(row=>row.count=used[row.id]||0);
+ return [...physical,{id:'spell-roles-2t',kind:'structural-reference',description:'参考記事の白領域・ロンド・真魔解放・祈り・おうえん・アンコール。実測火力の再現ではない',profile,enemy,reference,settings:{objective:'damage',turns:2,hp:e.hp,shieldRates:content.breakChallenge.rates,shieldMaxHP:content.breakChallenge.maxHP,newWorldGoal:'白',allowPaths:true,allowCheer:true,allowInheritance:true,allowAI:true,zoneScenario:'main',spellProcScenario:'triggered',maxNodes:1000,maxPoolNodes:6000,maxTimeMs:30000}}];
 }
 module.exports={cases};

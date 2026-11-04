@@ -7,6 +7,33 @@ function survivalCompare(a,b){const tier=r=>r.survival?.known?(r.survival.modelM
 function conditions(result){return result.builds.map((_,actor)=>{const own=result.steps.filter(s=>!s.enemy&&s.actor===actor);return {actor,zoneTurns:[...new Set(own.filter(s=>s.before?.zone).map(s=>s.turn))],tension100Turns:[...new Set(own.filter(s=>s.before?.tension>=50).map(s=>s.turn))]};});}
 // Screening and support probes use the same simulator as final results. No buff
 // multiplier is invented or granted without an available provider and action.
+
+// Assemble complementary roles before the single-actor attack proxy trims teams.
+// These are candidate generators; only the battle evaluator can rank a plan.
+function roleTeams(pools,master,profile,settings,limit=8){
+ const end=settings._deadline||Infinity,teams=[],seen=new Set(),roles=new Map();let checks=0;
+ const kinds=row=>{const key=JSON.stringify(row.actor);if(!roles.has(key))roles.set(key,new Set(SequenceEngine.available(row.actor).map(k=>k.kind)));return roles.get(key);};
+ const domainOK=row=>{if(!SequenceEngine.available(row.actor).some(k=>k.kind==='domain'&&k.domain==='newworld')||!row.actor.initial)return false;if(!settings.newWorldGoal||settings.newWorldGoal==='auto')return true;const job=master.jobs.find(j=>j.id===row.actor.job),slot=job.slots.map((s,i)=>s==='虹'?i:-1).filter(i=>i>=0).at(-1)??0;return Catalog9.hearts.find(h=>h.id===row.actor.hearts?.[slot])?.color?.split('+').at(-1)===settings.newWorldGoal;};
+ const matches=(row,role)=>role.some(kind=>kind==='domain'?domainOK(row):kinds(row).has(kind));
+ const leads=[],families=new Set(),ranked=pools.flatMap((rows,member)=>rows.map(row=>({row,member}))).filter(x=>skill(x.row.bestSkill)?.kind==='attack').sort((a,b)=>b.row.attackScore-a.row.attackScore);
+ // Keep different attack families before filling with alternative trained owners.
+ for(const unique of [true,false])for(const candidate of ranked){if(leads.length>=8)break;const family=candidate.row.bestSkill,key=candidate.member+':'+family;if(unique&&families.has(family)||leads.some(x=>x.key===key))continue;leads.push({...candidate,key});families.add(family);if(leads.length===8)break;}
+ for(const lead of leads.slice(0,8)){
+  const leadChecks=checks,leadLimit=Math.min(limit,teams.length+2),spell=skill(lead.row.bestSkill)?.type==='呪文',buff=spell?['skillBuff','jobPrayer','adaptiveBuff']:['skillBuff','adaptiveBuff','attackBuff'];
+  const templates=spell?[[['domain'],['rondo'],buff],[['rondo'],buff,['encore']]]:[[buff,['rondo'],['encore']],[buff,['encore'],['attackBuff','encore']]];
+  if(settings.objective==='survive')templates.unshift([['heal'],buff,['encore','rondo']]);
+  for(const template of templates){const slots=[0,1,2,3].filter(i=>i!==lead.member),picked=new Map([[lead.member,lead.row]]),assigned=new Map();
+   function visit(depth){if(teams.length>=leadLimit||checks-leadChecks>=16||checks>=128||Date.now()>=end)return;if(depth<3){const role=template[depth];for(const member of slots.filter(i=>!picked.has(i))){const options=pools[member].filter(r=>matches(r,role)).sort((a,b)=>b.supportScore-a.supportScore).slice(0,2);for(const row of options){picked.set(member,row);assigned.set(member,role);visit(depth+1);picked.delete(member);assigned.delete(member);}}return;}
+    checks++;const order=[lead.member,...slots],original=order.map(i=>picked.get(i)),config={actors:original.map(r=>clone(r.actor))};
+    try{const priority=i=>assigned.get(order[i])?.includes('domain')?2:assigned.get(order[i])?.includes('skillBuff')?1:0,release=[0,...[1,2,3].sort((a,b)=>priority(a)-priority(b))];if(!SupportLoadouts25.fit(config,release,master,profile))return;const fitted=original.map((row,i)=>{const b=SequenceEngine.build(config.actors[i],master,profile,settings);if(b.stats.hp<settings.minHP||b.stats.speed<settings.minSpeed||settings.costLimit!=null&&b.cost>settings.costLimit)throw Error('ability constraint');return {...row,actor:config.actors[i],stats:b.stats,cost:b.cost};});if(!SequenceEngine.available(fitted[0].actor).some(k=>k.id===lead.row.bestSkill))return;for(let i=1;i<4;i++)if(!matches(fitted[i],assigned.get(order[i])))return;if(settings.newWorldGoal&&settings.newWorldGoal!=='auto'&&!fitted.some(domainOK))return;
+     const rows=Array(4);order.forEach((member,i)=>rows[member]=fitted[i]);const key=JSON.stringify(rows.map(r=>r.actor));if(seen.has(key))return;seen.add(key);teams.push({rows,used:PartyBattle.inventory(config,master,profile).used,proxy:0,strategy:{skill:lead.row.bestSkill,lead:lead.member,roles:[...assigned].map(([member,kinds])=>({member,kinds}))}});
+    }catch{/* A role without its owned equipment or required ability is not a candidate. */}
+   }visit(0);
+  }
+ }
+ return {teams,checks,attemptedSkills:[...new Set(leads.map(x=>x.row.bestSkill))]};
+}
+
 function search(layouts,master,profile,settings,evaluate,budget=192){
  let probes=0,calls=0,verified=0;const candidates=[],end=settings._deadline||Infinity,selectedLayouts=layouts.slice(0,6),hasIncoming=settings.incoming!=null||settings.aoeDamageHigh!=null,attackTarget=settings.objective==='break'?PartyBattle.shieldThresholds(settings)[3]:settings.hp;
  const queues=selectedLayouts.map(layout=>layout.config.actors.map(a=>SequenceEngine.available(a).filter(k=>k.kind==='attack'))),max=Math.max(0,...queues.flat().map(q=>q.length));
@@ -33,5 +60,5 @@ function search(layouts,master,profile,settings,evaluate,budget=192){
  }
  return {probes,calls,verified,skills:selected.map(c=>c.id),scope:'耐性・種類耐性・SHTガード込みの攻撃比較→バフと回復の実行手順→同じ戦闘計算でMP/生存/シールドを再検証。最適性は未保証。'};
 }
-root.AttackStrategies={mainAttack,diverse,survivalCompare,conditions,search};
+root.AttackStrategies={mainAttack,diverse,survivalCompare,conditions,roleTeams,search};
 })(typeof window==='undefined'?globalThis:window);
