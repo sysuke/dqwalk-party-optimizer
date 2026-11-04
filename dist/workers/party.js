@@ -27,6 +27,7 @@ importScripts(
   '../data/catalog/procs.js',
   '../data/catalog/support-tools.js',
   '../data/catalog/mana-skills.js',
+  '../data/catalog/healing.js',
   '../data/catalog/mage-tools.js',
   '../data/catalog/physical-equipment.js',
   '../data/catalog/measurement-items.js',
@@ -43,6 +44,7 @@ importScripts(
   '../domain/optimization/speed-tuner.js',
   '../domain/optimization/order-robust.js',
   '../domain/optimization/role-assignment.js',
+  '../domain/optimization/attack-strategies.js',
   '../domain/optimization/party-planner.js',
   '../domain/optimization/heart-fallback.js'
 );

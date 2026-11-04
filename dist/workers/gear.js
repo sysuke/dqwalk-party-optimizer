@@ -26,6 +26,7 @@ importScripts(
   '../data/catalog/procs.js',
   '../data/catalog/support-tools.js',
   '../data/catalog/mana-skills.js',
+  '../data/catalog/healing.js',
   '../data/catalog/mage-tools.js',
   '../data/catalog/physical-equipment.js',
   '../data/catalog/measurement-items.js',
