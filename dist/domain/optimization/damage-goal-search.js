@@ -81,7 +81,7 @@ function complete(seeds,pools,master,profile,settings,evaluate,compare,budget=19
  let best=seeds[0];if(!best)return {calls,valid,improvements};const original=best;
  const attempt=cfg=>{if(calls>=budget||Date.now()>=(settings._deadline||Infinity))return null;const key=JSON.stringify([cfg.actors,cfg.actions]);if(seen.has(key))return null;seen.add(key);calls++;try{const r=evaluate(cfg);if(r?.resourceOK){valid++;if(compare(r,best)<0){best=r;improvements++;}return r;}}catch{}return null;};
  const waits=r=>r.steps.filter(s=>!s.enemy&&!s.extra&&s.skill==='wait'),leadOf=r=>{const d=r.config.actors.map((_,i)=>r.steps.filter(s=>s.actor===i&&s.damage).reduce((n,s)=>n+s.damage.min,0));return d.indexOf(Math.max(...d));};
- const replaceable=r=>{const lead=leadOf(r),main=r.steps.filter(s=>s.actor===lead&&s.damage).reduce((n,s)=>n+s.damage.min,0);return r.steps.filter(s=>!s.enemy&&!s.extra&&(s.skill==='wait'||s.actor!==lead&&skill(s.skill)?.kind==='attack'&&!skill(s.skill)?.nextBuff&&!skill(s.skill)?.eradicate&&!s.shieldHit?.broken&&(s.damage?.min||0)<main*.15));};
+ const replaceable=r=>{const lead=leadOf(r),main=Math.max(0,...r.steps.filter(s=>s.actor===lead&&s.damage).map(s=>s.damage.min));return r.steps.filter(s=>!s.enemy&&!s.extra&&(s.skill==='wait'||s.actor!==lead&&skill(s.skill)?.kind==='attack'&&!skill(s.skill)?.nextBuff&&!skill(s.skill)?.eradicate&&!s.shieldHit?.broken&&(s.damage?.min||0)<main*.15));};
  const insert=(cfg,parts,from,to,after=false)=>{const moved=parts.splice(from,1)[0],anchor=parts.indexOf(to);parts.splice(anchor+(after?1:0),0,moved);return {...cfg,actions:parts.flat()};};
  // Move a one-use buff after an earlier preparation action. Keep neutral setup
  // variants so the newly freed later turn can be used in the next phase.

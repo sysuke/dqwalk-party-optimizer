@@ -1,7 +1,7 @@
 'use strict';
 (function(root){
 const clone=x=>JSON.parse(JSON.stringify(x));
-function chunks(actions){const out=[];let extra=false;for(const a of actions){if(extra){out.at(-1).push(clone(a));extra=false;}else{out.push([clone(a)]);extra=['encore','rainbow','overdrive'].includes(Catalog9.skills.find(k=>k.id===a.skill)?.kind);}}return out;}
+function chunks(actions){const out=[];let pending=null;for(const a of actions){if(pending!==null){if(a.actor!==pending)throw Error('追加行動の対象と手順が一致しません');out.at(-1).push(clone(a));}else out.push([clone(a)]);const kind=Catalog9.skills.find(k=>k.id===a.skill)?.kind;pending=kind==='encore'?a.target:['rainbow','overdrive','mageChant'].includes(kind)?a.actor:null;}return out;}
 // Free only oversubscribed gear on the replacement supports. Never borrow
 // equipment from the retained attackers or invent another owned copy.
 function fit(config,changed,master,profile){
@@ -38,7 +38,7 @@ function search(seeds,pools,master,profile,settings,evaluate,budget=768){
   for(const lead of leads){
    const attack=seed.steps.filter(x=>x.actor===lead&&x.damage).at(-1)?.skill;
    if(!attack)continue;
-   const extraAttack=Catalog9.skills.find(k=>k.id===attack)?.eradicate?'fullslash':attack;
+   const mainHits=seed.steps.filter(s=>s.actor===lead&&s.damage),peakTurn=[...mainHits].sort((a,b)=>b.damage.min-a.damage.min)[0]?.turn||1,firstHitTurn=mainHits[0]?.turn||1;const extraAttack=Catalog9.skills.find(k=>k.id===attack)?.eradicate?'fullslash':attack;
    const candidates=[];
    for(let actor=0;actor<4;actor++)if(actor!==lead)for(const row of pools[seed.config.actors[actor].member]||[]){
     // Fortune benefits the party member immediately to its left.
@@ -64,15 +64,16 @@ function search(seeds,pools,master,profile,settings,evaluate,budget=768){
      if(!fit(base,changed,master,profile))continue;
      const initial=SequenceEngine.simulate({...base,actions:base.actors.map((_,actor)=>({actor,turn:1,skill:'wait'}))},master,profile);
      const order=states=>[0,1,2,3].sort((a,b)=>{const speed=i=>initial.builds[i].stats.speed*(1+.2*states[i].speedStages+(states[i].worldSpeed||0)/100);return speed(b)-speed(a)||a-b;});
-     const prepares=SequenceEngine.available(base.actors[lead]).filter(k=>['charge','zoneCharge','spellCharge','absolutecrit','critBuff'].includes(k.kind));for(const preparation of [null,...(set.some(x=>x.row.supportKind==='encore')?prepares:[])])for(const buffFirst of [false,true]){
+     const prepares=SequenceEngine.available(base.actors[lead]).filter(k=>['charge','zoneCharge','spellCharge','absolutecrit','critBuff'].includes(k.kind));for(const preparation of [null,...(set.some(x=>x.row.supportKind==='encore')?prepares:[])])for(const encoreMode of settings.turns>2?['remaining','provider']:['provider'])for(const buffFirst of [false,true]){
       if(calls>=budget)return {calls,valid};
       let plan=chunks(seed.config.actions);
-      for(const {actor,row}of set){const available=SequenceEngine.available(base.actors[actor]),buff=available.find(k=>k.kind==='attackBuff');for(let turn=1;turn<=settings.turns;turn++){
-       let part;if(row.supportKind==='encore')part=[{actor,turn,skill:available.find(k=>k.kind==='encore').id,target:lead},{actor:lead,turn,skill:preparation&&turn===1?preparation.id:extraAttack,target:lead}];
-       else if(row.supportKind==='skillBuff'||row.supportKind==='adaptiveBuff'){const k=available.find(k=>k.kind===row.supportKind);part=[{actor,turn,skill:turn===(row.supportKind==='skillBuff'?settings.turns:1)?k.id:'wait',target:lead}];}
+      for(const {actor,row}of set){const available=SequenceEngine.available(base.actors[actor]),buff=available.find(k=>k.kind==='attackBuff'),own=initial.builds[actor],opening=root.ResourceRules36?.opening(own,initial.turnStarts[0].states[actor]).max||0,encore=available.find(k=>k.kind==='encore'),providerLimit=encore?Math.floor(Math.max(0,own.stats.mp-opening)/PartyBattle.mpCost(encore.id,own.stats.mp).max):0,extraCost=seed.steps.filter(s=>s.actor===lead&&s.damage).at(-1)?.mpCost?.max||PartyBattle.mpCost(extraAttack,initial.builds[lead].stats.mp).max,prepCost=preparation?PartyBattle.mpCost(preparation.id,initial.builds[lead].stats.mp).max:0,margin=seed.mp?.[lead]??initial.builds[lead].stats.mp,encoreLimit=encoreMode==='remaining'?Math.min(providerLimit,(preparation&&margin>=prepCost?1:0)+Math.floor(Math.max(0,margin-prepCost)/Math.max(1,extraCost))):providerLimit;for(let turn=1;turn<=settings.turns;turn++){
+       let part;if(row.supportKind==='encore'&&turn>encoreLimit)part=[{actor,turn,skill:'wait',target:actor}];else if(row.supportKind==='encore')part=[{actor,turn,skill:available.find(k=>k.kind==='encore').id,target:lead},{actor:lead,turn,skill:preparation&&turn===1?preparation.id:extraAttack,target:lead}];
+       else if(row.supportKind==='skillBuff'||row.supportKind==='adaptiveBuff'){const k=available.find(k=>k.kind===row.supportKind);part=[{actor,turn,skill:turn===(row.supportKind==='skillBuff'?(buffFirst?firstHitTurn:peakTurn):1)?k.id:'wait',target:lead}];}
        else if(row.supportKind==='jobPrayer'){if(base.actors[lead].job!=='job-1')continue;part=[{actor,turn,skill:turn===1?'dharma-prayer':'wait',target:lead}];}
        else if(row.supportKind==='domain')part=[{actor,turn,skill:turn===1?'new-world':'wait',target:actor}];
        else if(row.supportKind==='extendBuff')part=[{actor,turn,skill:turn===settings.turns?'time-interference':'wait',target:actor}];
+       else if(row.supportKind==='heal')part=[{actor,turn,skill:available.find(k=>k.kind==='heal').id,target:actor}];
        else if(row.supportKind==='nextBuff')part=[{actor,turn,skill:available.find(k=>k.nextBuff==='phoenix').id,target:lead}];
        else if(row.supportKind==='rondo')part=[{actor,turn,skill:buffFirst&&turn===1&&buff?buff.id:available.find(k=>k.kind==='rondo').id,target:lead}];
        else part=[{actor,turn,skill:row.bestSkill||'wait',target:actor}];
@@ -82,6 +83,7 @@ function search(seeds,pools,master,profile,settings,evaluate,budget=768){
       const config={...base,actions:plan.flat()},preview=SequenceEngine.simulate(config,master,profile),second=preview.turnStarts.find(t=>t.turn===2);
       if(second){const order2=order(second.states);plan.sort((a,b)=>a[0].turn-b[0].turn||(a[0].turn===2?order2:order1).indexOf(a[0].actor)-(a[0].turn===2?order2:order1).indexOf(b[0].actor));config.actions=plan.flat();}
       const key=JSON.stringify(config);if(seen.has(key))continue;seen.add(key);calls++;const result=evaluate(config);if(result?.resourceOK)valid++;
+      if(calls<budget){const rondoActors=set.filter(x=>['rondo','nextBuff'].includes(x.row.supportKind)).map(x=>x.actor),encoreActors=set.filter(x=>x.row.supportKind==='encore').map(x=>x.actor),rolePlan=[];for(let t=1;t<=settings.turns;t++){const own=plan.filter(c=>c[0].turn===t),early=own.filter(c=>c[0].actor!==lead&&!rondoActors.includes(c[0].actor)&&!encoreActors.includes(c[0].actor)),rondo=own.filter(c=>rondoActors.includes(c[0].actor)),main=own.filter(c=>c[0].actor===lead),extra=own.filter(c=>encoreActors.includes(c[0].actor));rolePlan.push(...(preparation&&t===1?[...extra,...early,...rondo,...main]:[...early,...rondo,...main,...extra]));}const cfg={...base,actions:rolePlan.flat()},roleKey=JSON.stringify(cfg);if(!seen.has(roleKey)){seen.add(roleKey);calls++;const r=evaluate(cfg);if(r?.resourceOK)valid++;}}
       // Rondo buffs the next actor, not its target field. Compare its complete
       // setup-and-hit sequence even when the natural order inserts a third actor.
       for(const {actor,row}of set.filter(x=>['rondo','nextBuff'].includes(x.row.supportKind))){if(calls>=budget)break;const adjacent=[];for(let t=1;t<=settings.turns;t++){const turnPlan=plan.filter(c=>c[0].turn===t),support=turnPlan.find(c=>c[0].actor===actor);for(const chunk of turnPlan){if(chunk===support)continue;if(chunk[0].actor===lead&&support)adjacent.push(support);adjacent.push(chunk);}}const cfg={...base,actions:adjacent.flat()},key2=JSON.stringify(cfg);if(seen.has(key2))continue;seen.add(key2);calls++;const improved=evaluate(cfg);if(improved?.resourceOK)valid++;}
