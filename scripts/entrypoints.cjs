@@ -55,6 +55,7 @@ module.exports = {
     "domain/optimization/order-robust.js",
     "domain/optimization/role-assignment.js",
     "domain/optimization/attack-strategies.js",
+    "domain/optimization/party-constraints.js",
     "domain/optimization/party-planner.js",
     "domain/optimization/heart-fallback.js",
     "ui/buff-timeline.js",
@@ -150,6 +151,7 @@ module.exports = {
       "domain/optimization/order-robust.js",
       "domain/optimization/role-assignment.js",
       "domain/optimization/attack-strategies.js",
+    "domain/optimization/party-constraints.js",
     "domain/optimization/party-planner.js",
       "domain/optimization/heart-fallback.js"
     ],
