@@ -15,7 +15,8 @@
     "check:pages": "node scripts/check-pages.cjs",
     "test:ui": "node scripts/test.cjs ui",
     "test:measurements": "node scripts/test.cjs measurements",
-    "benchmark:search": "node scripts/benchmark-search.cjs"
+    "benchmark:search": "node scripts/benchmark-search.cjs",
+    "benchmark:support": "node scripts/benchmark-support.cjs"
   },
   "engines": {
     "node": ">=18"
