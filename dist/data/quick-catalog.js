@@ -87,8 +87,13 @@ for(const [id,maxHP,rates,source] of [
 
 m.contents.find(c=>c.id==='giga').speedRatio=1.2;
 const tentsuku=m.items.find(i=>i.id==='tentsuku');tentsuku.cost=137;tentsuku.stats=stats(122,115,47,89,72,122,80);tentsuku.verified=['S基礎値・コスト137'];tentsuku.assumptions=['回復効果+10%・耐性等の特殊効果は未反映。'];
+// 2026-11-04: published difficulty-specific values; shield ratios remain provisional.
+for(const [id,label,hp,defense,typeRate] of [['bahamut-normal','ノーマル',4000000,500,.5],['bahamut-zero','零式',9500000,2000,.5],['bahamut-absolute','絶',11500000,2350,.3]]){
+ const c=boss({id,name:'バハムート・ラムダ（'+label+'）',category:'ギガモン',source:'https://9db.jp/dqwalk/data/20605',end:'2026-12-07',defaultTurns:9,defaultBattleScenario:'standard',firepowerOnly:true,requiresDetailedRules:true},[enemy('バハムート・ラムダ',hp,defense,1000,{メラ:.2,ギラ:.2,イオ:.2,ヒャド:.5,バギ:.5,デイン:.1,ドルマ:.1,ジバリア:.3,ザバ:.3},0,'？？？？系',{斬撃:typeRate,体技:typeRate,呪文:typeRate,ブレス:typeRate})],['難易度別HP（概数）・守備力・通常時の種類/属性耐性','SHT攻撃99%軽減・10ターン目テラフレア強制敗戦'],['敵速度1000は仮。敵の攻撃・回復・領域・ガード解除/有効ターン短縮・ギガアタック・他参加者は未計算。9ターンは利用者の観測を基にした比較上限。','シールド割合は出典自体がメガモンと同じ前提の暫定値。幻竜の割合を流用せず、ブレイク枚数は判定しない。','参加制限（零式は特級職70、絶は90）の詳細判定は未対応。テンションを下げた後の敵耐性遷移は未対応。初期の耐性とSHTガードを固定した火力比較。']);
+ c.checked='2026-11-04';c.note='9ターンまでの参考火力比較。10ターン目に強制敗戦。生存・ブレイクは未判定。';c.breakChallenge={available:label!=='ノーマル',model:null,note:'シールド割合の公式確認待ち'};Object.assign(c.enemies[0],{shtGuardReduction:99,debuffImmune:true});m.contents.push(c);
+}
 const sandy=m.items.find(i=>i.id==='sandy');sandy.cost=171;sandy.stats=stats(158,72,36,117,131,52,50);sandy.verified=['S基礎値・コスト171'];sandy.assumptions=['色を緑と仮置き。プチおうえん・回復効果等は未反映。イベント限定の実所持数は要確認。'];
-for(const c of m.contents){c.checked=m.checked;c.assumptions.push('HP表記は参考値。ボスの強化・弱体化・複数人参加や外部支援は設定した条件以外は含まない。');}
+for(const c of m.contents){c.checked=c.checked||m.checked;c.assumptions.push('HP表記は参考値。ボスの強化・弱体化・複数人参加や外部支援は設定した条件以外は含まない。');}
 const originalProfile=PlannerData.profile;
 PlannerData.profile=function(master){const p=originalProfile(master);if(master.quickStart){const defaults=[{'job-5':80,'job-0':80},{'job-3':80,'job-4':80,'job-8':80},{'job-1':80,'job-10':80},{'job-2':80,'job-7':80}];p.characters.forEach((c,i)=>c.levels=defaults[i]);p.inventory.forEach(x=>{const item=master.items.find(i=>i.id===x.id);x.count=item.limitBreak===4?0:item.slot==='weapon'?1:4;});p.presetRevision=4;}return p;};
 PlannerData.mergeDefaults=function(raw){const defaults=PlannerData.profile(m),result=JSON.parse(JSON.stringify(raw));const ids=new Set((result.inventory||[]).map(x=>x.id));for(const entry of defaults.inventory)if(!ids.has(entry.id))result.inventory.push(entry);if(result.presetRevision!==4)result.characters.forEach((c,i)=>{if(!Object.values(c.levels||{}).some(v=>v>0))c.levels=defaults.characters[i].levels;});result.presetRevision=4;return result;};
