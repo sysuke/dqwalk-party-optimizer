@@ -14,7 +14,8 @@
     "audit:data": "node scripts/catalog-audit.cjs",
     "check:pages": "node scripts/check-pages.cjs",
     "test:ui": "node scripts/test.cjs ui",
-    "test:measurements": "node scripts/test.cjs measurements"
+    "test:measurements": "node scripts/test.cjs measurements",
+    "benchmark:search": "node scripts/benchmark-search.cjs"
   },
   "engines": {
     "node": ">=18"
