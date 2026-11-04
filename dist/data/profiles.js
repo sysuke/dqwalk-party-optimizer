@@ -24,4 +24,6 @@ const demo={schemaVersion:3,id:'demo-v3',name:'検証用データ',checked:'2026
  {id:'demo-farm',name:'複数敵を先制処理する検証',category:'検証用周回',modelReady:true,speedRatio:1.15,enemies:[0,1].map(i=>({name:'検証用の敵'+(i+1),hp:3000,defense:180,race:'検証用',speedLow:250-i*30,speedHigh:270-i*30,elements:{無:1,メラ:1,ヒャド:i===0?1.5:1},types:{斬撃:1,体技:1,呪文:1},action:{name:'全体攻撃（検証用）',damage:120,target:'all'}}))}]};
 function profile(master){return {schemaVersion:3,masterId:master.id,characters:[0,1,2,3].map(i=>({name:'キャラ'+(i+1),levels:master.isDemo?{['demo-job-'+i]:50}:{}})),inventory:master.items.map(i=>({id:i.id,count:master.isDemo?(i.slot==='weapon'?1:4):i.limitBreak===4?0:i.slot==='heart'?4:1}))};}
 root.PlannerData={real,demo,profile};
+PlannerData.profileStatus=function(profile){return ['sample','unreviewed','confirmed'].includes(profile?.setupStatus)?profile.setupStatus:'unreviewed';};
+PlannerData.markProfileEdited=function(profile){if(PlannerData.profileStatus(profile)!=='confirmed')profile.setupStatus='unreviewed';return profile;};
 })(typeof window==='undefined'?globalThis:window);
