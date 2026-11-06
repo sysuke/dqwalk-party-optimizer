@@ -1,0 +1,14 @@
+'use strict';
+const {loadRuntime}=require('./runtime.cjs'),fixture=require('../tests/fixtures/role-cycle.cjs');
+const results=[];
+for(const enabled of [false,true]){
+ const c=loadRuntime(),f=fixture(c),sim=q=>c.PartyBattle.simulate(q,f.master,f.profile,f.settings),seed=sim(f.config),before=JSON.stringify(f),r=c.RoleAssignment38.search([seed],f.master,f.profile,{...f.settings,rolePermutations:enabled,_deadline:Date.now()+30000},sim,(a,b)=>b.damage-a.damage,32),best=r.best,replay=sim(best.config);
+ if(JSON.stringify(f)!==before||!replay.resourceOK||replay.damage!==best.damage)throw Error('Role allocation replay or input mismatch');
+ results.push({case:'synthetic-three-role-cycle',permutations:enabled,budget:32,calls:r.calls,permutationCalls:r.permutationCalls,damage:best.damage,resourceOK:best.resourceOK,orderOK:best.orderOK,enemyFirst:best.enemyFirst});
+}
+if(process.argv.includes('--bahamut'))for(const enabled of [false,true]){
+ const c=loadRuntime(),master=c.PlannerData.real,profile=c.PlannerData.profile(master),content=master.contents.find(x=>x.id==='bahamut-zero'),e=content.enemies[0],enemy={name:e.name,race:e.race,count:1,defense:e.defense,enemyTension:0,typeResistance:Math.round((1-e.types['斬撃'])*100),typeResistances:Object.fromEntries(Object.entries(e.types).map(([key,rate])=>[key,Math.round((1-rate)*100)])),elements:Object.fromEntries(c.AutoDamage.elements.map(key=>[key,key==='無'?0:Math.round((1-(e.elements[key]??1))*100)])),shieldModelUnknown:true,shtGuardReduction:e.shtGuardReduction,debuffImmune:e.debuffImmune,specialMechanics:true},settings={objective:'damage',turns:5,hp:e.hp,shieldMaxHP:e.hp,shieldRates:content.breakChallenge.rates,shieldProvisional:true,allowPaths:true,allowAI:false,allowInheritance:true,allowDual:true,rolePermutations:enabled,maxNodes:1000,maxPoolNodes:4000,maxTimeMs:30000},before=JSON.stringify(profile),r=c.PartyPlanner.solve(master,profile,enemy,settings),best=r.results[0];
+ if(JSON.stringify(profile)!==before)throw Error('Profile changed');if(best){const replay=c.PartyBattle.simulate(best.config,master,profile,r.settings);if(!replay.resourceOK||replay.damage!==best.damage)throw Error('Bahamut replay mismatch');}
+ results.push({case:'sample-bahamut-zero-5t-standard',permutations:enabled,budget:1000,status:r.status,nodes:r.nodes,poolNodes:r.poolNodes,truncated:r.truncated,damage:best?.damage??null,resourceOK:best?.resourceOK??false,orderOK:best?.orderOK??false,enemyFirst:best?.enemyFirst??false,roleAssignment:r.roleAssignment,deadlineReached:r.performance.deadlineReached,notes:'Sample inventory and approximate bases. Fixed initial enemy mechanics; not the user saved profile, game measurement, or success proof.'});
+}
+console.log(JSON.stringify({scope:'Structural role allocation and optional sample-profile low-firepower baseline. Same evaluation ceilings; no global optimality or game accuracy claim. Time limits can change results.',results},null,2));

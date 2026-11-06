@@ -18,7 +18,8 @@
     "benchmark:search": "node scripts/benchmark-search.cjs",
     "benchmark:support": "node scripts/benchmark-support.cjs",
     "benchmark:temporal": "node scripts/benchmark-temporal.cjs",
-    "benchmark:speed": "node scripts/benchmark-speed.cjs"
+    "benchmark:speed": "node scripts/benchmark-speed.cjs",
+    "benchmark:roles": "node scripts/benchmark-roles.cjs"
   },
   "engines": {
     "node": ">=18"
