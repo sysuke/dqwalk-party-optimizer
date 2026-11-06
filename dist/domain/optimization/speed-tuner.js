@@ -12,14 +12,14 @@ function propagate(edges,floors,lower=[1,1,1,1],cap=100000){const speeds=[...low
 function analyze(result,settings=result.settings,cap=100000){const {edges,floors}=constraints(result,settings),current=result.builds.map(b=>b.stats.speed),minimum=propagate(edges,floors,[1,1,1,1],cap);return {cap,feasible:!!minimum,raiseTargets:minimum?propagate(edges,floors,current,cap):null,edges,floors};}
 function gap(result,settings){const c=constraints(result,settings),speeds=result.builds.map(b=>b.stats.speed);let count=0,total=0;for(const e of c.edges){const first=Math.floor(speeds[e.first]*e.firstFactor),need=Math.floor(Math.floor(speeds[e.second]*e.secondFactor)*e.ratio)+1;if(first<need){count++;total+=(need-first)/need;}}for(const e of c.floors){const first=Math.floor(speeds[e.actor]*e.factor),need=Math.floor(e.speed)+1;if(first<need){count++;total+=(need-first)/need;}}return {count,total};}
 function tune(seed,master,profile,settings,evaluate,budget=128){
- const analysis=analyze(seed,settings);if(!analysis.feasible||budget<1)return {result:seed,calls:0,analysis};let current=seed,calls=0;const stock=new Map(profile.inventory.map(x=>[x.id,x.count])),slots=GearOptimizer.slots,hearts=Catalog9.hearts.filter(h=>master.items.some(i=>i.slot==='heart'&&(i.id===h.id||i.name===h.name)&&(stock.get(i.id)||0)>0)),gear=master.items.filter(i=>i.verifiedModel&&(stock.get(i.id)||0)>0),seen=new Set();
+ const analysis=analyze(seed,settings);if(!analysis.feasible||budget<1)return {result:seed,calls:0,analysis};let current=seed,calls=0;const end=settings._deadline||Infinity;const stock=new Map(profile.inventory.map(x=>[x.id,x.count])),slots=GearOptimizer.slots,hearts=Catalog9.hearts.filter(h=>master.items.some(i=>i.slot==='heart'&&(i.id===h.id||i.name===h.name)&&(stock.get(i.id)||0)>0)),gear=master.items.filter(i=>i.verifiedModel&&(stock.get(i.id)||0)>0),seen=new Set();
  const better=(a,b)=>{const ga=gap(a,settings),gb=gap(b,settings);return ga.count-gb.count||ga.total-gb.total||b.damage-a.damage;};
- for(let round=0;round<6&&calls<budget;round++){
+ for(let round=0;round<6&&calls<budget&&Date.now()<end;round++){
   const before=current,candidates=[],actors=new Set(current.orderChecks.filter(x=>!x.certain).flatMap(x=>[x.first,x.second]));if(!actors.size&&settings.enemySpeedMax!=null)current.builds.forEach((_,i)=>actors.add(i));
   // Transfer scarce equipment atomically: removing it first can lose a kill,
   // while equipping the recipient first can exceed shared inventory.
   const consider=(config,changed,family)=>{
-   const key=JSON.stringify(config.actors);if(seen.has(key))return;seen.add(key);
+   if(Date.now()>=end)return;const key=JSON.stringify(config.actors);if(seen.has(key))return;seen.add(key);
    try{if(PartyBattle.inventory(config,master,profile).issues.length)return;
     const builds=[...current.builds];for(const actor of changed){const b=SequenceEngine.build(config.actors[actor],master,profile,settings);if(b.stats.hp<settings.minHP||b.stats.speed<settings.minSpeed||settings.costLimit!=null&&b.cost>settings.costLimit)return;builds[actor]=b;}
     const proxy={...current,builds};if(better(proxy,current)<0)candidates.push({config,proxy,family});
@@ -37,10 +37,20 @@ function tune(seed,master,profile,settings,evaluate,budget=128){
    consider(config,[actor,other],'swap:'+actor+':'+other+':'+field+':'+slot);
   }
   const sorted=candidates.sort((a,b)=>better(a.proxy,b.proxy)),families=new Set(),diverse=[];for(const row of sorted)if(!families.has(row.family)){families.add(row.family);diverse.push(row);}for(const row of sorted)if(!diverse.includes(row))diverse.push(row);
-  for(const row of diverse.slice(0,24)){if(calls>=budget)break;calls++;let r;try{r=evaluate(row.config);}catch{continue;}if(r?.resourceOK&&(!seed.killed||r.killed)&&better(r,current)<0)current=r;}
+  for(const row of diverse.slice(0,24)){if(calls>=budget||Date.now()>=end)break;calls++;let r;try{r=evaluate(row.config);}catch{continue;}if(r?.resourceOK&&(!seed.killed||r.killed)&&better(r,current)<0)current=r;}
   if(current===before||current.orderOK&&(settings.enemySpeedMax==null||current.enemyFirst))break;
  }
  return {result:current,calls,analysis:analyze(current,settings)};
 }
-root.SpeedTuner26={analyze,propagate,baseFor,gap,tune};
+
+// Full plans, not only actor equipment, determine whether speed is repairable.
+function repair(seeds,master,profile,settings,evaluate,compare,budget=128,tried=new Set(),preferred=new Set()){
+ const end=settings._deadline||Infinity,selected=[],seen=new Set(),results=[],verifiedKeys=[];let calls=0,attempted=0,impossible=0;
+ for(const seed of seeds){if(Date.now()>=end||budget<1)break;if(!seed.resourceOK||seed.orderOK&&(settings.enemySpeedMax==null||seed.enemyFirst))continue;const key=JSON.stringify(seed.config);if(tried.has(key)||seen.has(key))continue;seen.add(key);let analysis;try{analysis=analyze(seed,settings);}catch{continue;}if(!analysis.feasible){impossible++;tried.add(key);continue;}selected.push({seed,key});}
+ selected.sort((a,b)=>{const preferredOrder=Number(preferred.has(b.key))-Number(preferred.has(a.key));if(preferredOrder)return preferredOrder;const ga=gap(a.seed,settings),gb=gap(b.seed,settings);return ga.count-gb.count||ga.total-gb.total||compare(a.seed,b.seed);});
+ const parents=selected.slice(0,3);for(let i=0;i<parents.length&&Date.now()<end;i++){const allowance=Math.floor((budget-calls)/(parents.length-i));if(allowance<1)break;const {seed,key}=parents[i];tried.add(key);attempted++;const checked=tune(seed,master,profile,settings,evaluate,allowance);calls+=checked.calls;if(checked.result.resourceOK&&checked.result.orderOK&&(settings.enemySpeedMax==null||checked.result.enemyFirst)){results.push(checked.result);verifiedKeys.push(key);}}
+ return {calls,attempted,impossible,results,verifiedKeys};
+}
+
+root.SpeedTuner26={analyze,propagate,baseFor,gap,tune,repair};
 })(typeof window==='undefined'?globalThis:window);
