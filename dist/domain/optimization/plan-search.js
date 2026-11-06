@@ -37,10 +37,10 @@ function refine(config,chunks,evaluate,compare,budget=160,options={}){
 }
 // Refine individual turns without expanding or breaking existing extra-action chains.
 function refineLong(seed,master,profile,settings,evaluate,compare,budget=128){
- let best=seed,calls=0,valid=0,improvements=0,swapCalls=0;const end=settings._deadline||Infinity,seen=new Set([JSON.stringify(seed.config)]),beforeDamage=seed.damage;
+ let best=seed,calls=0,valid=0,improvements=0,swapCalls=0,rounds=0,stopReason='round-limit';const end=settings._deadline||Infinity,seen=new Set([JSON.stringify(seed.config)]),beforeDamage=seed.damage;
  const attempt=(config,swap=false)=>{if(calls>=budget||Date.now()>=end)return;const key=JSON.stringify(config);if(seen.has(key))return;seen.add(key);calls++;if(swap)swapCalls++;let result;try{result=evaluate(config);}catch{return;}if(!result?.resourceOK||settings.requireOrder&&(!result.orderOK||!result.enemyFirst))return;valid++;if(compare(result,best)<0){best=result;improvements++;}};
- for(let round=0;round<2&&calls<budget&&Date.now()<end;round++){
-  const parent=best,parts=SupportLoadouts25.chunks(parent.config.actions),roundEnd=round===0?Math.ceil(budget/2):budget,actionEnd=calls+Math.floor((roundEnd-calls)*.75),damage=parent.config.actors.map((_,actor)=>parent.steps.filter(s=>!s.enemy&&s.actor===actor).reduce((n,s)=>n+(s.damage?.min||0),0));
+ for(let round=0;round<(settings.longPlanThirdPass===false?2:3)&&calls<budget&&Date.now()<end;round++){
+  rounds++;const parent=best,parts=SupportLoadouts25.chunks(parent.config.actions),roundEnd=round===0?Math.ceil(budget/2):budget,actionEnd=calls+Math.floor((roundEnd-calls)*.75),damage=parent.config.actors.map((_,actor)=>parent.steps.filter(s=>!s.enemy&&s.actor===actor).reduce((n,s)=>n+(s.damage?.min||0),0));
   const sources=parts.map((part,index)=>({part,index})).filter(({part})=>part.length===1&&!part[0].automatic).sort((a,b)=>damage[a.part[0].actor]-damage[b.part[0].actor]||a.part[0].turn-b.part[0].turn);
   for(const {part,index} of sources){
    if(calls>=actionEnd||Date.now()>=end)break;const old=part[0],available=SequenceEngine.available(parent.config.actors[old.actor]).filter(k=>['attack','attackBuff','skillBuff','adaptiveBuff','jobPrayer','rondo','charge','zoneCharge','spellCharge','critBuff','heal'].includes(k.kind)).sort((a,b)=>Number(b.kind!=='attack')-Number(a.kind!=='attack'));
@@ -51,9 +51,10 @@ function refineLong(seed,master,profile,settings,evaluate,compare,budget=128){
   }
   // Exchange whole chunks only within the same turn; encore and its follow-up stay together.
   const ordered=SupportLoadouts25.chunks(best.config.actions);for(let i=0;i<ordered.length&&calls<roundEnd&&Date.now()<end;i++)for(let j=i+1;j<ordered.length&&calls<roundEnd&&Date.now()<end;j++)if(ordered[i][0].turn===ordered[j][0].turn&&ordered[i][0].actor!==ordered[j][0].actor){const next=clone(ordered);[next[i],next[j]]=[next[j],next[i]];attempt({...clone(best.config),actions:next.flat()},true);}
-  if(best===parent)break;
+  if(best===parent){stopReason='no-improvement';break;}
  }
- return {best,calls,valid,improvements,swapCalls,beforeDamage,afterDamage:best.damage};
+ if(Date.now()>=end)stopReason='deadline';else if(calls>=budget)stopReason='budget';
+ return {best,calls,valid,improvements,swapCalls,rounds,stopReason,beforeDamage,afterDamage:best.damage};
 }
 root.PlanSearch19={refine,refineLong,checked:'2026-10-22',sources:['https://walk.dragonquest.jp/web/news/show/2026091215','https://9db.jp/dqwalk/data/17135']};
 })(typeof window==='undefined'?globalThis:window);

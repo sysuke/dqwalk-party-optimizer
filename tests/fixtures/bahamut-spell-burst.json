@@ -1,0 +1,254 @@
+{
+  "kind": "conditional-sample-profile",
+  "conditions": [
+    "主力ゾーン",
+    "呪文暴走",
+    "AIが指定呪文を選択"
+  ],
+  "note": "Independently constructed sample-profile plan. Proc probability is unknown; not guaranteed or measured game damage.",
+  "config": {
+    "actors": [
+      {
+        "member": 0,
+        "job": "job-5",
+        "weapon": "gun",
+        "limitBreak": 0,
+        "initial": true,
+        "hearts": [
+          "donburi-king",
+          "",
+          "",
+          "zoma-awakened"
+        ],
+        "armors": [],
+        "favored": true,
+        "pathUnlocked": true,
+        "encoreUnlocked": false,
+        "cheerUnlocked": true,
+        "inherit": "",
+        "inheritLevel": 0,
+        "zone": false
+      },
+      {
+        "member": 1,
+        "job": "job-3",
+        "weapon": "keki",
+        "limitBreak": 0,
+        "initial": false,
+        "hearts": [],
+        "armors": [],
+        "favored": true,
+        "pathUnlocked": true,
+        "encoreUnlocked": false,
+        "cheerUnlocked": false,
+        "inherit": "",
+        "inheritLevel": 0,
+        "zone": false
+      },
+      {
+        "member": 2,
+        "job": "job-1",
+        "weapon": "paradox-staff",
+        "limitBreak": 0,
+        "initial": true,
+        "hearts": [
+          "ryu-chan-awakened",
+          "wight",
+          "phantom-dragon-awakened",
+          "ergios"
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "perseria-spell-0",
+          "perseria-spell-1",
+          "perseria-spell-2",
+          "element-pearl-s-3",
+          "element-pearl-s-3",
+          "slalike-medal-plus",
+          "light-orb"
+        ],
+        "favored": true,
+        "pathUnlocked": true,
+        "encoreUnlocked": false,
+        "cheerUnlocked": false,
+        "inherit": "perseria",
+        "inheritLevel": 1,
+        "confirmedSpellCritical": true,
+        "zone": false
+      },
+      {
+        "member": 3,
+        "job": "job-2",
+        "weapon": "dharma-staff",
+        "limitBreak": 0,
+        "initial": false,
+        "hearts": [],
+        "armors": [],
+        "favored": true,
+        "pathUnlocked": true,
+        "encoreUnlocked": true,
+        "cheerUnlocked": false,
+        "inherit": "",
+        "inheritLevel": 0,
+        "zone": false
+      }
+    ],
+    "actions": [
+      {
+        "actor": 0,
+        "turn": 1,
+        "skill": "wait",
+        "target": 0
+      },
+      {
+        "actor": 1,
+        "turn": 1,
+        "skill": "wait",
+        "target": 1
+      },
+      {
+        "actor": 2,
+        "turn": 1,
+        "skill": "wait",
+        "target": 2
+      },
+      {
+        "actor": 3,
+        "turn": 1,
+        "skill": "wait",
+        "target": 3
+      },
+      {
+        "actor": 0,
+        "turn": 2,
+        "skill": "wait",
+        "target": 0
+      },
+      {
+        "actor": 1,
+        "turn": 2,
+        "skill": "wait",
+        "target": 1
+      },
+      {
+        "actor": 2,
+        "turn": 2,
+        "skill": "wait",
+        "target": 2
+      },
+      {
+        "actor": 3,
+        "turn": 2,
+        "skill": "wait",
+        "target": 3
+      },
+      {
+        "actor": 2,
+        "turn": 3,
+        "skill": "wait",
+        "target": 2
+      },
+      {
+        "actor": 0,
+        "turn": 3,
+        "skill": "tokumori",
+        "target": 2
+      },
+      {
+        "actor": 1,
+        "turn": 3,
+        "skill": "wait",
+        "target": 1
+      },
+      {
+        "actor": 3,
+        "turn": 3,
+        "skill": "wait",
+        "target": 3
+      },
+      {
+        "actor": 0,
+        "turn": 4,
+        "skill": "cheer",
+        "target": 2
+      },
+      {
+        "actor": 3,
+        "turn": 4,
+        "skill": "dharma-prayer",
+        "target": 2
+      },
+      {
+        "actor": 1,
+        "turn": 4,
+        "skill": "rondo",
+        "target": 1
+      },
+      {
+        "actor": 2,
+        "turn": 4,
+        "skill": "true-magic-release",
+        "target": 2,
+        "aiSkill": "love-stream"
+      },
+      {
+        "actor": 0,
+        "turn": 5,
+        "skill": "wait",
+        "target": 0
+      },
+      {
+        "actor": 3,
+        "turn": 5,
+        "skill": "wait",
+        "target": 3
+      },
+      {
+        "actor": 1,
+        "turn": 5,
+        "skill": "rondo",
+        "target": 1
+      },
+      {
+        "actor": 2,
+        "turn": 5,
+        "skill": "love-stream",
+        "target": 2
+      }
+    ],
+    "enemy": {
+      "shieldModelUnknown": true,
+      "shtGuardReduction": 99,
+      "debuffImmune": true,
+      "name": "バハムート・ラムダ",
+      "firepowerOnly": true,
+      "typeResistances": {
+        "斬撃": 50,
+        "体技": 50,
+        "呪文": 50,
+        "ブレス": 50
+      },
+      "race": "？？？？系",
+      "defense": 2000,
+      "count": 1,
+      "typeResistance": 50,
+      "enemyTension": 0,
+      "elements": {
+        "無": 0,
+        "メラ": 80,
+        "ヒャド": 50,
+        "ギラ": 80,
+        "バギ": 50,
+        "イオ": 80,
+        "ドルマ": 90,
+        "デイン": 90,
+        "ジバリア": 70,
+        "ザバ": 70
+      },
+      "specialMechanics": true
+    },
+    "domain": "auto",
+    "aiPolicy": "assume-selected",
+    "strictDurations": true
+  }
+}

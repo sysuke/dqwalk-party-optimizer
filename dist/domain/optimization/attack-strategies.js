@@ -15,9 +15,11 @@ function roleTeams(pools,master,profile,settings,limit=8){
  const kinds=row=>{const key=JSON.stringify(row.actor);if(!roles.has(key))roles.set(key,new Set(SequenceEngine.available(row.actor).map(k=>k.kind)));return roles.get(key);};
  const domainOK=row=>{if(!SequenceEngine.available(row.actor).some(k=>k.kind==='domain'&&k.domain==='newworld')||!row.actor.initial)return false;if(!settings.newWorldGoal||settings.newWorldGoal==='auto')return true;const job=master.jobs.find(j=>j.id===row.actor.job),slot=job.slots.map((s,i)=>s==='虹'?i:-1).filter(i=>i>=0).at(-1)??0;return Catalog9.hearts.find(h=>h.id===row.actor.hearts?.[slot])?.color?.split('+').at(-1)===settings.newWorldGoal;};
  const matches=(row,role)=>role.some(kind=>kind==='domain'?domainOK(row):kinds(row).has(kind));
- const leads=[],families=new Set(),ranked=pools.flatMap((rows,member)=>rows.map(row=>({row,member}))).filter(x=>skill(x.row.bestSkill)?.kind==='attack').sort((a,b)=>b.row.attackScore-a.row.attackScore);
+ const leads=[],families=new Set(),ranked=pools.flatMap((rows,member)=>rows.map(row=>({row,member}))).filter(x=>skill(x.row.bestSkill)?.kind==='attack').sort((a,b)=>b.row.attackScore-a.row.attackScore||SequenceEngine.available(b.row.actor).filter(k=>k.kind==='attack').length-SequenceEngine.available(a.row.actor).filter(k=>k.kind==='attack').length);
+ // Reserve one complete inherited AI-spell role before opening damage trims it.
+ if(settings.allowAI){const candidate=ranked.find(x=>x.row.actor.job==='job-1'&&x.row.actor.inherit&&SequenceEngine.available(x.row.actor).some(k=>k.kind==='autoRelease'));if(candidate){const family=candidate.row.bestSkill,key=candidate.member+':'+family+':'+candidate.row.actor.weapon+':'+candidate.row.actor.inherit;leads.push({...candidate,key});families.add(family);}}
  // Keep different attack families before filling with alternative trained owners.
- for(const unique of [true,false])for(const candidate of ranked){if(leads.length>=8)break;const family=candidate.row.bestSkill,key=candidate.member+':'+family;if(unique&&families.has(family)||leads.some(x=>x.key===key))continue;leads.push({...candidate,key});families.add(family);if(leads.length===8)break;}
+ for(const unique of [true,false])for(const candidate of ranked){if(leads.length>=8)break;const family=candidate.row.bestSkill,key=candidate.member+':'+family+':'+candidate.row.actor.weapon+':'+candidate.row.actor.inherit;if(unique&&families.has(family)||leads.some(x=>x.key===key))continue;leads.push({...candidate,key});families.add(family);if(leads.length===8)break;}
  for(const lead of leads.slice(0,8)){
   const leadChecks=checks,leadLimit=Math.min(limit,teams.length+2),spell=skill(lead.row.bestSkill)?.type==='呪文',buff=spell?['skillBuff','jobPrayer','adaptiveBuff']:['skillBuff','adaptiveBuff','attackBuff'];
   const templates=spell?[[['domain'],['rondo'],buff],[['rondo'],buff,['encore']]]:[[buff,['rondo'],['encore']],[buff,['encore'],['attackBuff','encore']]];
@@ -25,7 +27,7 @@ function roleTeams(pools,master,profile,settings,limit=8){
   for(const template of templates){const slots=[0,1,2,3].filter(i=>i!==lead.member),picked=new Map([[lead.member,lead.row]]),assigned=new Map();
    function visit(depth){if(teams.length>=leadLimit||checks-leadChecks>=16||checks>=128||Date.now()>=end)return;if(depth<3){const role=template[depth];for(const member of slots.filter(i=>!picked.has(i))){const options=pools[member].filter(r=>matches(r,role)).sort((a,b)=>b.supportScore-a.supportScore).slice(0,2);for(const row of options){picked.set(member,row);assigned.set(member,role);visit(depth+1);picked.delete(member);assigned.delete(member);}}return;}
     checks++;const order=[lead.member,...slots],original=order.map(i=>picked.get(i)),config={actors:original.map(r=>clone(r.actor))};
-    try{const priority=i=>assigned.get(order[i])?.includes('domain')?2:assigned.get(order[i])?.includes('skillBuff')?1:0,release=[0,...[1,2,3].sort((a,b)=>priority(a)-priority(b))];if(!SupportLoadouts25.fit(config,release,master,profile))return;const fitted=original.map((row,i)=>{const b=SequenceEngine.build(config.actors[i],master,profile,settings);if(b.stats.hp<settings.minHP||b.stats.speed<settings.minSpeed||settings.costLimit!=null&&b.cost>settings.costLimit)throw Error('ability constraint');return {...row,actor:config.actors[i],stats:b.stats,cost:b.cost};});if(!SequenceEngine.available(fitted[0].actor).some(k=>k.id===lead.row.bestSkill))return;for(let i=1;i<4;i++)if(!matches(fitted[i],assigned.get(order[i])))return;if(settings.newWorldGoal&&settings.newWorldGoal!=='auto'&&!fitted.some(domainOK))return;
+    try{const protectedItems={};for(let i=1;i<4;i++){const role=assigned.get(order[i]),actor=config.actors[i],keep=[];if(role.includes('domain')){const job=master.jobs.find(j=>j.id===actor.job),slot=job.slots.map((s,n)=>s==='虹'?n:-1).filter(n=>n>=0).at(-1)??0;if(actor.hearts?.[slot])keep.push(actor.hearts[slot]);}for(const field of ['hearts','armors'])for(let slot=0;slot<(actor[field]||[]).length;slot++){const id=actor[field][slot];if(!id)continue;const changed=clone(actor);changed[field][slot]='';if(!matches({actor:changed},role))keep.push(id);}protectedItems[i]=keep;}if(!SupportLoadouts25.fit(config,[1,2,3,0],master,profile,protectedItems))return;const fitted=original.map((row,i)=>{const b=SequenceEngine.build(config.actors[i],master,profile,settings);if(b.stats.hp<settings.minHP||b.stats.speed<settings.minSpeed||settings.costLimit!=null&&b.cost>settings.costLimit)throw Error('ability constraint');return {...row,actor:config.actors[i],stats:b.stats,cost:b.cost};});if(!SequenceEngine.available(fitted[0].actor).some(k=>k.id===lead.row.bestSkill))return;for(let i=1;i<4;i++)if(!matches(fitted[i],assigned.get(order[i])))return;if(settings.newWorldGoal&&settings.newWorldGoal!=='auto'&&!fitted.some(domainOK))return;
      const rows=Array(4);order.forEach((member,i)=>rows[member]=fitted[i]);const key=JSON.stringify(rows.map(r=>r.actor));if(seen.has(key))return;seen.add(key);teams.push({rows,used:PartyBattle.inventory(config,master,profile).used,proxy:0,strategy:{skill:lead.row.bestSkill,lead:lead.member,roles:[...assigned].map(([member,kinds])=>({member,kinds}))}});
     }catch{/* A role without its owned equipment or required ability is not a candidate. */}
    }visit(0);
@@ -56,8 +58,29 @@ function shiftPreparation(plan,lead,attackId,turnIndex){
  return {...plan,parts:rows,prepTurn:turnIndex+1};
 }
 
+// Complete a late AI spell burst, including its earlier buff preparation.
+function lateSpellBursts(layout,settings){
+ if(!settings.allowAI||settings.turns<2)return [];
+ const config=layout.config,available=config.actors.map(a=>SequenceEngine.available(a)),plans=[],seen=new Set(),turns=settings.turns;
+ for(let lead=0;lead<4;lead++)if(config.actors[lead].job==='job-1'&&available[lead].some(k=>k.kind==='autoRelease')){
+  const spells=available[lead].filter(k=>k.kind==='attack'&&k.type==='呪文'),others=[0,1,2,3].filter(i=>i!==lead);
+  for(const prayer of others.filter(i=>available[i].some(k=>k.kind==='jobPrayer')))for(const rondo of others.filter(i=>i!==prayer&&available[i].some(k=>k.kind==='rondo')))for(const buffer of others.filter(i=>i!==prayer&&i!==rondo&&available[i].some(k=>k.kind==='skillBuff'))){
+   const buff=available[buffer].find(k=>k.kind==='skillBuff'),adaptive=available[buffer].find(k=>k.kind==='adaptiveBuff'),release=available[lead].find(k=>k.kind==='autoRelease');
+   for(const start of [...new Set([1,turns-1])])for(const spell of spells){
+    const actions=[],action=(actor,turn,skill,target=actor)=>({actor,turn,skill,target});
+    for(let turn=1;turn<=turns;turn++){
+     if(turn<start){for(const actor of [lead,buffer,prayer,rondo])actions.push(action(actor,turn,turn===start-1&&actor===buffer&&adaptive?adaptive.id:'wait',actor===buffer?lead:actor));continue;}
+     actions.push(action(buffer,turn,turn===start?buff.id:'wait',lead),action(prayer,turn,turn===start?available[prayer].find(k=>k.kind==='jobPrayer').id:'wait',lead),action(rondo,turn,available[rondo].find(k=>k.kind==='rondo').id));
+     actions.push({...action(lead,turn,turn===start?release.id:spell.id),...(turn===start?{aiSkill:spell.id}:{})});
+    }
+    const q={...clone(config),actions},key=JSON.stringify(q);if(seen.has(key))continue;seen.add(key);plans.push({config:q,meta:{lead,skill:spell.id,roles:['autoRelease','jobPrayer','rondo','skillBuff',...(adaptive&&start>1?['adaptiveBuff']:[])],macro:true,prepTurn:start,stage:'必要な補助を前ターンから用意した呪文手順'}});
+   }
+  }
+ }
+ return plans;
+}
 function search(layouts,master,profile,settings,evaluate,budget=192){
- let probes=0,calls=0,verified=0,macroCalls=0,duplicatePlans=0,temporalCalls=0;const temporal=!!settings.complementaryMacros&&settings.temporalPlans!==false;const seenPlans=new Set(),candidates=[],end=settings._deadline||Infinity,selectedLayouts=layouts.slice(0,6),hasIncoming=settings.incoming!=null||settings.aoeDamageHigh!=null,attackTarget=settings.objective==='break'?PartyBattle.shieldThresholds(settings)[3]:settings.hp;
+ let probes=0,calls=0,verified=0,macroCalls=0,duplicatePlans=0,temporalCalls=0;const temporal=!!settings.complementaryMacros&&settings.temporalPlans!==false;const seenPlans=new Set(),candidates=[],end=settings._deadline||Infinity,selectedLayouts=(settings.complementaryMacros&&settings.allowAI?[...layouts.filter(layout=>layout.config.actors.some(a=>a.job==='job-1'&&a.inherit&&SequenceEngine.available(a).some(k=>k.kind==='autoRelease'))),...layouts]:layouts).filter((layout,i,all)=>all.indexOf(layout)===i).slice(0,6),hasIncoming=settings.incoming!=null||settings.aoeDamageHigh!=null,attackTarget=settings.objective==='break'?PartyBattle.shieldThresholds(settings)[3]:settings.hp;
  const queues=selectedLayouts.map(layout=>layout.config.actors.map(a=>SequenceEngine.available(a).filter(k=>k.kind==='attack'))),max=Math.max(0,...queues.flat().map(q=>q.length));
  for(let n=0;n<max&&probes<48&&Date.now()<end;n++)for(let li=0;li<selectedLayouts.length;li++)for(let lead=0;lead<4;lead++){
   const k=queues[li][lead][n];if(!k||probes>=48||Date.now()>=end)continue;const q=clone(selectedLayouts[li].config);q.actions=[lead,...[0,1,2,3].filter(i=>i!==lead)].map(actor=>({actor,turn:1,skill:actor===lead?k.id:'wait',target:actor}));probes++;
@@ -65,6 +88,7 @@ function search(layouts,master,profile,settings,evaluate,budget=192){
  }
  const families=new Set(),selected=[],ranked=candidates.sort((a,b)=>b.base-a.base),add=row=>{const family=row?.id==='eradicate-fullslash'?'fullslash':row?.id;if(row&&!families.has(family)&&selected.length<4){families.add(family);selected.push(row);}};add(ranked[0]);if(settings.objective==='survive')add(ranked.find(row=>skill(row.id)?.healing));for(const row of ranked)add(row);
  const run=(q,meta)=>{if(calls>=budget||Date.now()>=end)return null;if(settings.complementaryMacros){const key=JSON.stringify(q);if(seenPlans.has(key)){duplicatePlans++;return null;}seenPlans.add(key);}calls++;if(meta.macro)macroCalls++;if(meta.prepTurn>1)temporalCalls++;const r=evaluate(q);if(r?.resourceOK){verified++;const hits=r.steps.filter(s=>s.actor===meta.lead&&s.skill===meta.skill&&s.damage),largest=hits.reduce((a,b)=>(a?.damage.min||0)>=b.damage.min?a:b,null);r.attackStrategy={...meta,target:attackTarget,largest:largest?.damage.min||0,buffs:clone(largest?.before||{}),verified:true};}return r;};
+ if(settings.complementaryMacros&&settings.lateSpellBursts!==false){const ceiling=Math.min(budget,Math.max(8,Math.floor(budget*.25)));for(const layout of selectedLayouts)for(const plan of lateSpellBursts(layout,settings)){if(calls>=ceiling||Date.now()>=end)break;run(plan.config,plan.meta);}}
  for(let index=0;index<selected.length;index++){
   const c=selected[index],{lead,id}=c,limit=calls+Math.ceil((budget-calls)/(selected.length-index)),turns=settings.turns,available=c.config.actors.map(a=>SequenceEngine.available(a)),action=(actor,turn,id,target=actor)=>({actor,turn,skill:id,target}),waits=actor=>Array.from({length:turns},(_,t)=>[action(actor,t+1,'wait')]),parts=available.map((ks,actor)=>{const rows=waits(actor),heal=ks.find(k=>k.kind==='heal');if((settings.objective==='survive'||hasIncoming)&&heal)for(let t=0;t<turns;t++)rows[t]=[action(actor,t+1,heal.id)];return rows;});
   const maxHits=Math.max(1,Math.floor(c.build.stats.mp/Math.max(1,c.mp))),attack=skill(id);let used=0;for(let t=0;t<turns;t++){const fires=Math.floor((t+1)*Math.min(turns,maxHits)/turns)>Math.floor(t*Math.min(turns,maxHits)/turns);parts[lead][t]=[action(lead,t+1,fires?(used++&&attack.eradicate?'fullslash':id):'wait')];}
@@ -82,5 +106,5 @@ function search(layouts,master,profile,settings,evaluate,budget=192){
  }
  return {probes,calls,verified,macroCalls,duplicatePlans,temporalCalls,skills:selected.map(c=>c.id),scope:'耐性・種類耐性・SHTガード込みの攻撃比較→バフと回復の実行手順→同じ戦闘計算でMP/生存/シールドを再検証。最適性は未保証。'};
 }
-root.AttackStrategies={mainAttack,diverse,survivalCompare,conditions,roleTeams,completeOptions,shiftPreparation,search};
+root.AttackStrategies={mainAttack,diverse,survivalCompare,conditions,roleTeams,completeOptions,shiftPreparation,lateSpellBursts,search};
 })(typeof window==='undefined'?globalThis:window);

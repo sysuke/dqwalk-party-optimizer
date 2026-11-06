@@ -4,10 +4,10 @@ const clone=x=>JSON.parse(JSON.stringify(x));
 function chunks(actions){const out=[];let pending=null;for(const a of actions){if(pending!==null){if(a.actor!==pending)throw Error('追加行動の対象と手順が一致しません');out.at(-1).push(clone(a));}else out.push([clone(a)]);const kind=Catalog9.skills.find(k=>k.id===a.skill)?.kind;pending=kind==='encore'?a.target:['rainbow','overdrive','mageChant'].includes(kind)?a.actor:null;}return out;}
 // Free only oversubscribed gear on the replacement supports. Never borrow
 // equipment from the retained attackers or invent another owned copy.
-function fit(config,changed,master,profile){
+function fit(config,changed,master,profile,protectedItems={}){
  const stock=new Map(profile.inventory.map(x=>[x.id,x.count])),used=PartyBattle.inventory(config,master,profile).used;
  for(const actor of changed)for(const field of ['hearts','armors'])for(let i=0;i<(config.actors[actor][field]||[]).length;i++){
-  const id=config.actors[actor][field][i];if(!id)continue;
+  const id=config.actors[actor][field][i];if(!id||protectedItems[actor]?.includes(id))continue;
   const heart=field==='hearts'&&Catalog9.hearts.find(h=>h.id===id),item=field==='hearts'?master.items.find(x=>x.slot==='heart'&&(x.id===id||x.name===heart?.name)):{id};
   if(item&&used[item.id]>(stock.get(item.id)||0)){config.actors[actor][field][i]='';used[item.id]--;}
  }
