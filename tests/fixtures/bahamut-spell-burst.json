@@ -250,5 +250,316 @@
     "domain": "auto",
     "aiPolicy": "assume-selected",
     "strictDurations": true
+  },
+  "orderRepairSeed": {
+    "actors": [
+      {
+        "member": 0,
+        "job": "job-5",
+        "weapon": "gun",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "jewel-base",
+          "god",
+          "",
+          "blair-awakened"
+        ],
+        "armors": [
+          "",
+          "new-legend-head",
+          "adjust-body",
+          "adjust-legs",
+          "",
+          "",
+          "light-orb",
+          "yellow-dragon-ring-plus"
+        ],
+        "favored": true,
+        "initial": true,
+        "cheerUnlocked": true,
+        "pathUnlocked": true,
+        "magePath": "none",
+        "encoreUnlocked": false,
+        "rootUnlocked": false,
+        "majinCritical20": 0,
+        "majinCritical40": 0,
+        "majinPathCritical": false,
+        "confirmedSpellCritical": true,
+        "confirmedEcho": false
+      },
+      {
+        "member": 1,
+        "job": "job-4",
+        "weapon": "moon",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "keki",
+        "hearts": [
+          "blue-dragonlord-awakened",
+          "god",
+          "",
+          "donburi-king"
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "",
+          "camyu-physical-0",
+          "camyu-physical-1",
+          "",
+          "",
+          "light-orb",
+          "slalike-medal-plus"
+        ],
+        "favored": false,
+        "initial": true,
+        "cheerUnlocked": false,
+        "pathUnlocked": true,
+        "magePath": "none",
+        "encoreUnlocked": false,
+        "rootUnlocked": false,
+        "majinCritical20": 0,
+        "majinCritical40": 0,
+        "majinPathCritical": false,
+        "confirmedSpellCritical": true,
+        "confirmedEcho": false,
+        "inheritLevel": 1,
+        "inheritLimitBreak": 0
+      },
+      {
+        "member": 2,
+        "job": "job-1",
+        "weapon": "paradox-staff",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "perseria",
+        "hearts": [
+          "zoma-awakened",
+          "phantom-dragon-awakened",
+          "ryu-chan-awakened",
+          "jewel-awakened"
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "perseria-spell-0",
+          "camyu-physical-0",
+          "perseria-spell-2",
+          "dragonfang-pearl-critical-s",
+          "dragonfang-pearl-critical-s",
+          "light-orb",
+          "slalike-medal-plus"
+        ],
+        "favored": true,
+        "initial": true,
+        "cheerUnlocked": false,
+        "pathUnlocked": true,
+        "magePath": "none",
+        "encoreUnlocked": false,
+        "rootUnlocked": false,
+        "majinCritical20": 0,
+        "majinCritical40": 0,
+        "majinPathCritical": false,
+        "confirmedSpellCritical": true,
+        "confirmedEcho": true,
+        "inheritLevel": 1,
+        "inheritLimitBreak": 0,
+        "zone": true,
+        "assumedZone": true
+      },
+      {
+        "member": 3,
+        "job": "job-2",
+        "weapon": "dharma-staff",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "blue-dragonlord-awakened",
+          "god",
+          "mordegon",
+          "griz-awakened"
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "new-legend-head",
+          "adjust-body",
+          "adjust-legs",
+          "dragonfang-pearl-critical-s",
+          "dragonfang-pearl-critical-s",
+          "light-orb",
+          "yellow-dragon-ring-plus"
+        ],
+        "favored": true,
+        "initial": true,
+        "cheerUnlocked": false,
+        "pathUnlocked": true,
+        "magePath": "none",
+        "encoreUnlocked": true,
+        "rootUnlocked": false,
+        "majinCritical20": 0,
+        "majinCritical40": 0,
+        "majinPathCritical": false,
+        "confirmedSpellCritical": true,
+        "confirmedEcho": false
+      }
+    ],
+    "enemy": {
+      "shieldModelUnknown": true,
+      "shtGuardReduction": 99,
+      "debuffImmune": true,
+      "name": "バハムート・ラムダ",
+      "firepowerOnly": true,
+      "typeResistances": {
+        "斬撃": 50,
+        "体技": 50,
+        "呪文": 50,
+        "ブレス": 50
+      },
+      "race": "？？？？系",
+      "defense": 2000,
+      "count": 1,
+      "typeResistance": 50,
+      "enemyTension": 0,
+      "elements": {
+        "無": 0,
+        "メラ": 80,
+        "ヒャド": 50,
+        "ギラ": 80,
+        "バギ": 50,
+        "イオ": 80,
+        "ドルマ": 90,
+        "デイン": 90,
+        "ジバリア": 70,
+        "ザバ": 70
+      },
+      "specialMechanics": true
+    },
+    "domain": "auto",
+    "aiPolicy": "assume-selected",
+    "strictDurations": true,
+    "actions": [
+      {
+        "actor": 0,
+        "turn": 1,
+        "skill": "wait",
+        "target": 0
+      },
+      {
+        "actor": 3,
+        "turn": 1,
+        "skill": "dharma-prayer",
+        "target": 2
+      },
+      {
+        "actor": 1,
+        "turn": 1,
+        "skill": "tokumori",
+        "target": 2
+      },
+      {
+        "actor": 2,
+        "turn": 1,
+        "skill": "true-magic-release",
+        "target": 2,
+        "aiSkill": "love-stream"
+      },
+      {
+        "actor": 0,
+        "turn": 2,
+        "skill": "cheer",
+        "target": 2
+      },
+      {
+        "actor": 3,
+        "turn": 2,
+        "skill": "wait",
+        "target": 2
+      },
+      {
+        "actor": 1,
+        "turn": 2,
+        "skill": "rondo",
+        "target": 1
+      },
+      {
+        "actor": 2,
+        "turn": 2,
+        "skill": "love-stream",
+        "target": 2
+      },
+      {
+        "actor": 0,
+        "turn": 3,
+        "skill": "wait",
+        "target": 2
+      },
+      {
+        "actor": 3,
+        "turn": 3,
+        "skill": "dharma-prayer",
+        "target": 2
+      },
+      {
+        "actor": 1,
+        "turn": 3,
+        "skill": "rondo",
+        "target": 1
+      },
+      {
+        "actor": 2,
+        "turn": 3,
+        "skill": "love-stream",
+        "target": 2
+      },
+      {
+        "actor": 0,
+        "turn": 4,
+        "skill": "wait",
+        "target": 2
+      },
+      {
+        "actor": 3,
+        "turn": 4,
+        "skill": "wait",
+        "target": 2
+      },
+      {
+        "actor": 1,
+        "turn": 4,
+        "skill": "rondo",
+        "target": 1
+      },
+      {
+        "actor": 2,
+        "turn": 4,
+        "skill": "love-stream",
+        "target": 2
+      },
+      {
+        "actor": 0,
+        "turn": 5,
+        "skill": "wait",
+        "target": 2
+      },
+      {
+        "actor": 3,
+        "turn": 5,
+        "skill": "wait",
+        "target": 2
+      },
+      {
+        "actor": 1,
+        "turn": 5,
+        "skill": "rondo",
+        "target": 1
+      },
+      {
+        "actor": 2,
+        "turn": 5,
+        "skill": "love-stream",
+        "target": 2
+      }
+    ]
   }
 }

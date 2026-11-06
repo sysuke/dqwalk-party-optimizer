@@ -35,8 +35,20 @@ function coordinatedCandidates(seed,master,profile,settings,maxChecks=2048,maxCa
  return {candidates:out,checks};
 }
 
+// Two removals can slow a chain together even when either removal alone fails.
+function pairedRemovals(seed,master,profile,settings,maxChecks=2048){
+ const end=settings._deadline||Infinity,options=[],out=[],before=gap(seed,settings);let checks=0;
+ for(let actor=0;actor<seed.config.actors.length&&Date.now()<end;actor++)for(const field of ['hearts','armors'])for(let slot=0;slot<(seed.config.actors[actor][field]||[]).length;slot++){
+  if(!seed.config.actors[actor][field][slot])continue;
+  try{const a=clone(seed.config.actors[actor]);a[field][slot]='';const build=SequenceEngine.build(a,master,profile,settings),required=seed.config.actions.filter(s=>s.actor===actor).map(s=>s.skill);if(build.stats.hp<settings.minHP||build.stats.speed<settings.minSpeed||settings.costLimit!=null&&build.cost>settings.costLimit||required.some(id=>!build.available.some(k=>k.id===id)))continue;options.push({actor,field,slot,a,build});}catch{}
+ }
+ for(let i=0;i<options.length&&checks<maxChecks&&Date.now()<end;i++)for(let j=i+1;j<options.length&&checks<maxChecks&&Date.now()<end;j++){
+  const a=options[i],b=options[j];if(a.actor===b.actor)continue;checks++;const builds=[...seed.builds];builds[a.actor]=a.build;builds[b.actor]=b.build;const proxy={...seed,builds},after=gap(proxy,settings);if(after.count>before.count||after.count===before.count&&after.total>=before.total)continue;const config=clone(seed.config);config.actors[a.actor]=a.a;config.actors[b.actor]=b.a;out.push({config,proxy,gap:after});
+ }
+ out.sort((a,b)=>a.gap.count-b.gap.count||a.gap.total-b.gap.total);return {checks,candidates:out.slice(0,8)};
+}
 function tune(seed,master,profile,settings,evaluate,budget=128){
- const analysis=analyze(seed,settings);if(!analysis.feasible||budget<1)return {result:seed,calls:0,analysis};let current=seed,calls=0,coordinatedChecks=0,coordinatedCalls=0;const end=settings._deadline||Infinity;const stock=new Map(profile.inventory.map(x=>[x.id,x.count])),slots=GearOptimizer.slots,hearts=Catalog9.hearts.filter(h=>master.items.some(i=>i.slot==='heart'&&(i.id===h.id||i.name===h.name)&&(stock.get(i.id)||0)>0)),gear=master.items.filter(i=>i.verifiedModel&&(stock.get(i.id)||0)>0),seen=new Set();
+ const analysis=analyze(seed,settings);if(!analysis.feasible||budget<1)return {result:seed,calls:0,analysis};let current=seed,calls=0,coordinatedChecks=0,coordinatedCalls=0,pairedChecks=0,pairedCalls=0;const end=settings._deadline||Infinity;const stock=new Map(profile.inventory.map(x=>[x.id,x.count])),slots=GearOptimizer.slots,hearts=Catalog9.hearts.filter(h=>master.items.some(i=>i.slot==='heart'&&(i.id===h.id||i.name===h.name)&&(stock.get(i.id)||0)>0)),gear=master.items.filter(i=>i.verifiedModel&&(stock.get(i.id)||0)>0),seen=new Set();
  const better=(a,b)=>{const ga=gap(a,settings),gb=gap(b,settings);return ga.count-gb.count||ga.total-gb.total||b.damage-a.damage;};
  for(let round=0;round<6&&calls<budget&&Date.now()<end;round++){
   const before=current,candidates=[],actors=new Set(current.orderChecks.filter(x=>!x.certain).flatMap(x=>[x.first,x.second]));if(!actors.size&&settings.enemySpeedMax!=null)current.builds.forEach((_,i)=>actors.add(i));
@@ -63,9 +75,20 @@ function tune(seed,master,profile,settings,evaluate,budget=128){
   const sorted=candidates.sort((a,b)=>better(a.proxy,b.proxy)),families=new Set(),diverse=[];for(const row of sorted)if(!families.has(row.family)){families.add(row.family);diverse.push(row);}for(const row of sorted)if(!diverse.includes(row))diverse.push(row);
   for(const row of diverse.slice(0,24)){if(calls>=budget||Date.now()>=end)break;calls++;let r;try{r=evaluate(row.config);}catch{continue;}if(r?.resourceOK&&(!seed.killed||r.killed)&&better(r,current)<0)current=r;}
   if(current===before&&gap(current,settings).count>0&&settings.atomicSpeedRepair!==false&&calls<budget&&coordinatedChecks<2048&&Date.now()<end){const coordinated=coordinatedCandidates(current,master,profile,settings,2048-coordinatedChecks);coordinatedChecks+=coordinated.checks;for(const row of coordinated.candidates){if(calls>=budget||Date.now()>=end)break;const key=JSON.stringify(row.config.actors);if(seen.has(key))continue;seen.add(key);calls++;coordinatedCalls++;let r;try{r=evaluate(row.config);}catch{continue;}if(r?.resourceOK&&(!seed.killed||r.killed)&&better(r,current)<0)current=r;}}
+  if(current===before&&gap(current,settings).count>0&&settings.pairedSpeedRepair!==false&&calls<budget&&pairedChecks<2048&&Date.now()<end){const paired=pairedRemovals(current,master,profile,settings,2048-pairedChecks);pairedChecks+=paired.checks;for(const row of paired.candidates){if(calls>=budget||Date.now()>=end)break;const key=JSON.stringify(row.config.actors);if(seen.has(key))continue;seen.add(key);calls++;pairedCalls++;let r;try{r=evaluate(row.config);}catch{continue;}if(r?.resourceOK&&(!seed.killed||r.killed)&&better(r,current)<0)current=r;}}
   if(current===before||current.orderOK&&(settings.enemySpeedMax==null||current.enemyFirst))break;
  }
- return {result:current,calls,coordinatedChecks,coordinatedCalls,analysis:analyze(current,settings)};
+ return {result:current,calls,coordinatedChecks,coordinatedCalls,pairedChecks,pairedCalls,analysis:analyze(current,settings)};
+}
+
+// Keep a separate lower-firepower plan when its ally order can be made valid.
+function orderedAlternative(seed,master,profile,settings,evaluate,budget=192){
+ const end=settings._deadline||Infinity,parts=SupportLoadouts25.chunks(seed.config.actions),perms=ids=>ids.length?ids.flatMap((x,i)=>perms(ids.filter((_,j)=>j!==i)).map(rest=>[x,...rest])):[[]],seeds=[],seen=new Set();let calls=0,best=null,repairCalls=0,pairedCalls=0;
+ const valid=r=>r?.resourceOK&&r.orderOK&&(settings.enemySpeedMax==null||r.enemyFirst);
+ for(const order of perms([0,1,2,3])){if(calls>=budget||Date.now()>=end)break;const config=clone(seed.config);config.actions=[...parts].sort((a,b)=>a[0].turn-b[0].turn||order.indexOf(a[0].actor)-order.indexOf(b[0].actor)).flat();const key=JSON.stringify(config);if(seen.has(key))continue;seen.add(key);calls++;let result;try{result=evaluate(config);}catch{continue;}if(!result?.resourceOK)continue;if(valid(result)&&(!best||result.damage>best.damage))best=result;try{if(analyze(result,settings).feasible)seeds.push(result);}catch{}}
+ seeds.sort((a,b)=>b.damage-a.damage||gap(a,settings).count-gap(b,settings).count||gap(a,settings).total-gap(b,settings).total);
+ if(seeds.length&&calls<budget&&Date.now()<end){const checked=tune(seeds[0],master,profile,settings,evaluate,budget-calls);calls+=checked.calls;repairCalls=checked.calls;pairedCalls=checked.pairedCalls||0;if(valid(checked.result)&&(!best||checked.result.damage>best.damage))best=checked.result;}
+ return {result:best,calls,repairCalls,pairedCalls};
 }
 
 // Full plans, not only actor equipment, determine whether speed is repairable.
@@ -77,5 +100,5 @@ function repair(seeds,master,profile,settings,evaluate,compare,budget=128,tried=
  return {calls,attempted,impossible,coordinatedCalls,results,verifiedKeys};
 }
 
-root.SpeedTuner26={analyze,propagate,baseFor,gap,tune,repair,coordinatedCandidates};
+root.SpeedTuner26={analyze,propagate,baseFor,gap,tune,repair,coordinatedCandidates,pairedRemovals,orderedAlternative};
 })(typeof window==='undefined'?globalThis:window);
