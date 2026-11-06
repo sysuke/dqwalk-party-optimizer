@@ -1,0 +1,426 @@
+{
+  "kind": "synthetic-sample-profile",
+  "note": "Fixed computed baseline and independently adjusted action plan. Not user measurements or a victory proof.",
+  "baseline": {
+    "actors": [
+      {
+        "member": 1,
+        "job": "job-4",
+        "weapon": "moon",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "keki",
+        "hearts": [
+          "blue-dragonlord-awakened",
+          "god",
+          "mordegon",
+          "donburi-king"
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "",
+          "camyu-physical-0",
+          "camyu-physical-1",
+          "dragonfang-pearl-critical-s",
+          "dragonfang-pearl-critical-s",
+          "light-orb",
+          "slalike-medal-plus"
+        ],
+        "favored": false,
+        "initial": true,
+        "cheerUnlocked": false,
+        "pathUnlocked": true,
+        "magePath": "none",
+        "encoreUnlocked": false,
+        "rootUnlocked": false,
+        "majinCritical20": 0,
+        "majinCritical40": 0,
+        "majinPathCritical": false,
+        "inheritLevel": 1,
+        "inheritLimitBreak": 0
+      },
+      {
+        "member": 2,
+        "job": "job-10",
+        "weapon": "gun",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "blue-dragonlord-awakened",
+          "",
+          "god",
+          "lamp"
+        ],
+        "armors": [
+          "",
+          "new-legend-head",
+          "adjust-body",
+          "adjust-legs",
+          "",
+          "",
+          "light-orb",
+          "yellow-dragon-ring-plus"
+        ],
+        "favored": true,
+        "initial": true,
+        "cheerUnlocked": false,
+        "pathUnlocked": true,
+        "magePath": "none",
+        "encoreUnlocked": false,
+        "rootUnlocked": false,
+        "majinCritical20": 0,
+        "majinCritical40": 0,
+        "majinPathCritical": false
+      },
+      {
+        "member": 0,
+        "job": "job-0",
+        "weapon": "hero",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "blue-dragonlord-awakened",
+          "phantom-dragon-awakened",
+          "ryu-chan-awakened",
+          "god"
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "adjust-head",
+          "adjust-body",
+          "adjust-legs",
+          "dragonfang-pearl-critical-s",
+          "dragonfang-pearl-critical-s",
+          "light-orb",
+          "yellow-dragon-ring-plus"
+        ],
+        "favored": true,
+        "initial": true,
+        "cheerUnlocked": true,
+        "pathUnlocked": true,
+        "magePath": "none",
+        "encoreUnlocked": false,
+        "rootUnlocked": false,
+        "majinCritical20": 0,
+        "majinCritical40": 0,
+        "majinPathCritical": false
+      },
+      {
+        "member": 3,
+        "job": "job-7",
+        "weapon": "eternal-staff",
+        "limitBreak": 0,
+        "left": "",
+        "inherit": "",
+        "hearts": [
+          "leeslet",
+          "zoma-awakened",
+          "",
+          ""
+        ],
+        "armors": [
+          "roto-sacred-shield",
+          "perseria-spell-0",
+          "camyu-physical-0",
+          "veronica-spell-2",
+          "",
+          "",
+          "light-orb",
+          "slalike-medal-plus"
+        ],
+        "favored": true,
+        "initial": true,
+        "cheerUnlocked": false,
+        "pathUnlocked": true,
+        "magePath": "none",
+        "encoreUnlocked": false,
+        "rootUnlocked": false,
+        "majinCritical20": 0,
+        "majinCritical40": 0,
+        "majinPathCritical": false
+      }
+    ],
+    "actions": [
+      {
+        "actor": 1,
+        "turn": 1,
+        "skill": "concentrate",
+        "target": 1
+      },
+      {
+        "actor": 3,
+        "turn": 1,
+        "skill": "meragaia",
+        "target": 3
+      },
+      {
+        "actor": 0,
+        "turn": 1,
+        "skill": "rondo",
+        "target": 2
+      },
+      {
+        "actor": 2,
+        "turn": 1,
+        "skill": "fullslash",
+        "target": 2
+      },
+      {
+        "actor": 1,
+        "turn": 2,
+        "skill": "dragonfang",
+        "target": 1
+      },
+      {
+        "actor": 3,
+        "turn": 2,
+        "skill": "meragaia",
+        "target": 3
+      },
+      {
+        "actor": 0,
+        "turn": 2,
+        "skill": "rondo",
+        "target": 2
+      },
+      {
+        "actor": 2,
+        "turn": 2,
+        "skill": "fullslash",
+        "target": 2
+      },
+      {
+        "actor": 1,
+        "turn": 3,
+        "skill": "dragonfang",
+        "target": 1
+      },
+      {
+        "actor": 3,
+        "turn": 3,
+        "skill": "meragaia",
+        "target": 3
+      },
+      {
+        "actor": 0,
+        "turn": 3,
+        "skill": "rondo",
+        "target": 2
+      },
+      {
+        "actor": 2,
+        "turn": 3,
+        "skill": "fullslash",
+        "target": 2
+      },
+      {
+        "actor": 1,
+        "turn": 4,
+        "skill": "dragonfang",
+        "target": 1
+      },
+      {
+        "actor": 3,
+        "turn": 4,
+        "skill": "meragaia",
+        "target": 3
+      },
+      {
+        "actor": 0,
+        "turn": 4,
+        "skill": "rondo",
+        "target": 2
+      },
+      {
+        "actor": 2,
+        "turn": 4,
+        "skill": "fullslash",
+        "target": 2
+      },
+      {
+        "actor": 1,
+        "turn": 5,
+        "skill": "dragonfang",
+        "target": 1
+      },
+      {
+        "actor": 3,
+        "turn": 5,
+        "skill": "meragaia",
+        "target": 3
+      },
+      {
+        "actor": 0,
+        "turn": 5,
+        "skill": "rondo",
+        "target": 2
+      },
+      {
+        "actor": 2,
+        "turn": 5,
+        "skill": "fullslash",
+        "target": 2
+      }
+    ],
+    "enemy": {
+      "shieldModelUnknown": true,
+      "shtGuardReduction": 99,
+      "debuffImmune": true,
+      "name": "バハムート・ラムダ",
+      "firepowerOnly": true,
+      "typeResistances": {
+        "斬撃": 50,
+        "体技": 50,
+        "呪文": 50,
+        "ブレス": 50
+      },
+      "race": "？？？？系",
+      "defense": 2000,
+      "count": 1,
+      "typeResistance": 50,
+      "enemyTension": 0,
+      "elements": {
+        "無": 0,
+        "メラ": 80,
+        "ヒャド": 50,
+        "ギラ": 80,
+        "バギ": 50,
+        "イオ": 80,
+        "ドルマ": 90,
+        "デイン": 90,
+        "ジバリア": 70,
+        "ザバ": 70
+      },
+      "specialMechanics": true
+    },
+    "domain": "auto",
+    "aiPolicy": "manual",
+    "weather": "unknown",
+    "timeOfDay": "unknown",
+    "strictDurations": true
+  },
+  "referenceActions": [
+    {
+      "actor": 1,
+      "turn": 1,
+      "skill": "concentrate",
+      "target": 1
+    },
+    {
+      "actor": 3,
+      "turn": 1,
+      "skill": "meragaia",
+      "target": 3
+    },
+    {
+      "actor": 0,
+      "turn": 1,
+      "skill": "tokumori",
+      "target": 1
+    },
+    {
+      "actor": 2,
+      "turn": 1,
+      "skill": "fullslash",
+      "target": 2
+    },
+    {
+      "actor": 0,
+      "turn": 2,
+      "skill": "rondo",
+      "target": 2
+    },
+    {
+      "actor": 3,
+      "turn": 2,
+      "skill": "meragaia",
+      "target": 3
+    },
+    {
+      "actor": 1,
+      "turn": 2,
+      "skill": "dragonfang",
+      "target": 1
+    },
+    {
+      "actor": 2,
+      "turn": 2,
+      "skill": "fullslash",
+      "target": 2
+    },
+    {
+      "actor": 1,
+      "turn": 3,
+      "skill": "dragonfang",
+      "target": 1
+    },
+    {
+      "actor": 3,
+      "turn": 3,
+      "skill": "meragaia",
+      "target": 3
+    },
+    {
+      "actor": 0,
+      "turn": 3,
+      "skill": "dualbreaker",
+      "target": 0
+    },
+    {
+      "actor": 2,
+      "turn": 3,
+      "skill": "fullslash",
+      "target": 2
+    },
+    {
+      "actor": 1,
+      "turn": 4,
+      "skill": "dragonfang",
+      "target": 1
+    },
+    {
+      "actor": 3,
+      "turn": 4,
+      "skill": "meragaia",
+      "target": 3
+    },
+    {
+      "actor": 0,
+      "turn": 4,
+      "skill": "dualbreaker",
+      "target": 0
+    },
+    {
+      "actor": 2,
+      "turn": 4,
+      "skill": "fullslash",
+      "target": 2
+    },
+    {
+      "actor": 1,
+      "turn": 5,
+      "skill": "dragonfang",
+      "target": 1
+    },
+    {
+      "actor": 3,
+      "turn": 5,
+      "skill": "meragaia",
+      "target": 3
+    },
+    {
+      "actor": 0,
+      "turn": 5,
+      "skill": "rondo",
+      "target": 2
+    },
+    {
+      "actor": 2,
+      "turn": 5,
+      "skill": "fullslash",
+      "target": 2
+    }
+  ]
+}

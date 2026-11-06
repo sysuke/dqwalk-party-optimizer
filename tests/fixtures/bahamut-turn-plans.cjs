@@ -1,0 +1,2 @@
+'use strict';
+module.exports=function(c){const data=require('./bahamut-turn-plans.json'),master=c.PlannerData.real,profile=c.PlannerData.profile(master),config=JSON.parse(JSON.stringify(data.baseline)),settings=c.PartyBattle.validate({objective:'damage',turns:5,hp:9500000,shieldMaxHP:9500000,shieldRates:[.1,.2,.3,.5],shieldProvisional:true,allowPaths:true,allowInheritance:true,allowDual:true});return {master,profile,config,settings,reference:{...JSON.parse(JSON.stringify(config)),actions:JSON.parse(JSON.stringify(data.referenceActions))}};};
