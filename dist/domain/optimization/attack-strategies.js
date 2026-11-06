@@ -64,16 +64,16 @@ function lateSpellBursts(layout,settings){
  const config=layout.config,available=config.actors.map(a=>SequenceEngine.available(a)),plans=[],seen=new Set(),turns=settings.turns;
  for(let lead=0;lead<4;lead++)if(config.actors[lead].job==='job-1'&&available[lead].some(k=>k.kind==='autoRelease')){
   const spells=available[lead].filter(k=>k.kind==='attack'&&k.type==='呪文'),others=[0,1,2,3].filter(i=>i!==lead);
-  for(const prayer of others.filter(i=>available[i].some(k=>k.kind==='jobPrayer')))for(const rondo of others.filter(i=>i!==prayer&&available[i].some(k=>k.kind==='rondo')))for(const buffer of others.filter(i=>i!==prayer&&i!==rondo&&available[i].some(k=>k.kind==='skillBuff'))){
-   const buff=available[buffer].find(k=>k.kind==='skillBuff'),adaptive=available[buffer].find(k=>k.kind==='adaptiveBuff'),release=available[lead].find(k=>k.kind==='autoRelease');
-   for(const start of [...new Set([1,turns-1])])for(const spell of spells){
+  for(const prayer of others.filter(i=>available[i].some(k=>k.kind==='jobPrayer')))for(const rondo of others.filter(i=>i!==prayer&&available[i].some(k=>k.kind==='rondo')))for(const buffer of others.filter(i=>i!==prayer&&i!==rondo)){
+   const buff=available[buffer].find(k=>k.kind==='skillBuff'),adaptiveOwner=others.find(i=>available[i].some(k=>k.kind==='adaptiveBuff')),adaptive=adaptiveOwner==null?null:available[adaptiveOwner].find(k=>k.kind==='adaptiveBuff'),release=available[lead].find(k=>k.kind==='autoRelease');
+   for(const start of [...new Set(settings.temporalPlans===false?[1]:[1,turns-1])])for(const spell of spells){
     const actions=[],action=(actor,turn,skill,target=actor)=>({actor,turn,skill,target});
     for(let turn=1;turn<=turns;turn++){
-     if(turn<start){for(const actor of [lead,buffer,prayer,rondo])actions.push(action(actor,turn,turn===start-1&&actor===buffer&&adaptive?adaptive.id:'wait',actor===buffer?lead:actor));continue;}
-     actions.push(action(buffer,turn,turn===start?buff.id:'wait',lead),action(prayer,turn,turn===start?available[prayer].find(k=>k.kind==='jobPrayer').id:'wait',lead),action(rondo,turn,available[rondo].find(k=>k.kind==='rondo').id));
+     if(turn<start){for(const actor of [lead,buffer,prayer,rondo])actions.push(action(actor,turn,turn===start-1&&actor===adaptiveOwner&&adaptive?adaptive.id:'wait',actor===adaptiveOwner?lead:actor));continue;}
+     actions.push(action(buffer,turn,turn===start?(buff?.id||(start===1&&adaptiveOwner===buffer?adaptive?.id:'wait')||'wait'):'wait',lead),action(prayer,turn,turn===start?available[prayer].find(k=>k.kind==='jobPrayer').id:'wait',lead),action(rondo,turn,available[rondo].find(k=>k.kind==='rondo').id));
      actions.push({...action(lead,turn,turn===start?release.id:spell.id),...(turn===start?{aiSkill:spell.id}:{})});
     }
-    const q={...clone(config),actions},key=JSON.stringify(q);if(seen.has(key))continue;seen.add(key);plans.push({config:q,meta:{lead,skill:spell.id,roles:['autoRelease','jobPrayer','rondo','skillBuff',...(adaptive&&start>1?['adaptiveBuff']:[])],macro:true,prepTurn:start,stage:'必要な補助を前ターンから用意した呪文手順'}});
+    const q={...clone(config),actions},key=JSON.stringify(q);if(seen.has(key))continue;seen.add(key);plans.push({config:q,meta:{lead,skill:spell.id,roles:['autoRelease','jobPrayer','rondo',...(buff?['skillBuff']:[]),...(adaptive&&(start>1||adaptiveOwner===buffer&&!buff)?['adaptiveBuff']:[])],macro:true,prepTurn:start,stage:'必要な補助を前ターンから用意した呪文手順'}});
    }
   }
  }

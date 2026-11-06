@@ -37,13 +37,24 @@ function refine(config,chunks,evaluate,compare,budget=160,options={}){
 }
 // Refine individual turns without expanding or breaking existing extra-action chains.
 function refineLong(seed,master,profile,settings,evaluate,compare,budget=128){
- let best=seed,calls=0,valid=0,improvements=0,swapCalls=0,rounds=0,stopReason='round-limit';const end=settings._deadline||Infinity,seen=new Set([JSON.stringify(seed.config)]),beforeDamage=seed.damage;
+ let best=seed,calls=0,valid=0,improvements=0,swapCalls=0,rounds=0,waitFillCalls=0,waitRelocations=0,stopReason='round-limit';const end=settings._deadline||Infinity,seen=new Set([JSON.stringify(seed.config)]),beforeDamage=seed.damage;
  const attempt=(config,swap=false)=>{if(calls>=budget||Date.now()>=end)return;const key=JSON.stringify(config);if(seen.has(key))return;seen.add(key);calls++;if(swap)swapCalls++;let result;try{result=evaluate(config);}catch{return;}if(!result?.resourceOK||settings.requireOrder&&(!result.orderOK||!result.enemyFirst))return;valid++;if(compare(result,best)<0){best=result;improvements++;}};
+ // Fill successive waits against the updated complete plan, not a frozen parent.
+ if(settings.fillWaits!==false&&settings.objective==='damage'&&!['main','all'].includes(settings.zoneScenario)&&settings.spellProcScenario!=='triggered'){
+  const ceiling=Math.min(48,Math.floor(budget*.3));
+  for(let index=0;index<SupportLoadouts25.chunks(best.config.actions).length&&calls<ceiling&&Date.now()<end;index++){
+   const parent=best,parts=SupportLoadouts25.chunks(parent.config.actions),part=parts[index];if(part.length!==1||part[0].skill!=='wait')continue;const old=part[0],step=parent.steps.find(s=>!s.enemy&&!s.extra&&s.actor===old.actor&&s.turn===old.turn),available=SequenceEngine.available(parent.config.actors[old.actor]).filter(k=>['attack','attackBuff','skillBuff','adaptiveBuff','jobPrayer','rondo','extendBuff','charge','zoneCharge','spellCharge','critBuff'].includes(k.kind)).sort((a,b)=>Number(b.kind!=='attack')-Number(a.kind!=='attack'));let tried=0;
+   for(const skill of available){if(calls>=ceiling||tried>=8||Date.now()>=end)break;let cost;try{cost=PartyBattle.mpCost(skill.id,parent.builds[old.actor].stats.mp).max;}catch{continue;}if(step&&cost>step.mpBefore)continue;
+    const targets=['attackBuff','skillBuff','adaptiveBuff','jobPrayer'].includes(skill.kind)?[0,1,2,3].filter(actor=>skill.kind!=='jobPrayer'||parent.config.actors[actor].job==='job-1').sort((a,b)=>parent.steps.filter(s=>s.actor===b).reduce((n,s)=>n+(s.damage?.min||0),0)-parent.steps.filter(s=>s.actor===a).reduce((n,s)=>n+(s.damage?.min||0),0)):[old.actor];
+    for(const target of targets){if(calls>=ceiling||tried>=8||Date.now()>=end)break;const next=clone(parts);let relocated=false;if(skill.maxUses&&parts.filter(p=>p.some(a=>a.actor===old.actor&&a.skill===skill.id)).length>=skill.maxUses){const later=next.map((p,i)=>({p,i})).filter(x=>x.p.length===1&&x.p[0].actor===old.actor&&x.p[0].skill===skill.id&&x.p[0].turn>old.turn).at(-1);if(!later)continue;next[later.i]=[{actor:old.actor,turn:later.p[0].turn,skill:'wait',target:old.actor}];relocated=true;}next[index]=[{actor:old.actor,turn:old.turn,skill:skill.id,target}];const before=calls,previous=best;attempt({...clone(parent.config),actions:next.flat()});tried++;waitFillCalls+=calls-before;if(relocated&&best!==previous)waitRelocations++;}
+   }
+  }
+ }
  for(let round=0;round<(settings.longPlanThirdPass===false?2:3)&&calls<budget&&Date.now()<end;round++){
   rounds++;const parent=best,parts=SupportLoadouts25.chunks(parent.config.actions),roundEnd=round===0?Math.ceil(budget/2):budget,actionEnd=calls+Math.floor((roundEnd-calls)*.75),damage=parent.config.actors.map((_,actor)=>parent.steps.filter(s=>!s.enemy&&s.actor===actor).reduce((n,s)=>n+(s.damage?.min||0),0));
   const sources=parts.map((part,index)=>({part,index})).filter(({part})=>part.length===1&&!part[0].automatic).sort((a,b)=>damage[a.part[0].actor]-damage[b.part[0].actor]||a.part[0].turn-b.part[0].turn);
   for(const {part,index} of sources){
-   if(calls>=actionEnd||Date.now()>=end)break;const old=part[0],available=SequenceEngine.available(parent.config.actors[old.actor]).filter(k=>['attack','attackBuff','skillBuff','adaptiveBuff','jobPrayer','rondo','charge','zoneCharge','spellCharge','critBuff','heal'].includes(k.kind)).sort((a,b)=>Number(b.kind!=='attack')-Number(a.kind!=='attack'));
+   if(calls>=actionEnd||Date.now()>=end)break;const old=part[0],available=SequenceEngine.available(parent.config.actors[old.actor]).filter(k=>['attack','attackBuff','skillBuff','adaptiveBuff','jobPrayer','rondo','charge','zoneCharge','spellCharge','critBuff','extendBuff','heal'].includes(k.kind)).sort((a,b)=>Number(b.kind!=='attack')-Number(a.kind!=='attack'));
    for(const skill of available){if(calls>=actionEnd||Date.now()>=end)break;if(skill.maxUses&&parent.config.actions.filter(a=>a.actor===old.actor&&a.skill===skill.id).length>=skill.maxUses&&skill.id!==old.skill)continue;
     const targets=['attackBuff','skillBuff','adaptiveBuff','jobPrayer'].includes(skill.kind)?[0,1,2,3].filter(actor=>skill.kind!=='jobPrayer'||parent.config.actors[actor].job==='job-1').sort((a,b)=>damage[b]-damage[a]):[old.actor];
     for(const target of targets){if(calls>=actionEnd||Date.now()>=end)break;if(skill.id===old.skill&&(old.target??old.actor)===target)continue;const next=clone(parts);next[index]=[{actor:old.actor,turn:old.turn,skill:skill.id,target,...(old.enemyTarget==null?{}:{enemyTarget:old.enemyTarget})}];attempt({...clone(parent.config),actions:next.flat()});}
@@ -54,7 +65,7 @@ function refineLong(seed,master,profile,settings,evaluate,compare,budget=128){
   if(best===parent){stopReason='no-improvement';break;}
  }
  if(Date.now()>=end)stopReason='deadline';else if(calls>=budget)stopReason='budget';
- return {best,calls,valid,improvements,swapCalls,rounds,stopReason,beforeDamage,afterDamage:best.damage};
+ return {best,calls,valid,improvements,swapCalls,rounds,waitFillCalls,waitRelocations,stopReason,beforeDamage,afterDamage:best.damage};
 }
 root.PlanSearch19={refine,refineLong,checked:'2026-10-22',sources:['https://walk.dragonquest.jp/web/news/show/2026091215','https://9db.jp/dqwalk/data/17135']};
 })(typeof window==='undefined'?globalThis:window);

@@ -422,5 +422,421 @@
       "skill": "fullslash",
       "target": 2
     }
-  ]
+  ],
+  "standard9": {
+    "note": "Synthetic sample stock and screenshot-visible trained jobs only; not the user saved profile. Late extension and idle support actions form the regression baseline.",
+    "jobs": [
+      "job-0",
+      "job-4",
+      "job-1",
+      "job-9"
+    ],
+    "levels": [
+      70,
+      80,
+      70,
+      70
+    ],
+    "config": {
+      "actors": [
+        {
+          "member": 0,
+          "job": "job-0",
+          "weapon": "hero",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "blue-dragonlord-awakened",
+            "phantom-dragon-awakened",
+            "estark",
+            ""
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "adjust-head",
+            "adjust-body",
+            "adjust-legs",
+            "dragonfang-pearl-critical-s",
+            "dragonfang-pearl-critical-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": true,
+          "initial": true,
+          "cheerUnlocked": true,
+          "pathUnlocked": true,
+          "magePath": "none",
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 0,
+          "majinCritical40": 0,
+          "majinPathCritical": false,
+          "leftLimitBreak": 0,
+          "inheritLevel": 0,
+          "actualAttack": null,
+          "actualMagic": null
+        },
+        {
+          "member": 1,
+          "job": "job-4",
+          "weapon": "god-bird-axe",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "donburi-king",
+            "",
+            "ryu-chan-awakened",
+            "god"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "dragonfang-pearl-critical-s",
+            "dragonfang-pearl-critical-s",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": false,
+          "initial": true,
+          "cheerUnlocked": false,
+          "pathUnlocked": true,
+          "magePath": "none",
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 0,
+          "majinCritical40": 0,
+          "majinPathCritical": false,
+          "inheritLevel": 0,
+          "inheritLimitBreak": 0
+        },
+        {
+          "member": 2,
+          "job": "job-1",
+          "weapon": "eternal-staff",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "leeslet",
+            "",
+            "",
+            "ergios"
+          ],
+          "armors": [
+            "roto-sacred-shield",
+            "veronica-spell-0",
+            "veronica-spell-1",
+            "veronica-spell-2",
+            "element-pearl-s-0",
+            "element-pearl-s-0",
+            "light-orb",
+            "slalike-medal-plus"
+          ],
+          "favored": true,
+          "initial": true,
+          "cheerUnlocked": false,
+          "pathUnlocked": true,
+          "magePath": "none",
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 0,
+          "majinCritical40": 0,
+          "majinPathCritical": false
+        },
+        {
+          "member": 3,
+          "job": "job-9",
+          "weapon": "gun",
+          "limitBreak": 0,
+          "left": "",
+          "inherit": "",
+          "hearts": [
+            "blue-dragonlord-awakened",
+            "god",
+            "mordegon",
+            "king-slime"
+          ],
+          "armors": [
+            "",
+            "new-legend-head",
+            "adjust-body",
+            "adjust-legs",
+            "",
+            "",
+            "light-orb",
+            "yellow-dragon-ring-plus"
+          ],
+          "favored": false,
+          "initial": false,
+          "cheerUnlocked": false,
+          "pathUnlocked": true,
+          "magePath": "none",
+          "encoreUnlocked": false,
+          "rootUnlocked": false,
+          "majinCritical20": 0,
+          "majinCritical40": 0,
+          "majinPathCritical": false
+        }
+      ],
+      "actions": [
+        {
+          "actor": 1,
+          "turn": 1,
+          "skill": "tokumori",
+          "target": 0
+        },
+        {
+          "actor": 2,
+          "turn": 1,
+          "skill": "meragaia",
+          "target": 0
+        },
+        {
+          "actor": 3,
+          "turn": 1,
+          "skill": "concentrate",
+          "target": 3
+        },
+        {
+          "actor": 0,
+          "turn": 1,
+          "skill": "fullslash",
+          "target": 0
+        },
+        {
+          "actor": 1,
+          "turn": 2,
+          "skill": "wait",
+          "target": 0
+        },
+        {
+          "actor": 2,
+          "turn": 2,
+          "skill": "meragaia",
+          "target": 0
+        },
+        {
+          "actor": 3,
+          "turn": 2,
+          "skill": "dragonfang",
+          "target": 3
+        },
+        {
+          "actor": 0,
+          "turn": 2,
+          "skill": "fullslash",
+          "target": 0
+        },
+        {
+          "actor": 1,
+          "turn": 3,
+          "skill": "wait",
+          "target": 0
+        },
+        {
+          "actor": 2,
+          "turn": 3,
+          "skill": "meragaia",
+          "target": 0
+        },
+        {
+          "actor": 3,
+          "turn": 3,
+          "skill": "dragonfang",
+          "target": 3
+        },
+        {
+          "actor": 0,
+          "turn": 3,
+          "skill": "fullslash",
+          "target": 0
+        },
+        {
+          "actor": 1,
+          "turn": 4,
+          "skill": "wait",
+          "target": 0
+        },
+        {
+          "actor": 2,
+          "turn": 4,
+          "skill": "meragaia",
+          "target": 0
+        },
+        {
+          "actor": 3,
+          "turn": 4,
+          "skill": "dragonfang",
+          "target": 3
+        },
+        {
+          "actor": 0,
+          "turn": 4,
+          "skill": "fullslash",
+          "target": 0
+        },
+        {
+          "actor": 1,
+          "turn": 5,
+          "skill": "wait",
+          "target": 0
+        },
+        {
+          "actor": 2,
+          "turn": 5,
+          "skill": "meragaia",
+          "target": 0
+        },
+        {
+          "actor": 3,
+          "turn": 5,
+          "skill": "dragonfang",
+          "target": 3
+        },
+        {
+          "actor": 0,
+          "turn": 5,
+          "skill": "fullslash",
+          "target": 0
+        },
+        {
+          "actor": 1,
+          "turn": 6,
+          "skill": "wait",
+          "target": 0
+        },
+        {
+          "actor": 2,
+          "turn": 6,
+          "skill": "meragaia",
+          "target": 0
+        },
+        {
+          "actor": 3,
+          "turn": 6,
+          "skill": "dragonfang",
+          "target": 3
+        },
+        {
+          "actor": 0,
+          "turn": 6,
+          "skill": "fullslash",
+          "target": 0
+        },
+        {
+          "actor": 1,
+          "turn": 7,
+          "skill": "wait",
+          "target": 0
+        },
+        {
+          "actor": 2,
+          "turn": 7,
+          "skill": "meragaia",
+          "target": 0
+        },
+        {
+          "actor": 3,
+          "turn": 7,
+          "skill": "dragonfang",
+          "target": 3
+        },
+        {
+          "actor": 0,
+          "turn": 7,
+          "skill": "fullslash",
+          "target": 0
+        },
+        {
+          "actor": 1,
+          "turn": 8,
+          "skill": "wait",
+          "target": 0
+        },
+        {
+          "actor": 2,
+          "turn": 8,
+          "skill": "meragaia",
+          "target": 0
+        },
+        {
+          "actor": 3,
+          "turn": 8,
+          "skill": "dragonfang",
+          "target": 3
+        },
+        {
+          "actor": 0,
+          "turn": 8,
+          "skill": "fullslash",
+          "target": 0
+        },
+        {
+          "actor": 1,
+          "turn": 9,
+          "skill": "time-interference",
+          "target": 0
+        },
+        {
+          "actor": 2,
+          "turn": 9,
+          "skill": "meragaia",
+          "target": 0
+        },
+        {
+          "actor": 3,
+          "turn": 9,
+          "skill": "dragonfang",
+          "target": 3
+        },
+        {
+          "actor": 0,
+          "turn": 9,
+          "skill": "fullslash",
+          "target": 0
+        }
+      ],
+      "enemy": {
+        "shieldModelUnknown": true,
+        "shtGuardReduction": 99,
+        "debuffImmune": true,
+        "name": "バハムート・ラムダ",
+        "firepowerOnly": true,
+        "typeResistances": {
+          "斬撃": 50,
+          "体技": 50,
+          "呪文": 50,
+          "ブレス": 50
+        },
+        "race": "？？？？系",
+        "defense": 2000,
+        "count": 1,
+        "typeResistance": 50,
+        "enemyTension": 0,
+        "elements": {
+          "無": 0,
+          "メラ": 80,
+          "ヒャド": 50,
+          "ギラ": 80,
+          "バギ": 50,
+          "イオ": 80,
+          "ドルマ": 90,
+          "デイン": 90,
+          "ジバリア": 70,
+          "ザバ": 70
+        },
+        "specialMechanics": true
+      },
+      "domain": "auto",
+      "aiPolicy": "manual",
+      "weather": "unknown",
+      "timeOfDay": "unknown",
+      "strictDurations": true,
+      "captureBuffs": true
+    }
+  }
 }
