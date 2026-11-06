@@ -112,7 +112,15 @@ function complete(seeds,pools,master,profile,settings,evaluate,compare,budget=19
   }
   const unique=[...new Map(providers.map(a=>[JSON.stringify(a),a])).values()];
   for(const actor of unique){if(calls>=budget)break;const cfg=clone(seed.config);cfg.actors[idle.actor]=actor;const changed=[0,1,2,3].filter(i=>i!==lead&&i!==idle.actor&&cfg.actors[i].actualAttack==null&&cfg.actors[i].actualMagic==null).concat(idle.actor);try{if(!SupportLoadouts25.fit(cfg,changed,master,profile))continue;}catch{continue;}
-   if(cfg.actors.some((a,i)=>cfg.actions.some(action=>action.actor===i&&!SequenceEngine.available(a).some(k=>k.id===action.skill))))continue;
+   // A provider change must be checked together with its action change. Repair
+   // only ordinary, low-damage attacks made unavailable by that change; keep
+   // preparations, support actions and extra-action chains intact.
+   const learned=cfg.actors.map(a=>new Set(SequenceEngine.available(a).map(k=>k.id))),weak=new Set(replaceable(seed).map(st=>st.actor+':'+st.turn)),chunks=SupportLoadouts25.chunks(cfg.actions);let legal=true;
+   for(const part of chunks)for(const action of part)if(!learned[action.actor].has(action.skill)){
+    if(settings.repairProviderActions!==false&&part.length===1&&weak.has(action.actor+':'+action.turn)&&skill(action.skill)?.kind==='attack'){action.skill='wait';action.target=action.actor;}
+    else legal=false;
+   }
+   if(!legal)continue;cfg.actions=chunks.flat();
    const targets=[...new Set([lead,...seed.steps.filter(s=>s.damage&&(s.turn>idle.turn||s.order>idle.order)).map(s=>s.actor)])],skills=SequenceEngine.available(actor).filter(k=>support(k)||k.kind==='overdrive');
    for(const k of skills)for(const target of external.has(k.kind)&&!['extendBuff','domain','rondo'].includes(k.kind)?targets:[lead]){
     if(calls>=budget)break;if(k.kind==='jobPrayer'&&cfg.actors[target].job!=='job-1')continue;
@@ -121,6 +129,14 @@ function complete(seeds,pools,master,profile,settings,evaluate,compare,budget=19
     const options=k.kind==='overdrive'?skills.filter(x=>support(x)&&x.kind!=='overdrive'):[k];
     for(const follow of options){const p=clone(parts);if(k.kind==='overdrive'&&follow.maxUses===1)for(const c of p)if(c[0].actor===idle.actor&&c[0].skill===follow.id)c.splice(0,c.length,{actor:idle.actor,turn:c[0].turn,skill:'wait',target:idle.actor});p[i]=[{actor:idle.actor,turn:idle.turn,skill:k.id,target}];if(k.kind==='overdrive')p[i].push({actor:idle.actor,turn:idle.turn,skill:follow.id,target});attempt({...cfg,actions:p.flat()});
      let anchor=p.find(c=>c[0].actor===target&&c[0].turn===idle.turn);if(anchor&&anchor!==p[i]){const nextBuff=k.kind==='rondo'||k.nextBuff==='phoenix'||follow.kind==='rondo'||follow.nextBuff==='phoenix';if(!nextBuff){let index=p.indexOf(anchor);while(index>0&&p[index-1][0].turn===idle.turn&&p[index-1]!==p[i]&&(skill(p[index-1].at(-1).skill)?.kind==='rondo'||skill(p[index-1].at(-1).skill)?.nextBuff==='phoenix')){anchor=p[index-1];index--;}}if(!nextBuff&&["charge","zoneCharge"].includes(skill(anchor[0].skill)?.kind)){const extra=clone(p);attempt(insert(cfg,extra,i,extra[p.indexOf(anchor)],true));}attempt(insert(cfg,p,i,anchor));}
+     // Repeated next-actor support is a whole-plan alternative. Changing
+     // only one weak attack cannot reveal its value over a long battle.
+     if(settings.repairProviderActions!==false&&settings.turns>=3&&(follow.nextBuff==='phoenix'||follow.kind==='rondo'))for(const count of [...new Set([Math.ceil(settings.turns/2),settings.turns])]){
+      const repeated=clone(p),slots=repeated.filter(part=>part.length===1&&part[0].actor===idle.actor&&part[0].turn>=idle.turn&&weak.has(idle.actor+':'+part[0].turn)).slice(0,count);
+      if(slots.length<2)continue;
+      for(const part of slots){part[0]={actor:idle.actor,turn:part[0].turn,skill:follow.id,target};const anchor=repeated.find(chunk=>chunk[0].actor===target&&chunk[0].turn===part[0].turn);if(anchor&&anchor!==part){repeated.splice(repeated.indexOf(part),1);repeated.splice(repeated.indexOf(anchor),0,part);}}
+      attempt({...cfg,actions:repeated.flat()});if(calls>=budget)break;
+     }
      if(calls>=budget)break;
     }
    }
