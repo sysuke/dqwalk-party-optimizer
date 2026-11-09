@@ -81,6 +81,31 @@ function tune(seed,master,profile,settings,evaluate,budget=128){
  return {result:current,calls,coordinatedChecks,coordinatedCalls,pairedChecks,pairedCalls,analysis:analyze(current,settings)};
 }
 
+// Restore firepower after speed repair, without spending a new battle budget.
+// The score only orders probes; accepted plans are replayed in full.
+function recoverDamage(seed,master,profile,settings,evaluate,budget=24){
+ let current=seed,calls=0,checks=0,improvements=0;const end=settings._deadline||Infinity,seen=new Set([JSON.stringify(seed.config.actors)]),stock=new Map(profile.inventory.map(row=>[row.id,row.count])),beforeDamage=seed.damage;
+ const valid=r=>r?.resourceOK&&r.orderOK&&(settings.enemySpeedMax==null||r.enemyFirst)&&(!seed.killed||r.killed)&&(!seed.conditionsMet||r.conditionsMet)&&(!settings.requireSurvival||r.survival?.modelMet)&&(!settings.newWorldGoal||settings.newWorldGoal==='auto'||r.domain?.id==='newworld'&&r.worldColor===settings.newWorldGoal);
+ if(!valid(seed)||budget<1)return {result:seed,calls,checks,improvements,beforeDamage,afterDamage:seed.damage};
+ const hearts=Catalog9.hearts.filter(h=>(stock.get(master.items.find(i=>i.slot==='heart'&&(i.id===h.id||i.name===h.name))?.id)||0)>0),gear=master.items.filter(i=>i.verifiedModel&&(stock.get(i.id)||0)>0);
+ for(let round=0;round<2&&calls<budget&&checks<2048&&Date.now()<end;round++){
+  const parent=current,candidates=[],damage=parent.builds.map((_,actor)=>parent.steps.filter(st=>st.actor===actor&&st.damage).reduce((n,st)=>n+st.damage.min,0)),actors=[0,1,2,3].sort((a,b)=>damage[b]-damage[a]);
+  for(const actor of actors){if(parent.config.actors[actor].actualAttack!=null||parent.config.actors[actor].actualMagic!=null)continue;
+   for(const field of ['hearts','armors'])for(let slot=0;slot<(field==='hearts'?4:8);slot++)for(const item of field==='hearts'?hearts:gear.filter(i=>i.slot===GearOptimizer.slots[slot])){
+    if(checks>=2048||Date.now()>=end)break;if(parent.config.actors[actor][field]?.[slot]===item.id)continue;checks++;
+    const config=clone(parent.config);config.actors[actor][field]=Array.from({length:field==='hearts'?4:8},(_,i)=>config.actors[actor][field]?.[i]||'');config.actors[actor][field][slot]=item.id;const key=JSON.stringify(config.actors);if(seen.has(key))continue;seen.add(key);
+    try{const build=SequenceEngine.build(config.actors[actor],master,profile,settings);if(build.stats.hp<settings.minHP||build.stats.speed<settings.minSpeed||settings.costLimit!=null&&build.cost>settings.costLimit)continue;const proxy={...parent,builds:[...parent.builds]};proxy.builds[actor]=build;if(gap(proxy,settings).count||PartyBattle.inventory(config,master,profile).issues.length)continue;
+     const old=parent.builds[actor];let score=0;for(const st of parent.steps.filter(st=>st.actor===actor&&st.damage)){const k=Catalog9.skills.find(k=>k.id===st.skill),d=st.damage,type=d.spell?'呪文':k?.type||'斬撃',element=d.element||'無',power=b=>d.hybrid?b.stats.attack+b.stats.magic:b.stats[d.spell?'magic':'attack'],bonus=b=>1+['general','element','race',d.spell?'spellCritical':'critical'].reduce((n,group)=>n+AutoDamage.sum(b,group,type,element,parent.config.enemy.race),0);score+=d.min*(power(build)/Math.max(1,power(old)))*(bonus(build)/Math.max(.01,bonus(old)))-d.min;}
+     if(score>0)candidates.push({config,score,key});
+    }catch{/* Equipment restrictions and incomplete candidates stay excluded. */}
+   }
+  }
+  candidates.sort((a,b)=>b.score-a.score||a.key.localeCompare(b.key));const allowance=Math.min(12,budget-calls);for(const row of candidates.slice(0,allowance)){if(calls>=budget||Date.now()>=end)break;calls++;let result;try{result=evaluate(row.config);}catch{continue;}if(valid(result)&&((result.effectiveDamage??result.damage)>(current.effectiveDamage??current.damage)||(result.effectiveDamage??result.damage)===(current.effectiveDamage??current.damage)&&result.damage>current.damage)){current=result;improvements++;}}
+  if(current===parent)break;
+ }
+ return {result:current,calls,checks,improvements,beforeDamage,afterDamage:current.damage};
+}
+
 // Keep a separate lower-firepower plan when its ally order can be made valid.
 function orderedAlternative(seed,master,profile,settings,evaluate,budget=192){
  const end=settings._deadline||Infinity,parts=SupportLoadouts25.chunks(seed.config.actions),perms=ids=>ids.length?ids.flatMap((x,i)=>perms(ids.filter((_,j)=>j!==i)).map(rest=>[x,...rest])):[[]],seeds=[],seen=new Set();let calls=0,best=null,repairCalls=0,pairedCalls=0;
@@ -88,7 +113,7 @@ function orderedAlternative(seed,master,profile,settings,evaluate,budget=192){
  for(const order of perms([0,1,2,3])){if(calls>=budget||Date.now()>=end)break;const config=clone(seed.config);config.actions=[...parts].sort((a,b)=>a[0].turn-b[0].turn||order.indexOf(a[0].actor)-order.indexOf(b[0].actor)).flat();const key=JSON.stringify(config);if(seen.has(key))continue;seen.add(key);calls++;let result;try{result=evaluate(config);}catch{continue;}if(!result?.resourceOK)continue;if(valid(result)&&(!best||result.damage>best.damage))best=result;try{if(analyze(result,settings).feasible)seeds.push(result);}catch{}}
  seeds.sort((a,b)=>b.damage-a.damage||gap(a,settings).count-gap(b,settings).count||gap(a,settings).total-gap(b,settings).total);
  if(seeds.length&&calls<budget&&Date.now()<end){const checked=tune(seeds[0],master,profile,settings,evaluate,budget-calls);calls+=checked.calls;repairCalls=checked.calls;pairedCalls=checked.pairedCalls||0;if(valid(checked.result)&&(!best||checked.result.damage>best.damage))best=checked.result;}
- return {result:best,calls,repairCalls,pairedCalls};
+ let recovery={calls:0,checks:0,improvements:0};if(best&&settings.orderDamageRecovery!==false&&calls<budget&&Date.now()<end){recovery=recoverDamage(best,master,profile,settings,evaluate,Math.min(24,budget-calls));calls+=recovery.calls;best=recovery.result;}const {result:recovered,...recoveryMetrics}=recovery;return {result:best,calls,repairCalls,pairedCalls,recovery:recoveryMetrics};
 }
 
 // Full plans, not only actor equipment, determine whether speed is repairable.
@@ -100,5 +125,5 @@ function repair(seeds,master,profile,settings,evaluate,compare,budget=128,tried=
  return {calls,attempted,impossible,coordinatedCalls,results,verifiedKeys};
 }
 
-root.SpeedTuner26={analyze,propagate,baseFor,gap,tune,repair,coordinatedCandidates,pairedRemovals,orderedAlternative};
+root.SpeedTuner26={analyze,propagate,baseFor,gap,tune,repair,coordinatedCandidates,pairedRemovals,orderedAlternative,recoverDamage};
 })(typeof window==='undefined'?globalThis:window);
