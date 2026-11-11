@@ -33,3 +33,5 @@ body:not([data-page="select"]) .intro h1{font-size:22px}body:not([data-page="sel
 .simple-candidate [data-result-select][aria-pressed="true"]{background:#edf5ff;border-color:#3275b9}.edit-candidate-context{font-weight:700;color:#2a66a4}.result-order-help{margin:14px 0;padding:12px 16px;background:#f1f6fc;border-left:3px solid #9dbce0}.result-order-help p{line-height:1.8}
 
 .candidate-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:20px 0}.candidate-comparison button{text-align:left;min-width:0;white-space:normal}.candidate-comparison strong,.candidate-comparison span,.candidate-comparison small{display:block;line-height:1.7}.candidate-comparison span{font-weight:700;color:#2a66a4;margin:6px 0}.candidate-comparison small{font-weight:400}@media(max-width:600px){.candidate-comparison{grid-template-columns:1fr}}
+
+.result-order-range{margin:16px 0;padding:14px 18px;background:#f1f6fc;border-left:3px solid #739dc6}.result-order-range h4{margin:0 0 8px}.result-order-range p{line-height:1.8}.result-order-range strong{color:#2a66a4}
