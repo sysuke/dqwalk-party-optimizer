@@ -22,6 +22,21 @@ function verify(seed,master,profile,settings,evaluate,budget=576){
  const exhaustive=complete&&checked>0,allKilled=exhaustive&&failures===0;
  return {complete,allKilled,checked,total,failures,resourceFailures,maxKillTurn,maxKillAction,minDamage:resourceFailures?null:worst?.damage??null,maxDamage:best?.damage??null,worst,best,ratio:settings.ratio,allEnemyFirst:exhaustive&&allEnemyFirst,allSurvivalKnown:exhaustive&&allSurvivalKnown,allSurvived:exhaustive&&allSurvived,minHP:unknownCases?null:minHP,minMP:unknownCases?null:minMP,unknownCases,modelConditionsMet:allKilled&&allEnemyFirst&&allSurvived&&!seed.config.enemy.specialMechanics&&!seed.config.enemy.firepowerOnly};
 }
+// Redistribute equipped speed items without changing jobs, weapons or actions.
+function gearCandidates(seed,master,profile,settings,limit=256){
+ const end=settings._deadline||Infinity,out=[],seen=new Set(),required=seed.config.actors.map((_,actor)=>new Set(seed.config.actions.filter(a=>a.actor===actor).flatMap(a=>[a.skill,a.aiSkill].filter(Boolean)))),lead=seed.builds.map((_,actor)=>seed.steps.filter(s=>!s.enemy&&s.actor===actor).reduce((n,s)=>n+(s.damage?.min||0),0)).reduce((best,n,i,all)=>n>all[best]?i:best,0),providers=[...new Set(seed.config.actions.filter(a=>Catalog9.skills.find(k=>k.id===a.skill)?.kind==='rondo').map(a=>a.actor))];let checks=0;
+ if(seed.config.actors.some(a=>a.actualAttack!=null||a.actualMagic!=null))return {candidates:out,checks};
+ const consider=config=>{if(checks>=limit||Date.now()>=end)return;checks++;const key=JSON.stringify(config.actors);if(seen.has(key))return;seen.add(key);
+  try{if(PartyBattle.inventory(config,master,profile).issues.length)return;for(let actor=0;actor<4;actor++){const available=new Set(SequenceEngine.available(config.actors[actor]).map(k=>k.id));if([...required[actor]].some(id=>!available.has(id)))return;const b=SequenceEngine.build(config.actors[actor],master,profile,settings);if(b.stats.hp<settings.minHP||b.stats.speed<settings.minSpeed||settings.costLimit!=null&&b.cost>settings.costLimit)return;}
+   const preview=SequenceEngine.simulate({...config,captureBuffs:false,actions:config.actors.map((_,actor)=>({actor,turn:1,skill:'wait'}))},master,profile);if(preview.domain.id!==seed.domain.id||(preview.worldColor??null)!==(seed.worldColor??null))return;const velocity=speeds(preview.builds,preview.turnStarts[0].states),possibleOrders=orders.filter(order=>possible(order,velocity,settings.ratio)),bad=possibleOrders.reduce((n,order)=>n+providers.filter(actor=>order[order.indexOf(actor)+1]!==lead).length,0);out.push({config,preview:{builds:preview.builds,turnStarts:preview.turnStarts},score:bad/Math.max(1,possibleOrders.length),orders:possibleOrders.length});
+  }catch{/* Invalid cost, duplicate hearts or lost support effects are not candidates. */}
+ };
+ const donors=[lead,...[0,1,2,3].filter(i=>i!==lead)];for(const field of ['hearts','armors'])for(const donor of donors)for(let slot=0;slot<(field==='hearts'?4:8);slot++){
+  if(checks>=limit||Date.now()>=end)break;const id=seed.config.actors[donor][field]?.[slot],item=field==='hearts'?Catalog9.hearts.find(h=>h.id===id):master.items.find(i=>i.id===id);if(!id||!(item?.stats?.speed>0))continue;
+  for(let receiver=0;receiver<4;receiver++)if(receiver!==donor)for(const target of field==='hearts'?[0,1,2,3]:[slot]){if(checks>=limit||Date.now()>=end)break;const config=clone(seed.config);for(const actor of [donor,receiver])config.actors[actor][field]=Array.from({length:field==='hearts'?4:8},(_,i)=>config.actors[actor][field]?.[i]||'');const other=config.actors[receiver][field][target];if(other===id)continue;config.actors[donor][field][slot]=other;config.actors[receiver][field][target]=id;consider(config);}
+ }
+ return {candidates:out.sort((a,b)=>a.score-b.score||a.orders-b.orders),checks};
+}
 // Compare complete modeled order ranges, not one favorable action ordering.
 function refineDamage(seed,baseline,master,profile,settings,evaluate,budget=32){
  const known=r=>r?.complete&&r.checked>0&&!r.resourceFailures&&!r.unknownCases&&Number.isFinite(r.minDamage)&&Number.isFinite(r.maxDamage),end=settings._deadline||Infinity;
@@ -32,12 +47,23 @@ function refineDamage(seed,baseline,master,profile,settings,evaluate,budget=32){
   const parts=SupportLoadouts25.chunks(seed.config.actions);
   for(let index=0;index<parts.length;index++){if(calls>=budget||Date.now()>=end)break;const first=parts[index][0],kind=Catalog9.skills.find(k=>k.id===first.skill)?.kind;if(first.actor!==actor||!['autoRelease','mageChant'].includes(kind))continue;
    const config=clone(seed.config),next=clone(parts);next[index].unshift({actor,turn:first.turn,skill:extension.id,target:actor});config.actions=next.flat();const key=JSON.stringify(config.actions);if(seen.has(key))continue;seen.add(key);attempted++;
+   const count=verify({...seed,config},master,profile,settings,()=>null,0).total;if(!Number.isInteger(count)||count<1||count>budget-calls)continue;
    const report=verify({...seed,config},master,profile,settings,q=>{const r=evaluate(q);return r?.mpKnown===false?null:r;},budget-calls);calls+=report.checked;
    if(!known(report)||!report.worst||report.minDamage<best.minDamage||report.minDamage===best.minDamage&&report.maxDamage<=best.maxDamage)continue;
    best=report;result={...report.worst,orderResilient:true,orderDamageRange:summary(report)};
   }
  }
- return {result,calls,attempted};
+ let gearChecks=0,gearCalls=0;
+ if(settings.orderRangeGear!==false&&calls<budget&&Date.now()<end){const parent=result||seed,candidates=gearCandidates(parent,master,profile,settings);gearChecks=candidates.checks;const pool=[...candidates.candidates];
+  if(settings.orderRangePairedGear!==false)for(const row of candidates.candidates.slice(0,2)){if(gearChecks>=256||Date.now()>=end)break;const paired=gearCandidates({...parent,config:row.config,...row.preview},master,profile,settings,256-gearChecks);gearChecks+=paired.checks;pool.push(...paired.candidates);}
+  const seenGear=new Set();for(const row of pool.sort((a,b)=>a.score-b.score||a.orders-b.orders)){if(calls>=budget||Date.now()>=end)break;const {config}=row,key=JSON.stringify(config.actors);if(seenGear.has(key))continue;seenGear.add(key);
+   const count=verify({...parent,config,...row.preview},master,profile,settings,()=>null,0).total;if(!Number.isInteger(count)||count<1||count+1>budget-calls)continue;
+   calls++;gearCalls++;let preview;try{preview=evaluate(config);}catch{continue;}if(!preview?.resourceOK||preview.mpKnown===false)continue;
+   const report=verify(preview,master,profile,settings,q=>{const r=evaluate(q);return r?.mpKnown===false?null:r;},budget-calls);calls+=report.checked;gearCalls+=report.checked;
+   if(!known(report)||!report.worst||report.minDamage<best.minDamage||report.minDamage===best.minDamage&&report.maxDamage<=best.maxDamage)continue;best=report;result={...report.worst,orderResilient:true,orderGearAdjusted:true,orderDamageRange:summary(report)};
+  }
+ }
+ return {result,calls,attempted,gearChecks,gearCalls};
 }
 function summary(report){const {worst,best,...info}=report;return info;}
 function focus(result,dependencies,settings){const checks=dependencies.map(d=>{const state=result.turnStarts.find(t=>t.turn===d.turn),s=speeds(result.builds,state.states);return {...d,certain:s[d.first]>s[d.second]*settings.ratio};});return {...result,orderChecks:checks,orderOK:checks.every(x=>x.certain)};}
@@ -65,5 +91,5 @@ function search(seeds,pools,master,profile,settings,evaluate,budget=1536){let ca
  }
  return {calls,verified,reports};
 }
-root.OrderRobust27={possible,verify,orders,speeds,variants,focus,search,summary,refineDamage};
+root.OrderRobust27={possible,verify,orders,speeds,variants,focus,search,summary,refineDamage,gearCandidates};
 })(typeof window==='undefined'?globalThis:window);
